@@ -1,0 +1,22 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>AShaderBase.DefaultShaderVar - </title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">org.rajawali3d.materials.shaders</a>&nbsp;/&nbsp;<a href="../index.html">AShaderBase</a>&nbsp;/&nbsp;<a href="./index.html">DefaultShaderVar</a><br/>
+<br/>
+<h1>DefaultShaderVar</h1>
+<a name="org.rajawali3d.materials.shaders.AShaderBase.DefaultShaderVar"></a>
+<code><span class="keyword">class </span><span class="identifier">DefaultShaderVar</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-i-global-shader-var/index.html"><span class="identifier">AShaderBase.IGlobalShaderVar</span></a></code><br/>
+<a name="org.rajawali3d.materials.shaders.AShaderBase.DefaultShaderVar"></a>
+<code><span class="keyword">class </span><span class="identifier">DefaultShaderVar</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-i-global-shader-var/index.html"><span class="identifier">AShaderBase.IGlobalShaderVar</span></a></code>
+<p>The default shader variables are used in the default vertex and fragment shader. They define variables for matrices, position, texture attributes, etc. These shader variables can be used by custom shaders as well. When one of these variables is required the <code><a href="../../-a-shader/get-global.html">AShader#getGlobal(IGlobalShaderVar)</a></code> method can be called. For instance: <pre><code>
+	  // (in a class that inherits from AShader):
+	  RVec4 position = (RVec4) getGlobal(DefaultShaderVar.G_POSITION);
+	  </code></pre></p>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

@@ -1,0 +1,26 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SlerpAnimation3D - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.animation</a>&nbsp;/&nbsp;<a href="./index.html">SlerpAnimation3D</a><br/>
+<br/>
+<h1>SlerpAnimation3D</h1>
+<a name="org.rajawali3d.animation.SlerpAnimation3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SlerpAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<a name="org.rajawali3d.animation.SlerpAnimation3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SlerpAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code>
+<p>Performs spherical linear interpolation (SLERP) animation between two <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code>s. Example usage: <pre><code>
+  SlerpAnimation3D anim = new SlerpAnimation3D(pointOnSphere1, pointOnSphere1);
+  anim.setDuration(1000);
+  anim.setInterpolator(new AccelerateDecelerateInterpolator());
+  anim.setTransformable3D(myObject);
+  registerAnimation(anim);
+  anim.play();
+  </code></pre></p>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

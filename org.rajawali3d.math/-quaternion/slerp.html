@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Quaternion.slerp - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.math</a>&nbsp;/&nbsp;<a href="index.html">Quaternion</a>&nbsp;/&nbsp;<a href="./slerp.html">slerp</a><br/>
+<br/>
+<h1>slerp</h1>
+<a name="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, kotlin.Double)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">slerp</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, kotlin.Double)/end">end</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Performs spherical linear interpolation between this and the provided <code><a href="index.html">Quaternion</a></code> and sets this <code><a href="index.html">Quaternion</a></code> to the normalized result.</p>
+<h3>Parameters</h3>
+<p><a name="end"></a>
+<code>end</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The destination point.</p>
+<p><a name="t"></a>
+<code>t</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> double The interpolation value. [0-1] Where 0 represents this and 1 represents end.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">slerp</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)/q1">q1</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)/q2">q2</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Performs spherical linear interpolation between the provided <code><a href="index.html">Quaternion</a></code>s and sets this <code><a href="index.html">Quaternion</a></code> to the normalized result.</p>
+<h3>Parameters</h3>
+<p><a name="q1"></a>
+<code>q1</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The starting point.</p>
+<p><a name="q2"></a>
+<code>q2</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The destination point.</p>
+<p><a name="t"></a>
+<code>t</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">slerp</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/start">start</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/end">end</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/shortestPath">shortestPath</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Performs spherical linear interpolation between the provided <code><a href="index.html">Quaternion</a></code>s and sets this <code><a href="index.html">Quaternion</a></code> to the normalized result.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The starting point.</p>
+<p><a name="end"></a>
+<code>end</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The destination point.</p>
+<p><a name="t"></a>
+<code>t</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> <code>double</code> The interpolation value. [0-1] Where 0 represents start and 1 represents end.</p>
+<p><a name="shortestPath"></a>
+<code>shortestPath</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> always return the shortest path.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, kotlin.Double)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">slerp</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, kotlin.Double)/end">end</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Performs spherical linear interpolation between this and the provided <code><a href="index.html">Quaternion</a></code> and sets this <code><a href="index.html">Quaternion</a></code> to the normalized result.</p>
+<h3>Parameters</h3>
+<p><a name="end"></a>
+<code>end</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The destination point.</p>
+<p><a name="t"></a>
+<code>t</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> double The interpolation value. [0-1] Where 0 represents this and 1 represents end.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">slerp</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)/q1">q1</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)/q2">q2</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Performs spherical linear interpolation between the provided <code><a href="index.html">Quaternion</a></code>s and sets this <code><a href="index.html">Quaternion</a></code> to the normalized result.</p>
+<h3>Parameters</h3>
+<p><a name="q1"></a>
+<code>q1</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The starting point.</p>
+<p><a name="q2"></a>
+<code>q2</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The destination point.</p>
+<p><a name="t"></a>
+<code>t</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">slerp</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/start">start</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/end">end</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.math.Quaternion$slerp(org.rajawali3d.math.Quaternion, org.rajawali3d.math.Quaternion, kotlin.Double, kotlin.Boolean)/shortestPath">shortestPath</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Performs spherical linear interpolation between the provided <code><a href="index.html">Quaternion</a></code>s and sets this <code><a href="index.html">Quaternion</a></code> to the normalized result.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The starting point.</p>
+<p><a name="end"></a>
+<code>end</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The destination point.</p>
+<p><a name="t"></a>
+<code>t</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> <code>double</code> The interpolation value. [0-1] Where 0 represents start and 1 represents end.</p>
+<p><a name="shortestPath"></a>
+<code>shortestPath</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> always return the shortest path.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+</BODY>
+</HTML>

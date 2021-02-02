@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.scenegraph - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.scenegraph</a><br/>
+<br/>
+<h2>Package org.rajawali3d.scenegraph</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-a_n-a-a-b-b-tree/index.html">A_nAABBTree</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">A_nAABBTree</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.bounds/-bounding-box/index.html"><span class="identifier">BoundingBox</span></a><span class="symbol">, </span><a href="-i-graph-node/index.html"><span class="identifier">IGraphNode</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">A_nAABBTree</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.bounds/-bounding-box/index.html"><span class="identifier">BoundingBox</span></a><span class="symbol">, </span><a href="-i-graph-node/index.html"><span class="identifier">IGraphNode</span></a></code>
+<p>Generic Axis Aligned Bounding Box based tree sorting hierarchy. Subclasses are left to determine child count and any count specific behavior. This implementation in general uses the methodology described in the tutorial listed below by Paramike, with a few modifications to the behavior. Implementations of this could be Ternary trees (3), Octree (8), Icoseptree (27), etc. The tree will try to nest objects as deeply as possible while trying to maintain an minimal tree structure based on the thresholds set. It is up to the user to determine what thresholds make sense and are optimal for your specific needs as there are tradeoffs associated with them all. The default implementation attempts to strike a reasonable balance. This tree design also utilizes an option for overlap between child partitions. This is useful for mimicking some of the behavior of a more complex tree without incurring the complexity. If you specify an overlap percentage, it is more likely that an object near a boundary of the partitions will fit in one or the other and be able to be nested deeper rather than staying in the parent partition. Note however that in cases where the object is small enough to still be fully contained by both (or more) children, it is added to the parent. This is where a more complex tree would excel, but only in the case over very large object counts. By default, this tree will NOT recursively add the children of added objects and NOT recursively remove the children of removed objects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-graph-node/index.html">IGraphNode</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IGraphNode</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IGraphNode</span></code>
+<p>Generic interface allowing for the incorporation of scene graphs to the rendering pipeline of Rajawali. To be a member of scene graphs which implement this interface, an object must inherit from ATransformable3D.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-graph-node-member/index.html">IGraphNodeMember</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IGraphNodeMember</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IGraphNodeMember</span></code>
+<p>Generic interface which any member of IGraphNode must implement in order to be a part of the graph.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-octree/index.html">Octree</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Octree</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a_n-a-a-b-b-tree/index.html"><span class="identifier">A_nAABBTree</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Octree</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a_n-a-a-b-b-tree/index.html"><span class="identifier">A_nAABBTree</span></a></code>
+<p>Octree implementation specific to the Rajawali library. Child partitions will inherit the behavior (recursive add, division threshold, etc.) of the root node in the graph. This system divides space into 8 equal portions called octants. The octant order follows the conventional algebraic numbering for 3D Euclidean space. Note that they follow the axis ordering and OpenGL uses a rotated coordinate system when compared to Euclidean mathematics. Thus, assuming no camera rotation or similar effects:</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

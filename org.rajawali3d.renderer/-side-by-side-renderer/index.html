@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SideBySideRenderer - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.renderer</a>&nbsp;/&nbsp;<a href="./index.html">SideBySideRenderer</a><br/>
+<br/>
+<h1>SideBySideRenderer</h1>
+<a name="org.rajawali3d.renderer.SideBySideRenderer"></a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SideBySideRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-renderer/index.html"><span class="identifier">Renderer</span></a></code><br/>
+<a name="org.rajawali3d.renderer.SideBySideRenderer"></a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SideBySideRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-renderer/index.html"><span class="identifier">Renderer</span></a></code>
+<p> This renderer is typically used by virtual reality glasses like the Open Dive. It renders the scene from two different viewpoints. The x position of the two cameras are slightly offset while the z and y position stay 0. </p>
+ 
+<p> You can set up your scene like a regular Rajawali project. The only difference is that you should call <code>super.initScene()</code> at the end of the <code>initScene()</code> method. </p>
+ 
+<p> Your application's activity should implement the <code><a href="#">SensorEventListener</a></code> interface. The sensor to use is <code><a href="#">Sensor#TYPE_ROTATION_VECTOR</a></code>. In <code><a href="#">SensorEventListener#onSensorChanged(android.hardware.SensorEvent)</a></code> the <code><a href="set-sensor-orientation.html">this#setSensorOrientation(float[])</a></code> method should be called. Here's an example of how to do this. </p>
+ 
+<p> In your RajawaliActivity: </p>
+<pre><code>
+  public void onCreate(Bundle savedInstanceState) {
+  	// ...
+  	mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+  	mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+  }
+ 
+  // ...
+ 
+  public void onSensorChanged(SensorEvent event) {
+  	if(event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR_
+  	{
+  		SensorManager.getQuaternionFromVector(mQuaternion, event.values);
+  		mRender.setSensorOrientation(mQuaternion);
+  	}
+  }
+ 
+  // ...
+ 
+  protected void onResume() {
+  	super.onResume();
+  	mSensorManager.registerListener(this, mSensor, 10000);
+  }
+ 
+  // ...
+ 
+  protected void onPause() {
+  	super.onPause();
+  	mSensorManager.unregisterListener(this);
+  }
+  </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

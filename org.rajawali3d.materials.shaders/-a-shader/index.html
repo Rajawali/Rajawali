@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>AShader - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.materials.shaders</a>&nbsp;/&nbsp;<a href="./index.html">AShader</a><br/>
+<br/>
+<h1>AShader</h1>
+<a name="org.rajawali3d.materials.shaders.AShader"></a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-shader-base/index.html"><span class="identifier">AShaderBase</span></a></code><br/>
+<a name="org.rajawali3d.materials.shaders.AShader"></a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-shader-base/index.html"><span class="identifier">AShaderBase</span></a></code>
+<p>This class is a wrapper class for shader creation. GLSL shaders are text files that are compiled at runtime. The GLSL language is based on C. This class is like a mini framework that lets you write shaders in Java. The main reason for this is maintainability and code reuse. The lack of operator overloading makes this slightly verbose however. Instead of writing this in GLSL: <pre><code>
+  myVar *= myOtherVar;
+  </code></pre> You'll have to write this: <pre><code>
+  myVar.assignAdd(myOtherVar);
+  </code></pre> GLSL data types are wrapped into their own classes. Because most of the data type names are reserved keywords in Java they are prefixed with 'R'. For instance: </p>
+ <ul> <li>float: <code><a href="../-a-shader-base/-r-float/index.html">RFloat</a></code></li>
+ <li>vec2: <code><a href="../-a-shader-base/-r-vec2/index.html">RVec2</a></code></li>
+ <li>vec4: <code><a href="../-a-shader-base/-r-vec4/index.html">RVec4</a></code></li>
+ <li>mat3: <code><a href="../-a-shader-base/-r-mat3/index.html">RMat3</a></code></li>
+ <li>sampler2D: <code><a href="../-a-shader-base/-r-sampler2-d/index.html">RSampler2D</a></code></li>
+ </ul>
+ Shader initialization should be done in the <code><a href="initialize.html">AShader#initialize()</a></code> method. This is the place where you would create your uniforms, varyings, constanst, etc: <pre><code></code></pre>
+<p><strong>Override</strong><br/>
+public void initialize() { super.initialize(); muMyVec3Uniform = (RVec3) addUniform("uMyVec3Uniform", DataType.VEC3); maMyVec2Attribute = (RVec2) addAttribute("uMyVec2Attribute", DataType.VEC2); mvMyFloatVarying = (RFloat) addVarying("vMyFloatVarying", DataType.FLOAT); mgMyMat4Global = (RMat4) addGlobal("gMyMat4Global", DataType.MAT4); mcMyIntConstant = (RInt) addConstant("cMyIntConstant", DataType.INT); }  All attributes and uniforms needs to get their handles. This is an integer that represents the location of a specific attribute or uniform within a shader program. <pre><code></code></pre></p>
+<p><strong>Override</strong><br/>
+public void setLocations(int programHandle) { muMyVec3UniformHandle = getUniformLocation(programHandle, "uMyVec3Uniform"); maMyVec2AttributeHandle = getAttributeLocation(programHandle, "uMyVec2Attribute"); }  This handle is subsequently used in <code><a href="apply-params.html">)</a></code> to set the attribute/uniform value: <pre><code></code></pre></p>
+<p><strong>Override</strong><br/>
+public void applyParams() { super.applyParams(); GLES20.glUniform3fv(muMyVec3UniformHandle, 1, myFloatArrayValue, 0); }  The shader code that goes into main() in a regular shader goes into <code><a href="main.html">AShader#main()</a></code>: <pre><code></code></pre></p>
+<p><strong>Override</strong><br/>
+public void main() { // corresponds to GLSL: vec3 myVar = maMyVec3Uniform; RVec3 myVar = new RVec3("myVar"); myVar.assign(maMyVec3Uniform); // corresponds to GLSL: myVar *= 1.0f; myVar.assignMultiply(1.0f); // etc .. } </p>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

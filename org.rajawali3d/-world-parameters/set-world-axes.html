@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WorldParameters.setWorldAxes - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d</a>&nbsp;/&nbsp;<a href="index.html">WorldParameters</a>&nbsp;/&nbsp;<a href="./set-world-axes.html">setWorldAxes</a><br/>
+<br/>
+<h1>setWorldAxes</h1>
+<a name="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)"></a>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">setWorldAxes</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)/right">right</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)/up">up</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)/forward">forward</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the world axis values after checking that they are all orthogonal to each other. The check performed is to verify that the cross product between <code>right</code> and <code>up</code> is equivilant to <code>forward</code> withing 1ppm error on each component.</p>
+<h3>Parameters</h3>
+<p><a name="right"></a>
+<code>right</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The desired right vector. Must be normalized.</p>
+<p><a name="up"></a>
+<code>up</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The desired up vector. Must be normalized.</p>
+<p><a name="forward"></a>
+<code>forward</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The desired forward vector. Must be normalized.</p>
+<a name="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)"></a>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">setWorldAxes</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)/right">right</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)/up">up</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.WorldParameters$setWorldAxes(org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3, org.rajawali3d.math.vector.Vector3)/forward">forward</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the world axis values after checking that they are all orthogonal to each other. The check performed is to verify that the cross product between <code>right</code> and <code>up</code> is equivilant to <code>forward</code> withing 1ppm error on each component.</p>
+<h3>Parameters</h3>
+<p><a name="right"></a>
+<code>right</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The desired right vector. Must be normalized.</p>
+<p><a name="up"></a>
+<code>up</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The desired up vector. Must be normalized.</p>
+<p><a name="forward"></a>
+<code>forward</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The desired forward vector. Must be normalized.</p>
+</BODY>
+</HTML>

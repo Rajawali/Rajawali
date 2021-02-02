@@ -1,0 +1,200 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.animation - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.animation</a><br/>
+<br/>
+<h2>Package org.rajawali3d.animation</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-animation/index.html">Animation</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Animation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-playable/index.html"><span class="identifier">Playable</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Animation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-playable/index.html"><span class="identifier">Playable</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-animation3-d/index.html">Animation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Animation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation/index.html"><span class="identifier">Animation</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Animation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation/index.html"><span class="identifier">Animation</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-animation-group/index.html">AnimationGroup</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">AnimationGroup</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation/index.html"><span class="identifier">Animation</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">AnimationGroup</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation/index.html"><span class="identifier">Animation</span></a></code>
+<p>A group of <code><a href="-animation/index.html">Animation</a></code>s that will all be played and paused at the same time. When using a group, use <code><a href="-animation-group/add-animation.html">AnimationGroup#addAnimation(Animation)</a></code> to add each desired animation to the group and register the group to the scene with <code><a href="../org.rajawali3d.scene/-scene/register-animation.html">Scene#registerAnimation(Animation)</a></code>. When ready, call <code><a href="-animation-group/play.html">#play()</a></code> to begin all animations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-animation-queue/index.html">AnimationQueue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">AnimationQueue</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation-group/index.html"><span class="identifier">AnimationGroup</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">AnimationQueue</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation-group/index.html"><span class="identifier">AnimationGroup</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-coalesce-animation3-d/index.html">CoalesceAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CoalesceAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CoalesceAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code>
+<p><code><a href="../org.rajawali3d/-a-transformable3-d/index.html">ATransformable3D</a></code> Coalescence animation. This animation <em>ROUGHLY</em> approximates a decaying orbit. This is a non-physics based animation. The paths objects follow are defined by <code><a href="../org.rajawali3d.curves/-a-spiral3-d/index.html">ASpiral3D</a></code> paths. Any number of objects can be added to the animation, and objects can have their spiral focused on a fixed point, or on another object in the animation. For example, a system of a sun, planet and moon. The moon decays into the planet while the planet decays into the sun. It is important to note that any dependencies in the animation take place in insertion order. If the 4th item is set to converge on the 5th item, then the position of the 4th item will always be one time step behind where it should be. This class is thread safe, and should you want to, configurations can be added while the animation is playing.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-color-animation3-d/index.html">ColorAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ColorAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ColorAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-elliptical-orbit-animation3-d/index.html">EllipticalOrbitAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">EllipticalOrbitAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">EllipticalOrbitAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code>
+<p>Animation that orbits <code><a href="../org.rajawali3d/-a-transformable3-d/index.html">ATransformable3D</a></code> object around a point.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-exploding-animation3-d/index.html">ExplodingAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ExplodingAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ExplodingAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-animation-listener/index.html">IAnimationListener</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IAnimationListener</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IAnimationListener</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-playable/index.html">IPlayable</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IPlayable</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IPlayable</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-playable/index.html">Playable</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Playable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-playable/index.html"><span class="identifier">IPlayable</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Playable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-playable/index.html"><span class="identifier">IPlayable</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-posable-animation3-d/index.html">PosableAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PosableAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PosableAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-rotate-animation3-d/index.html">RotateAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RotateAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RotateAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-rotate-around-animation3-d/index.html">RotateAroundAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RotateAroundAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RotateAroundAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-rotate-on-axis-animation/index.html">RotateOnAxisAnimation</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RotateOnAxisAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RotateOnAxisAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-scale-animation3-d/index.html">ScaleAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ScaleAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ScaleAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-slerp-animation3-d/index.html">SlerpAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SlerpAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SlerpAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code>
+<p>Performs spherical linear interpolation (SLERP) animation between two <code><a href="../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code>s. Example usage: <pre><code>
+  SlerpAnimation3D anim = new SlerpAnimation3D(pointOnSphere1, pointOnSphere1);
+  anim.setDuration(1000);
+  anim.setInterpolator(new AccelerateDecelerateInterpolator());
+  anim.setTransformable3D(myObject);
+  registerAnimation(anim);
+  anim.play();
+  </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-spline-orientation-animation3-d/index.html">SplineOrientationAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SplineOrientationAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SplineOrientationAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-spline-scaling-animation3-d/index.html">SplineScalingAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SplineScalingAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SplineScalingAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-spline-translate-animation3-d/index.html">SplineTranslateAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SplineTranslateAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SplineTranslateAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-translate-animation3-d/index.html">TranslateAnimation3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TranslateAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TranslateAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

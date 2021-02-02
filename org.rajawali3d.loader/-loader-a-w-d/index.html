@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>LoaderAWD - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.loader</a>&nbsp;/&nbsp;<a href="./index.html">LoaderAWD</a><br/>
+<br/>
+<h1>LoaderAWD</h1>
+<a name="org.rajawali3d.loader.LoaderAWD"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderAWD</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<a name="org.rajawali3d.loader.LoaderAWD"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderAWD</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code>
+<p>AWD File parser written using the AWD File Format specification. All future additions to the format should adhere to all specification requirements for maximum forward and backward compatibility. </p>
+ Currently compression is not supported, files will need to be formatted with compression off. This is an option in MAX and should be an option using other exporters.   <strong>Example AWD parsing</strong>  <code><pre><code>
+  final AWDParser parser = new AWDParser(this, new File(Environment.getExternalStorageDirectory(),
+  "cube.awd"));
+  parser.parse();
+  parser.setAlwaysUseContainer(false);
+  final BaseObject3D obj = parser.getParsedObject();
+  </code></pre></code>
+<p><strong>Author</strong><br/>
+Ian Thomas (toxicbakery@gmail.com)</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+<p><strong>See Also</strong><br/>
+&lt;a href="http://awaytools.com/"&gt;Away Tools Homepage&lt;/a&gt; &lt;p&gt;&lt;a href="https://github.com/awaytools/awd-sdk/blob/master/docs/AWD_format_specification2_1_Alpha.pdf"&gt;Official&lt;a href="https://github.com/awaytools/AwayBuilder/blob/master/awaybuilder-core/src/awaybuilder/utils/encoders/AWDEncoder.as"&gt;Official</p>
+</BODY>
+</HTML>

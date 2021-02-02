@@ -1,0 +1,80 @@
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: rajawali/rajawali:1.1
+  environment:
+    TERM: dumb
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Execute Gradle
+          command: |
+            echo "org.gradle.parallel=false" >> gradle.properties
+            echo "org.gradle.daemon=false" >> gradle.properties
+            echo "org.gradle.jvmargs=-Xmx3g -XX:MaxPermSize=2048m -Dfile.encoding=UTF-8" >> gradle.properties
+
+            # This should not be necessary but it seems to keep going back to a 5.x version 
+            echo "distributionUrl=https\://services.gradle.org/distributions/gradle-6.7.1-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+
+            # Only deploy master and tags, only tags are pushed as releases to OSS. Forks never attempt deploy
+            if [ -z "$CIRCLE_PR_REPONAME" ] ; then
+              echo "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
+              echo "signing.password=${SIGNING_PASSWORD}" >> "gradle.properties"
+              echo "signing.secretKeyRingFile=../maven.keystore" >> "gradle.properties"
+              gpg --cipher-algo AES256 --yes --batch --passphrase=$ENC_FILE_KEY maven.keystore.gpg
+
+              # Build and deploy
+              ./gradlew build publish
+            else
+              # Regular Build
+              ./gradlew build --no-daemon
+            fi
+
+            # Firebase Test Lab for non forked work
+            if [ -z "$CIRCLE_PR_REPONAME" ]; then
+              ./gradlew :rajawali:assembleAndroidTest
+              echo $GCLOUD_SERVICE_KEY | base64 -d > ${HOME}/client-secret.json
+              gcloud config set project rajawali-de514
+              gcloud --quiet components update
+              gcloud auth activate-service-account $GCLOUD_SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
+              gcloud firebase test android run --type instrumentation --device version=28,model=Pixel2 --no-record-video --app testing/dummy.apk --test rajawali/build/outputs/apk/androidTest/debug/rajawali-debug-androidTest.apk --timeout 1m --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" --directories-to-pull /sdcard --results-dir rajawali-${CIRCLE_SHA1}
+              coverageFile=`gsutil ls gs://test-lab-b7bitcqyxt144-h7dwq818889qk/rajawali-${CIRCLE_SHA1}/**/*.ec | tail -1`
+              gsutil cp $coverageFile $PWD/rajawali/build/jacoco | true
+              ./gradlew :rajawali:jacocoTestReport
+            fi
+
+            # Codecov report for non forked work
+            if [ -z "$CIRCLE_PR_REPONAME" ]; then
+              bash <(curl -s https://codecov.io/bash)
+            fi
+
+            # Github Pages for master non forked work
+            if [ -z "$CIRCLE_PR_REPONAME" ] && [ "master" = "$CIRCLE_BRANCH" ]; then
+              ./gradlew dokkaGhPages
+              git config --global user.email $GH_EMAIL
+              git config --global user.name $GH_NAME
+              cp -r .circleci rajawali/build/gh-pages/.circleci
+              cd rajawali/build/gh-pages
+              git init
+              git checkout --orphan gh-pages
+              git add -A &>/dev/null
+              git commit -m "Automated deployment of ${CIRCLE_BRANCH} ${CIRCLE_SHA1}" --allow-empty
+              git push -q https://${GH_PERSONAL_TOKEN}@github.com/Rajawali/${CIRCLE_PROJECT_REPONAME}.git gh-pages --force
+            fi
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          context: Sonatype
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - gh-pages

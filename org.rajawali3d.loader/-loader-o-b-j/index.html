@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>LoaderOBJ - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.loader</a>&nbsp;/&nbsp;<a href="./index.html">LoaderOBJ</a><br/>
+<br/>
+<h1>LoaderOBJ</h1>
+<a name="org.rajawali3d.loader.LoaderOBJ"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderOBJ</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<a name="org.rajawali3d.loader.LoaderOBJ"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderOBJ</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code>
+<p>The most important thing is that the model should be triangulated. Rajawali doesn�t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically. At the moment, Rajawali also doesn�t support per-face textures. This is on the todo list. </p>
+<p> The options that should be checked when exporting from blender are: </p>
+<ul> <li>Apply Modifiers </li>
+<li>Include Normals </li>
+<li>Include UVs </li>
+<li>Write Materials (if applicable) </li>
+<li>Triangulate Faces </li>
+<li>Objects as OBJ Objects </li>
+</ul>
+ 
+<p> The files should be written to your �res/raw� folder in your ADT project. Usually you�ll get errors in the console when you do this. The Android SDK ignores file extensions so it�ll regard the .obj and .mtl files as duplicates. The way to fix this is to rename the files. For instance: - myobject.obj &gt; myobject_obj - myobject.mtl &gt; myobject_mtl The parser replaces any dots in file names, so this should be picked up automatically by the parser. Path fragments in front of file names (also texture paths) are discarded so you can leave them as is. </p>
+<p> The texture file paths in the .mtl files are stripped off periods and path fragments as well. The textures need to be placed in the res/drawable-nodpi folder. </p>
+<p> If it still throws errors check if there are any funny characters or unsupported texture formats (like bmp). </p>
+<p> Just as a reminder, here�s the code that takes care of the parsing: </p>
+<pre><code>ObjParser objParser = new ObjParser(mContext.getResources(), mTextureManager, R.raw.myobject_obj);
+  objParser.parse();
+  BaseObject3D mObject = objParser.getParsedObject();
+  mObject.setLight(mLight);
+  addChild(mObject);
+  
+  </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

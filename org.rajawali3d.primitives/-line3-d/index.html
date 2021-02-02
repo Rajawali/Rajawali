@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Line3D - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.primitives</a>&nbsp;/&nbsp;<a href="./index.html">Line3D</a><br/>
+<br/>
+<h1>Line3D</h1>
+<a name="org.rajawali3d.primitives.Line3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Line3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a></code><br/>
+<a name="org.rajawali3d.primitives.Line3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Line3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a></code>
+<p>The Line3D takes a list of Vector3 points, thickness and a color. </p>
+<p> Usage: </p>
+<pre><code>
+  Stack&lt;Vector3&gt; points = new Stack&lt;Vector3&gt;();
+  int[] colors = new int[3];
+  
+  points.add(new Vector3(-2, 0, 1));
+  points.add(new Vector3(-1, -1, 2));
+  points.add(new Vector3(0, 2, 4));
+  
+  colors[0] = 0xffff0000; // red
+  colors[1] = 0xff00ff00; // green
+  colors[2] = 0xffffff00; // yellow
+  
+  Line3D line = new Line3D(points, 1, colors);
+  SimpleMaterial material = new SimpleMaterial();
+  material.setUseVertexColor(true);
+  line.setMaterial(material);
+  getCurrentScene.addChild(line);
+  </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

@@ -1,0 +1,20 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureManager - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.materials.textures</a>&nbsp;/&nbsp;<a href="./index.html">TextureManager</a><br/>
+<br/>
+<h1>TextureManager</h1>
+<a name="org.rajawali3d.materials.textures.TextureManager"></a>
+<code><span class="keyword">class </span><span class="identifier">TextureManager</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials/-a-resource-manager/index.html"><span class="identifier">AResourceManager</span></a></code><br/>
+<a name="org.rajawali3d.materials.textures.TextureManager"></a>
+<code><span class="keyword">class </span><span class="identifier">TextureManager</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials/-a-resource-manager/index.html"><span class="identifier">AResourceManager</span></a></code>
+<p>A singleton class that keeps track of all textures used by the application. All textures will be restored when the OpenGL context is being recreated. This however needs to be indicated by setting <code><a href="../-a-texture/should-recycle.html">ATexture#shouldRecycle(boolean)</a></code> to true (which is the default). It will then keep a reference to the Bitmap which means the application will take up more memory. </p>
+<p> The advantage of storing the Bitmap in memory is that it the texture can quickly be recovered when the context is restored.</p>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

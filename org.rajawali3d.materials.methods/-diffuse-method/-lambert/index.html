@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>DiffuseMethod.Lambert - </title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">org.rajawali3d.materials.methods</a>&nbsp;/&nbsp;<a href="../index.html">DiffuseMethod</a>&nbsp;/&nbsp;<a href="./index.html">Lambert</a><br/>
+<br/>
+<h1>Lambert</h1>
+<a name="org.rajawali3d.materials.methods.DiffuseMethod.Lambert"></a>
+<code><span class="keyword">class </span><span class="identifier">Lambert</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../-i-diffuse-method/index.html"><span class="identifier">IDiffuseMethod</span></a></code><br/>
+<a name="org.rajawali3d.materials.methods.DiffuseMethod.Lambert"></a>
+<code><span class="keyword">class </span><span class="identifier">Lambert</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../-i-diffuse-method/index.html"><span class="identifier">IDiffuseMethod</span></a></code>
+<p>Defines Lambertian reflectance. This technique causes polygons to reflect light equally in all directions. The reflection is calculated by taking the dot product of the surface's normal vector and a normalized light direction vector. This number is then multiplied by the color of the surface and the intensity of the light hitting the surface. </p>
+<p> To use the Lambertian diffuse method you need to create an instance of one of the methods and then assign it to a material using the <code><a href="../../../org.rajawali3d.materials/-material/set-diffuse-method.html">Material#setDiffuseMethod(IDiffuseMethod)</a></code> method: </p>
+<pre><code>
+      material.setDiffuseMethod(new DiffuseMethod.Lambert());
+      </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+<p><strong>See Also</strong><br/>
+&lt;a href="http://en.wikipedia.org/wiki/Lambertian_reflectance"&gt;http://en.wikipedia.org/wiki/Lambertian_reflectance&lt;/a&gt;</p>
+</BODY>
+</HTML>

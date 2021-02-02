@@ -1,0 +1,317 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureView - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.view</a>&nbsp;/&nbsp;<a href="./index.html">TextureView</a><br/>
+<br/>
+<h1>TextureView</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TextureView</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">TextureView</span><span class="symbol">, </span><a href="../-i-surface/index.html"><span class="identifier">ISurface</span></a></code>
+<p>Rajawali version of a <a href="./index.html">TextureView</a>. If you plan on using Rajawali with a <a href="./index.html">TextureView</a>,
+it is imperative that you extend this class or life cycle events may not function as you expect.</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-base-config-chooser/index.html">BaseConfigChooser</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">BaseConfigChooser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-i-rajawali-egl-config-chooser/index.html"><span class="identifier">IRajawaliEglConfigChooser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-component-size-chooser/index.html">ComponentSizeChooser</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ComponentSizeChooser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-base-config-chooser/index.html"><span class="identifier">TextureView.BaseConfigChooser</span></a></code>
+<p>Choose a configuration with exactly the specified r,g,b,a sizes,
+and at least the specified depth and stencil sizes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-renderer-delegate/index.html">RendererDelegate</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">RendererDelegate</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">SurfaceTextureListener</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">TextureView</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$<init>(android.content.Context, android.util.AttributeSet, kotlin.Int)/context">context</span><span class="symbol">:</span>&nbsp;<span class="identifier">Context</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$<init>(android.content.Context, android.util.AttributeSet, kotlin.Int)/attrs">attrs</span><span class="symbol">:</span>&nbsp;<span class="identifier">AttributeSet</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$<init>(android.content.Context, android.util.AttributeSet, kotlin.Int)/defStyleAttr">defStyleAttr</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span></code>
+<p>Rajawali version of a <a href="./index.html">TextureView</a>. If you plan on using Rajawali with a <a href="./index.html">TextureView</a>,
+it is imperative that you extend this class or life cycle events may not function as you expect.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="anti-aliasing-config.html">antiAliasingConfig</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">antiAliasingConfig</span><span class="symbol">: </span><a href="../-i-surface/-a-n-t-i_-a-l-i-a-s-i-n-g_-c-o-n-f-i-g/index.html"><span class="identifier">ISurface.ANTI_ALIASING_CONFIG</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bits-alpha.html">bitsAlpha</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bitsAlpha</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bits-blue.html">bitsBlue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bitsBlue</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bits-depth.html">bitsDepth</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bitsDepth</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bits-green.html">bitsGreen</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bitsGreen</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bits-red.html">bitsRed</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bitsRed</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="frame-rate-texture.html">frameRateTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">frameRateTexture</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="m-render-mode.html">mRenderMode</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mRenderMode</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="multi-sample-count.html">multiSampleCount</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">multiSampleCount</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="preserve-e-g-l-context-on-pause.html">preserveEGLContextOnPause</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">preserveEGLContextOnPause</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Control whether the EGL context is preserved when the TextureView is paused and
+resumed.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="renderer-delegate.html">rendererDelegate</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">rendererDelegate</span><span class="symbol">: </span><a href="-renderer-delegate/index.html"><span class="identifier">TextureView.RendererDelegate</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="render-mode-internal.html">renderModeInternal</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">renderModeInternal</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The rendering mode.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="finalize.html">finalize</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">finalize</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-render-mode.html">getRenderMode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getRenderMode</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="on-attached-to-window.html">onAttachedToWindow</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onAttachedToWindow</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>This method is used as part of the View class and is not normally
+called or subclassed by clients of TextureView.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="on-detached-from-window.html">onDetachedFromWindow</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onDetachedFromWindow</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="on-pause.html">onPause</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onPause</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inform the view that the activity is paused. The owner of this view must
+call this method when the activity is paused. Calling this method will
+pause the rendering thread.
+Must not be called before a renderer has been set.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="on-resume.html">onResume</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onResume</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inform the view that the activity is resumed. The owner of this view must
+call this method when the activity is resumed. Calling this method will
+recreate the OpenGL display and resume the rendering
+thread.
+Must not be called before a renderer has been set.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="on-visibility-changed.html">onVisibilityChanged</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onVisibilityChanged</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$onVisibilityChanged(android.view.View, kotlin.Int)/changedView">changedView</span><span class="symbol">:</span>&nbsp;<span class="identifier">View</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$onVisibilityChanged(android.view.View, kotlin.Int)/visibility">visibility</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="queue-event.html">queueEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">queueEvent</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$queueEvent(java.lang.Runnable)/runnable">runnable</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Runnable.html"><span class="identifier">Runnable</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Queue a runnable to be run on the GL rendering thread. This can be used
+to communicate with the Renderer on the rendering thread.
+Must not be called before a renderer has been set.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="request-render-update.html">requestRenderUpdate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">requestRenderUpdate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-anti-aliasing-mode.html">setAntiAliasingMode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setAntiAliasingMode</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setAntiAliasingMode(org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG)/config">config</span><span class="symbol">:</span>&nbsp;<a href="../-i-surface/-a-n-t-i_-a-l-i-a-s-i-n-g_-c-o-n-f-i-g/index.html"><span class="identifier">ISurface.ANTI_ALIASING_CONFIG</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-e-g-l-config-chooser.html">setEGLConfigChooser</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLConfigChooser</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(org.rajawali3d.view.IRajawaliEglConfigChooser)/configChooser">configChooser</span><span class="symbol">:</span>&nbsp;<a href="../-i-rajawali-egl-config-chooser/index.html"><span class="identifier">IRajawaliEglConfigChooser</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install a custom EGLConfigChooser.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLConfigChooser</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/redSize">redSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/greenSize">greenSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/blueSize">blueSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/alphaSize">alphaSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/depthSize">depthSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/stencilSize">stencilSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install a config chooser which will choose a config
+with at least the specified depthSize and stencilSize,
+and exactly the specified redSize, greenSize, blueSize and alphaSize.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-e-g-l-context-client-version.html">setEGLContextClientVersion</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLContextClientVersion</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLContextClientVersion(kotlin.Int)/version">version</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inform the default EGLContextFactory and default EGLConfigChooser
+which EGLContext client version to pick.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-e-g-l-context-factory.html">setEGLContextFactory</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLContextFactory</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLContextFactory(android.opengl.GLSurfaceView.EGLContextFactory)/factory">factory</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGLContextFactory</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install a custom EGLContextFactory.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-e-g-l-window-surface-factory.html">setEGLWindowSurfaceFactory</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLWindowSurfaceFactory</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLWindowSurfaceFactory(android.opengl.GLSurfaceView.EGLWindowSurfaceFactory)/factory">factory</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGLWindowSurfaceFactory</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install a custom EGLWindowSurfaceFactory.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-frame-rate.html">setFrameRate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setFrameRate</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setFrameRate(kotlin.Double)/rate">rate</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-render-mode.html">setRenderMode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setRenderMode</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setRenderMode(kotlin.Int)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-sample-count.html">setSampleCount</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSampleCount</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setSampleCount(kotlin.Int)/count">count</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-surface-renderer.html">setSurfaceRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSurfaceRenderer</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setSurfaceRenderer(org.rajawali3d.renderer.ISurfaceRenderer)/renderer">renderer</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-i-surface-renderer/index.html"><span class="identifier">ISurfaceRenderer</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

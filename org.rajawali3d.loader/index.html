@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.loader - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.loader</a><br/>
+<br/>
+<h2>Package org.rajawali3d.loader</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-a-loader/index.html">ALoader</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ALoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ALoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-a-mesh-loader/index.html">AMeshLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AMeshLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">, </span><a href="-i-mesh-loader/index.html"><span class="identifier">IMeshLoader</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AMeshLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">, </span><a href="-i-mesh-loader/index.html"><span class="identifier">IMeshLoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-animated-mesh-loader/index.html">IAnimatedMeshLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IAnimatedMeshLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IAnimatedMeshLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-animation-sequence-loader/index.html">IAnimationSequenceLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IAnimationSequenceLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IAnimationSequenceLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-loader/index.html">ILoader</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ILoader</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">ILoader</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-mesh-loader/index.html">IMeshLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IMeshLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IMeshLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-loader/index.html"><span class="identifier">ILoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-parser/index.html">IParser</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IParser</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IParser</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-loader3-d-s-max/index.html">Loader3DSMax</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Loader3DSMax</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Loader3DSMax</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code>
+<p>3DS object parser. This is a work in progress. Materials aren't parsed yet.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-loader-a-w-d/index.html">LoaderAWD</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderAWD</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderAWD</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code>
+<p>AWD File parser written using the AWD File Format specification. All future additions to the format should adhere to all specification requirements for maximum forward and backward compatibility. </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-loader-g-code/index.html">LoaderGCode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderGCode</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderGCode</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-loader-m-d2/index.html">LoaderMD2</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderMD2</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a><span class="symbol">, </span><a href="-i-animated-mesh-loader/index.html"><span class="identifier">IAnimatedMeshLoader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderMD2</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a><span class="symbol">, </span><a href="-i-animated-mesh-loader/index.html"><span class="identifier">IAnimatedMeshLoader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-loader-o-b-j/index.html">LoaderOBJ</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderOBJ</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderOBJ</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code>
+<p>The most important thing is that the model should be triangulated. Rajawali doesn�t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically. At the moment, Rajawali also doesn�t support per-face textures. This is on the todo list. </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-loader-s-t-l/index.html">LoaderSTL</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderSTL</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LoaderSTL</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-mesh-loader/index.html"><span class="identifier">AMeshLoader</span></a></code>
+<p>STL Parser written using the ASCII format as describe on Wikipedia. </p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Exceptions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-parsing-exception/index.html">ParsingException</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ParsingException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Exception.html"><span class="identifier">Exception</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ParsingException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Exception.html"><span class="identifier">Exception</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

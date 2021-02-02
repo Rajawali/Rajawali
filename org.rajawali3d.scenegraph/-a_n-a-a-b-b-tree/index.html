@@ -1,0 +1,21 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>A_nAABBTree - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.scenegraph</a>&nbsp;/&nbsp;<a href="./index.html">A_nAABBTree</a><br/>
+<br/>
+<h1>A_nAABBTree</h1>
+<a name="org.rajawali3d.scenegraph.A_nAABBTree"></a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">A_nAABBTree</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.bounds/-bounding-box/index.html"><span class="identifier">BoundingBox</span></a><span class="symbol">, </span><a href="../-i-graph-node/index.html"><span class="identifier">IGraphNode</span></a></code><br/>
+<a name="org.rajawali3d.scenegraph.A_nAABBTree"></a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">A_nAABBTree</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.bounds/-bounding-box/index.html"><span class="identifier">BoundingBox</span></a><span class="symbol">, </span><a href="../-i-graph-node/index.html"><span class="identifier">IGraphNode</span></a></code>
+<p>Generic Axis Aligned Bounding Box based tree sorting hierarchy. Subclasses are left to determine child count and any count specific behavior. This implementation in general uses the methodology described in the tutorial listed below by Paramike, with a few modifications to the behavior. Implementations of this could be Ternary trees (3), Octree (8), Icoseptree (27), etc. The tree will try to nest objects as deeply as possible while trying to maintain an minimal tree structure based on the thresholds set. It is up to the user to determine what thresholds make sense and are optimal for your specific needs as there are tradeoffs associated with them all. The default implementation attempts to strike a reasonable balance. This tree design also utilizes an option for overlap between child partitions. This is useful for mimicking some of the behavior of a more complex tree without incurring the complexity. If you specify an overlap percentage, it is more likely that an object near a boundary of the partitions will fit in one or the other and be able to be nested deeper rather than staying in the parent partition. Note however that in cases where the object is small enough to still be fully contained by both (or more) children, it is added to the parent. This is where a more complex tree would excel, but only in the case over very large object counts. By default, this tree will NOT recursively add the children of added objects and NOT recursively remove the children of removed objects.</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+<p><strong>See Also</strong><br/>
+{@link http://www.piko3d.com/tutorials/space-partitioning-tutorial-piko3ds-dynamic-octree}</p>
+</BODY>
+</HTML>

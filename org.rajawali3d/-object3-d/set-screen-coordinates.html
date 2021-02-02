@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Object3D.setScreenCoordinates - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d</a>&nbsp;/&nbsp;<a href="index.html">Object3D</a>&nbsp;/&nbsp;<a href="./set-screen-coordinates.html">setScreenCoordinates</a><br/>
+<br/>
+<h1>setScreenCoordinates</h1>
+<a name="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setScreenCoordinates</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/x">x</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/y">y</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/viewportWidth">viewportWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/viewportHeight">viewportHeight</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/eyeZ">eyeZ</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Positions the object in the plane of the screen/viewport (z = 0), with x and y specified in GL screen coordinates (origin at bottom left); Assumes: - the object is a direct child of the current scene (not in a container) - the current viewport is centered on the Z-axis, and has the given dimensions - the current camera is positioned at the given eyeZ</p>
+<h3>Parameters</h3>
+<p><a name="x"></a>
+<code>x</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> object x coordinate in pixels [0 = viewport left]</p>
+<p><a name="y"></a>
+<code>y</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> object y coordinate in pixels [0 = viewport bottom]</p>
+<p><a name="viewportWidth"></a>
+<code>viewportWidth</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> width of current viewport in pixels</p>
+<p><a name="viewportHeight"></a>
+<code>viewportHeight</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> height of current viewport in pixels</p>
+<p><a name="eyeZ"></a>
+<code>eyeZ</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> location of current camera on Z-axis</p>
+<a name="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setScreenCoordinates</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/x">x</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/y">y</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/viewportWidth">viewportWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/viewportHeight">viewportHeight</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Object3D$setScreenCoordinates(kotlin.Double, kotlin.Double, kotlin.Int, kotlin.Int, kotlin.Double)/eyeZ">eyeZ</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Positions the object in the plane of the screen/viewport (z = 0), with x and y specified in GL screen coordinates (origin at bottom left); Assumes: - the object is a direct child of the current scene (not in a container) - the current viewport is centered on the Z-axis, and has the given dimensions - the current camera is positioned at the given eyeZ</p>
+<h3>Parameters</h3>
+<p><a name="x"></a>
+<code>x</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> object x coordinate in pixels [0 = viewport left]</p>
+<p><a name="y"></a>
+<code>y</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> object y coordinate in pixels [0 = viewport bottom]</p>
+<p><a name="viewportWidth"></a>
+<code>viewportWidth</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> width of current viewport in pixels</p>
+<p><a name="viewportHeight"></a>
+<code>viewportHeight</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> height of current viewport in pixels</p>
+<p><a name="eyeZ"></a>
+<code>eyeZ</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> location of current camera on Z-axis</p>
+</BODY>
+</HTML>

@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Renderer.replaceScene - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.renderer</a>&nbsp;/&nbsp;<a href="index.html">Renderer</a>&nbsp;/&nbsp;<a href="./replace-scene.html">replaceScene</a><br/>
+<br/>
+<h1>replaceScene</h1>
+<a name="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)/location">location</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer at the specified location in the list. This does not validate the index, so if it is not contained in the list already, an exception will be thrown. </p>
+ If the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> being replaced is the one in current use, the replacement will be selected on the next frame.
+<h3>Parameters</h3>
+<p><a name="scene"></a>
+<code>scene</code> - <a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> object to add.</p>
+<p><a name="location"></a>
+<code>location</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> Integer index of the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> to replace.</p>
+<p><strong>Return</strong><br/>
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> True if the replace task was successfully queued.</p>
+<a name="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/oldScene">oldScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/newScene">newScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces the specified <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer with the new one. If the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> being replaced is the one in current use, the replacement will be selected on the next frame.</p>
+<h3>Parameters</h3>
+<p><a name="oldScene"></a>
+<code>oldScene</code> - <a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> object to be replaced.</p>
+<p><a name="newScene"></a>
+<code>newScene</code> - <a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> which will replace the old.</p>
+<p><strong>Return</strong><br/>
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> True if the replace task was successfully queued.</p>
+<a name="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)/location">location</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer at the specified location in the list. This does not validate the index, so if it is not contained in the list already, an exception will be thrown. </p>
+ If the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> being replaced is the one in current use, the replacement will be selected on the next frame.
+<h3>Parameters</h3>
+<p><a name="scene"></a>
+<code>scene</code> - <a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> object to add.</p>
+<p><a name="location"></a>
+<code>location</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> Integer index of the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> to replace.</p>
+<p><strong>Return</strong><br/>
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> True if the replace task was successfully queued.</p>
+<a name="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/oldScene">oldScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/newScene">newScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces the specified <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer with the new one. If the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> being replaced is the one in current use, the replacement will be selected on the next frame.</p>
+<h3>Parameters</h3>
+<p><a name="oldScene"></a>
+<code>oldScene</code> - <a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> object to be replaced.</p>
+<p><a name="newScene"></a>
+<code>newScene</code> - <a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> which will replace the old.</p>
+<p><strong>Return</strong><br/>
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> True if the replace task was successfully queued.</p>
+</BODY>
+</HTML>

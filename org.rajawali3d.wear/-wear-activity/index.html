@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WearActivity - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.wear</a>&nbsp;/&nbsp;<a href="./index.html">WearActivity</a><br/>
+<br/>
+<h1>WearActivity</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WearActivity</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">WearableActivity</span></code>
+<p><strong>Author</strong><br/>
+Ian Thomas (toxicbakery@gmail.com)</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WearActivity</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="renderer.html">renderer</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">renderer</span><span class="symbol">: </span><a href="../../org.rajawali3d.renderer/-i-surface-renderer/index.html"><span class="identifier">ISurfaceRenderer</span></a><span class="symbol">!</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="create-egl-config-chooser.html">createEglConfigChooser</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">createEglConfigChooser</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.util.egl/-rajawali-e-g-l-config-chooser/index.html"><span class="identifier">RajawaliEGLConfigChooser</span></a><span class="symbol">!</span></code>
+<p>The config chooser to apply to the SurfaceView when multi-sampling is enabled.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-anti-aliasing-config.html">getAntiAliasingConfig</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getAntiAliasingConfig</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.view/-i-surface/-a-n-t-i_-a-l-i-a-s-i-n-g_-c-o-n-f-i-g/index.html"><span class="identifier">ISurface.ANTI_ALIASING_CONFIG</span></a><span class="symbol">!</span></code>
+<p>Flag for multi-sampling.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-renderer.html">getRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getRenderer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.renderer/-i-surface-renderer/index.html"><span class="identifier">ISurfaceRenderer</span></a><span class="symbol">!</span></code>
+<p>Get the renderer currently set to the SurfaceView.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-target-g-l-version.html">getTargetGLVersion</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTargetGLVersion</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The GLES version to apply to the SurfaceView.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="on-create.html">onCreate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onCreate</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.wear.WearActivity$onCreate(android.os.Bundle)/savedInstanceState">savedInstanceState</span><span class="symbol">:</span>&nbsp;<span class="identifier">Bundle</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="on-enter-ambient.html">onEnterAmbient</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onEnterAmbient</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.wear.WearActivity$onEnterAmbient(android.os.Bundle)/ambientDetails">ambientDetails</span><span class="symbol">:</span>&nbsp;<span class="identifier">Bundle</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="on-exit-ambient.html">onExitAmbient</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onExitAmbient</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="on-update-ambient.html">onUpdateAmbient</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onUpdateAmbient</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-renderer.html">setRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setRenderer</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.wear.WearActivity$setRenderer(org.rajawali3d.renderer.ISurfaceRenderer)/renderer">renderer</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-i-surface-renderer/index.html"><span class="identifier">ISurfaceRenderer</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Set the renderer for the SurfaceView.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="update-display-ambient.html">updateDisplayAmbient</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">updateDisplayAmbient</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="update-display-normal.html">updateDisplayNormal</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">updateDisplayNormal</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

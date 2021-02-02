@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Material.<init> - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.materials</a>&nbsp;/&nbsp;<a href="index.html">Material</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;()"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;()"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>The Material class is where you define the visual characteristics of your 3D model. Here you can specify lighting parameters, specular highlights, ambient colors and much more. This is the place where you add textures as well. For an overview of the different types of materials and parameters visit the Rajawali Wiki. </p>
+ This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights: <pre><code>
+      Material material = new Material();
+      material.addTexture(new Texture("earth", R.drawable.earth_diffuse));
+      material.enableLighting(true);
+      material.setDiffuseMethod(new DiffuseMethod.Lambert());
+      material.setSpecularMethod(new SpecularMethod.Phong());
+      
+      myObject.setMaterial(material);
+      </code></pre>
+<p><strong>See Also</strong><br/>
+&lt;a href="https://github.com/MasDennis/Rajawali/wiki/Materials"&gt;https://github.com/MasDennis/Rajawali/wiki/Materials&lt;/a&gt;</p>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;(kotlin.Boolean)"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(kotlin.Boolean)/deferCapabilitiesCheck">deferCapabilitiesCheck</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader)"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader)/customVertexShader">customVertexShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-vertex-shader/index.html"><span class="identifier">VertexShader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader)/customFragmentShader">customFragmentShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-fragment-shader/index.html"><span class="identifier">FragmentShader</span></a><span class="symbol">!</span><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)/customVertexShader">customVertexShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-vertex-shader/index.html"><span class="identifier">VertexShader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)/customFragmentShader">customFragmentShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-fragment-shader/index.html"><span class="identifier">FragmentShader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)/deferCapabilitiesCheck">deferCapabilitiesCheck</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;(kotlin.Boolean)"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(kotlin.Boolean)/deferCapabilitiesCheck">deferCapabilitiesCheck</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader)"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader)/customVertexShader">customVertexShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-vertex-shader/index.html"><span class="identifier">VertexShader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader)/customFragmentShader">customFragmentShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-fragment-shader/index.html"><span class="identifier">FragmentShader</span></a><span class="symbol">!</span><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.materials.Material$&lt;init&gt;(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)"></a>
+<code><span class="identifier">Material</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)/customVertexShader">customVertexShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-vertex-shader/index.html"><span class="identifier">VertexShader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)/customFragmentShader">customFragmentShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-fragment-shader/index.html"><span class="identifier">FragmentShader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$<init>(org.rajawali3d.materials.shaders.VertexShader, org.rajawali3d.materials.shaders.FragmentShader, kotlin.Boolean)/deferCapabilitiesCheck">deferCapabilitiesCheck</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code>
+</BODY>
+</HTML>

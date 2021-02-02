@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SkeletalAnimationMaterialPlugin - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.materials.plugins</a>&nbsp;/&nbsp;<a href="./index.html">SkeletalAnimationMaterialPlugin</a><br/>
+<br/>
+<h1>SkeletalAnimationMaterialPlugin</h1>
+<a name="org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SkeletalAnimationMaterialPlugin</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-i-material-plugin/index.html"><span class="identifier">IMaterialPlugin</span></a></code><br/>
+<a name="org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SkeletalAnimationMaterialPlugin</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-i-material-plugin/index.html"><span class="identifier">IMaterialPlugin</span></a></code>
+<p> The material plugin for skeletal animation. This is the container for skeletal animation shaders and should be used as the access point to skeletal animation properties. </p>
+ 
+<p> Skeletal animation on mobile devices is limited. It is recommended to use as few bones as possible. The number of vertex weights per bone can't be more than 8. </p>
+ Example usage: <pre><code>
+  ...
+  mMaterialPlugin = new SkeletalAnimationMaterialPlugin(numJoints, numVertexWeights);
+  ...
+  
+  public void setShaderParams(Camera camera) {
+  		super.setShaderParams(camera);
+  		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.bufferHandle);
+  		mMaterialPlugin.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+  		if (mMaxBoneWeightsPerVertex &gt; 4) {
+  			mMaterialPlugin.setBone2Indices(mboneIndexes2BufferInfo.bufferHandle);
+  			mMaterialPlugin.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
+  		}
+  		mMaterialPlugin.setBoneMatrix(mSkeleton.uBoneMatrix);
+  	}
+  </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

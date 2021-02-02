@@ -1,0 +1,805 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WatchRenderer - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.wear</a>&nbsp;/&nbsp;<a href="./index.html">WatchRenderer</a><br/>
+<br/>
+<h1>WatchRenderer</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WatchRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-renderer/index.html"><span class="identifier">Renderer</span></a></code>
+<p><strong>Author</strong><br/>
+Ian Thomas (toxicbakery@gmail.com)</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WatchRenderer</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$<init>(android.content.Context)/context">context</span><span class="symbol">:</span>&nbsp;<span class="identifier">Context</span><span class="symbol">!</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/-a-v-a-i-l-a-b-l-e_-c-o-r-e-s.html">AVAILABLE_CORES</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">val </span><span class="identifier">AVAILABLE_CORES</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-context.html">mContext</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mContext</span><span class="symbol">: </span><span class="identifier">Context</span><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-current-viewport-height.html">mCurrentViewportHeight</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mCurrentViewportHeight</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-current-viewport-width.html">mCurrentViewportWidth</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mCurrentViewportWidth</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-default-viewport-height.html">mDefaultViewportHeight</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mDefaultViewportHeight</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-default-viewport-width.html">mDefaultViewportWidth</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mDefaultViewportWidth</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-enable-depth-buffer.html">mEnableDepthBuffer</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mEnableDepthBuffer</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-fog-enabled.html">mFogEnabled</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">var </span><span class="identifier">mFogEnabled</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-f-p-s-update-listener.html">mFPSUpdateListener</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mFPSUpdateListener</span><span class="symbol">: </span><a href="../../org.rajawali3d.util/-on-f-p-s-update-listener/index.html"><span class="identifier">OnFPSUpdateListener</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-frame-count.html">mFrameCount</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mFrameCount</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-frame-rate.html">mFrameRate</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mFrameRate</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-g-l-e-s_-major_-version.html">mGLES_Major_Version</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mGLES_Major_Version</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-g-l-e-s_-minor_-version.html">mGLES_Minor_Version</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mGLES_Minor_Version</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-last-measured-f-p-s.html">mLastMeasuredFPS</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mLastMeasuredFPS</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-loader-executor.html">mLoaderExecutor</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">mLoaderExecutor</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/Executor.html"><span class="identifier">Executor</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-material-manager.html">mMaterialManager</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mMaterialManager</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials/-material-manager/index.html"><span class="identifier">MaterialManager</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-override-viewport-height.html">mOverrideViewportHeight</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mOverrideViewportHeight</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-override-viewport-width.html">mOverrideViewportWidth</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mOverrideViewportWidth</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-render-targets.html">mRenderTargets</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">mRenderTargets</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.renderer/-render-target/index.html"><span class="identifier">RenderTarget</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-scene-initialized.html">mSceneInitialized</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mSceneInitialized</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-scenes.html">mScenes</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">mScenes</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-surface.html">mSurface</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mSurface</span><span class="symbol">: </span><a href="../../org.rajawali3d.view/-i-surface/index.html"><span class="identifier">ISurface</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-texture-manager.html">mTextureManager</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mTextureManager</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.textures/-texture-manager/index.html"><span class="identifier">TextureManager</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/m-timer.html">mTimer</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mTimer</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html"><span class="identifier">ScheduledExecutorService</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/s-max-lights.html">sMaxLights</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">var </span><span class="identifier">sMaxLights</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="on-offsets-changed.html">onOffsetsChanged</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onOffsetsChanged</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onOffsetsChanged(kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Int, kotlin.Int)/xOffset">xOffset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onOffsetsChanged(kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Int, kotlin.Int)/yOffset">yOffset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onOffsetsChanged(kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Int, kotlin.Int)/xOffsetStep">xOffsetStep</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onOffsetsChanged(kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Int, kotlin.Int)/yOffsetStep">yOffsetStep</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onOffsetsChanged(kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Int, kotlin.Int)/xPixelOffset">xPixelOffset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onOffsetsChanged(kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Float, kotlin.Int, kotlin.Int)/yPixelOffset">yPixelOffset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="on-touch-event.html">onTouchEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onTouchEvent</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.wear.WatchRenderer$onTouchEvent(android.view.MotionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">MotionEvent</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/add-and-switch-scene.html">addAndSwitchScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addAndSwitchScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$addAndSwitchScene(org.rajawali3d.scene.Scene)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Adds a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code>, switching to it immediately</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/add-material.html">addMaterial</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addMaterial</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$addMaterial(org.rajawali3d.materials.Material)/material">material</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials/-material/index.html"><span class="identifier">Material</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/add-render-target.html">addRenderTarget</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addRenderTarget</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$addRenderTarget(org.rajawali3d.renderer.RenderTarget)/renderTarget">renderTarget</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-render-target/index.html"><span class="identifier">RenderTarget</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Add a render target in a thread safe manner.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/add-scene.html">addScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$addScene(org.rajawali3d.scene.Scene)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Adds a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> to the renderer.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/add-scenes.html">addScenes</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addScenes</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$addScenes(kotlin.collections.MutableCollection((org.rajawali3d.scene.Scene)))/scenes">scenes</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-collection/index.html"><span class="identifier">MutableCollection</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Adds a <code><a href="https://docs.oracle.com/javase/6/docs/api/java/util/Collection.html">Collection</a></code> of scenes to the renderer.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/add-texture.html">addTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addTexture</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$addTexture(org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/clear-override-viewport-dimensions.html">clearOverrideViewportDimensions</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">clearOverrideViewportDimensions</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/clear-scenes.html">clearScenes</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">clearScenes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Clears all scenes from the renderer. This should be used with extreme care as it will also clear the current scene. If this is done while still rendering, bad things will happen.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-context.html">getContext</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getContext</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Context</span><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-current-camera.html">getCurrentCamera</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getCurrentCamera</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.cameras/-camera/index.html"><span class="identifier">Camera</span></a><span class="symbol">!</span></code>
+<p>Retrieve the current <code><a href="../../org.rajawali3d.cameras/-camera/index.html">Camera</a></code> in use. This is the camera being used by the current scene.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-current-scene.html">getCurrentScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getCurrentScene</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span></code>
+<p>Fetches the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> currently being being displayed. Note that the scene is not thread safe so this should be used with extreme caution.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-default-viewport-height.html">getDefaultViewportHeight</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getDefaultViewportHeight</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-default-viewport-width.html">getDefaultViewportWidth</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getDefaultViewportWidth</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-frame-rate.html">getFrameRate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getFrameRate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-g-l-major-version.html">getGLMajorVersion</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getGLMajorVersion</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Fetches the Open GL ES major version of the EGL surface.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-g-l-minor-version.html">getGLMinorVersion</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getGLMinorVersion</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Fetches the Open GL ES minor version of the EGL surface.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-max-lights.html">getMaxLights</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">getMaxLights</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-new-default-scene.html">getNewDefaultScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getNewDefaultScene</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span></code>
+<p>Return a new instance of the default initial scene for the <code><a href="../../org.rajawali3d.renderer/-renderer/index.html">Renderer</a></code> instance. This method is only intended to be called one time by the renderer itself and should not be used elsewhere.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-num-scenes.html">getNumScenes</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getNumScenes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Retrieve the number of <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> associated with the Renderer.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-override-viewport-height.html">getOverrideViewportHeight</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getOverrideViewportHeight</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-override-viewport-width.html">getOverrideViewportWidth</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getOverrideViewportWidth</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-refresh-rate.html">getRefreshRate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getRefreshRate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-render-target.html">getRenderTarget</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getRenderTarget</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.renderer/-render-target/index.html"><span class="identifier">RenderTarget</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-scene.html">getScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$getScene(kotlin.Int)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span></code>
+<p>Fetches the specified scene.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-scene-caching-enabled.html">getSceneCachingEnabled</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getSceneCachingEnabled</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-scene-initialized.html">getSceneInitialized</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getSceneInitialized</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-texture-manager.html">getTextureManager</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTextureManager</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.textures/-texture-manager/index.html"><span class="identifier">TextureManager</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-viewport-height.html">getViewportHeight</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getViewportHeight</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/get-viewport-width.html">getViewportWidth</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getViewportWidth</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/has-g-l-context.html">hasGLContext</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">hasGLContext</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Indicates whether the OpenGL context is still alive or not.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/initialize-color-picker.html">initializeColorPicker</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">initializeColorPicker</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$initializeColorPicker(org.rajawali3d.util.ObjectColorPicker)/picker">picker</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.util/-object-color-picker/index.html"><span class="identifier">ObjectColorPicker</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/init-scene.html">initScene</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">initScene</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Scene construction should happen here, not in onSurfaceCreated()</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/internal-offer-task.html">internalOfferTask</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">internalOfferTask</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$internalOfferTask(org.rajawali3d.renderer.AFrameTask)/task">task</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-a-frame-task/index.html"><span class="identifier">AFrameTask</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/load-model.html">loadModel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">loadModel</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(org.rajawali3d.loader.ALoader, org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int)/loader">loader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.loader/-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(org.rajawali3d.loader.ALoader, org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/index.html"><span class="identifier">IAsyncLoaderCallback</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(org.rajawali3d.loader.ALoader, org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int)/tag">tag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.loader/-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">!</span></code>
+<p>Add an <code><a href="../../org.rajawali3d.loader/-a-loader/index.html">ALoader</a></code> instance to queue parsing for the given resource ID. Use <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-complete.html">IAsyncLoaderCallback#onModelLoadComplete(ALoader)</a></code>, <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-failed.html">IAsyncLoaderCallback#onModelLoadFailed(ALoader)</a></code>, and</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">loadModel</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int)/loaderClass">loaderClass</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../org.rajawali3d.loader/-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/index.html"><span class="identifier">IAsyncLoaderCallback</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int)/resID">resID</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.loader/-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">!</span></code>
+<p>Create and add an <code><a href="../../org.rajawali3d.loader/-a-loader/index.html">ALoader</a></code> instance using reflection to queue parsing of the given resource ID. Use <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-complete.html">IAsyncLoaderCallback#onModelLoadComplete(ALoader)</a></code>, <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-failed.html">IAsyncLoaderCallback#onModelLoadFailed(ALoader)</a></code> to monitor the status of loading. Returns null if the loader fails to instantiate, <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-failed.html">IAsyncLoaderCallback#onModelLoadFailed(ALoader)</a></code> will still be called. A tag will be set automatically for the model equal to the resource ID passed.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">loadModel</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int, kotlin.Int)/loaderClass">loaderClass</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../org.rajawali3d.loader/-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int, kotlin.Int)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/index.html"><span class="identifier">IAsyncLoaderCallback</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int, kotlin.Int)/resID">resID</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$loadModel(java.lang.Class((org.rajawali3d.loader.ALoader)), org.rajawali3d.loader.async.IAsyncLoaderCallback, kotlin.Int, kotlin.Int)/tag">tag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.loader/-a-loader/index.html"><span class="identifier">ALoader</span></a><span class="symbol">!</span></code>
+<p>Create and add an <code><a href="../../org.rajawali3d.loader/-a-loader/index.html">ALoader</a></code> instance using reflection to queue parsing of the given resource ID. Use <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-complete.html">IAsyncLoaderCallback#onModelLoadComplete(ALoader)</a></code>, <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-failed.html">IAsyncLoaderCallback#onModelLoadFailed(ALoader)</a></code> to monitor the status of loading. Returns null if the loader fails to instantiate, <code><a href="../../org.rajawali3d.loader.async/-i-async-loader-callback/on-model-load-failed.html">IAsyncLoaderCallback#onModelLoadFailed(ALoader)</a></code> will still be called. Use the tag identified to determine which model completed loading when multiple models are loaded.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-pause.html">onPause</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onPause</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-render.html">onRender</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onRender</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRender(kotlin.Long, kotlin.Double)/elapsedRealtime">elapsedRealtime</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRender(kotlin.Long, kotlin.Double)/deltaTime">deltaTime</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <code><a href="../../org.rajawali3d.renderer/-renderer/on-render-frame.html">#onRenderFrame(GL10)</a></code> to render the next frame. This is called prior to the current scene's <code><a href="../../org.rajawali3d.scene/-scene/render.html">Scene#render(long, double, RenderTarget)</a></code> method.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-render-frame.html">onRenderFrame</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onRenderFrame</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderFrame(javax.microedition.khronos.opengles.GL10)/gl">gl</span><span class="symbol">:</span>&nbsp;<span class="identifier">GL10</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-render-surface-created.html">onRenderSurfaceCreated</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onRenderSurfaceCreated</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceCreated(javax.microedition.khronos.egl.EGLConfig, javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/config">config</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGLConfig</span><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceCreated(javax.microedition.khronos.egl.EGLConfig, javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/gl">gl</span><span class="symbol">:</span>&nbsp;<span class="identifier">GL10</span><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceCreated(javax.microedition.khronos.egl.EGLConfig, javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/width">width</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceCreated(javax.microedition.khronos.egl.EGLConfig, javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/height">height</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-render-surface-destroyed.html">onRenderSurfaceDestroyed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onRenderSurfaceDestroyed</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceDestroyed(android.graphics.SurfaceTexture)/surface">surface</span><span class="symbol">:</span>&nbsp;<span class="identifier">SurfaceTexture</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-render-surface-size-changed.html">onRenderSurfaceSizeChanged</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onRenderSurfaceSizeChanged</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceSizeChanged(javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/gl">gl</span><span class="symbol">:</span>&nbsp;<span class="identifier">GL10</span><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceSizeChanged(javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/width">width</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$onRenderSurfaceSizeChanged(javax.microedition.khronos.opengles.GL10, kotlin.Int, kotlin.Int)/height">height</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/on-resume.html">onResume</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onResume</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/perform-frame-tasks.html">performFrameTasks</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">performFrameTasks</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/reload-materials.html">reloadMaterials</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">reloadMaterials</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/reload-render-targets.html">reloadRenderTargets</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">reloadRenderTargets</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/reload-scenes.html">reloadScenes</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">reloadScenes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called to reload the scenes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/reload-textures.html">reloadTextures</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">reloadTextures</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/remove-material.html">removeMaterial</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeMaterial</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$removeMaterial(org.rajawali3d.materials.Material)/material">material</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials/-material/index.html"><span class="identifier">Material</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/remove-render-target.html">removeRenderTarget</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeRenderTarget</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$removeRenderTarget(org.rajawali3d.renderer.RenderTarget)/renderTarget">renderTarget</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-render-target/index.html"><span class="identifier">RenderTarget</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Remove a render target in a thread safe manner.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/remove-scene.html">removeScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$removeScene(org.rajawali3d.scene.Scene)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Removes a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> from the renderer. If the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> being removed is the one in current use, the 0 index <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> will be selected on the next frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/remove-texture.html">removeTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeTexture</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$removeTexture(org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/render.html">render</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">render</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$render(kotlin.Long, kotlin.Double)/elapsedRealtime">elapsedRealtime</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$render(kotlin.Long, kotlin.Double)/deltaTime">deltaTime</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called by <code><a href="../../org.rajawali3d.renderer/-renderer/on-render.html">#onRender(long, double)</a></code> to render the next frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/replace-and-switch-scene.html">replaceAndSwitchScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceAndSwitchScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceAndSwitchScene(org.rajawali3d.scene.Scene, kotlin.Int)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceAndSwitchScene(org.rajawali3d.scene.Scene, kotlin.Int)/location">location</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> at the specified index, switching to the replacement immediately on the next frame. This does not validate the index.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceAndSwitchScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceAndSwitchScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/oldScene">oldScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceAndSwitchScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/newScene">newScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces the specified <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer with the new one, switching to it immediately on the next frame. If the scene to replace does not exist, nothing will happen.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/replace-scene.html">replaceScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, kotlin.Int)/location">location</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces a <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer at the specified location in the list. This does not validate the index, so if it is not contained in the list already, an exception will be thrown. </p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/oldScene">oldScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceScene(org.rajawali3d.scene.Scene, org.rajawali3d.scene.Scene)/newScene">newScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Replaces the specified <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> in the renderer with the new one. If the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> being replaced is the one in current use, the replacement will be selected on the next frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/replace-texture.html">replaceTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">replaceTexture</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$replaceTexture(org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/reset-materials.html">resetMaterials</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">resetMaterials</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/reset-textures.html">resetTextures</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">resetTextures</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/resize-render-target.html">resizeRenderTarget</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">resizeRenderTarget</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$resizeRenderTarget(org.rajawali3d.materials.textures.RenderTargetTexture)/renderTargetTexture">renderTargetTexture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-render-target-texture/index.html"><span class="identifier">RenderTargetTexture</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/screen-to-cartesian.html">screenToCartesian</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">screenToCartesian</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$screenToCartesian(kotlin.Float, kotlin.Float)/screenX">screenX</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$screenToCartesian(kotlin.Float, kotlin.Float)/screenY">screenY</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">PointF</span><span class="symbol">!</span></code>
+<p>converts screen coordinates (y increases downwards) to cartesian (y increases upwards) coordinates</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-anti-aliasing-mode.html">setAntiAliasingMode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setAntiAliasingMode</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setAntiAliasingMode(org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG)/config">config</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.view/-i-surface/-a-n-t-i_-a-l-i-a-s-i-n-g_-c-o-n-f-i-g/index.html"><span class="identifier">ISurface.ANTI_ALIASING_CONFIG</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-f-p-s-update-listener.html">setFPSUpdateListener</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setFPSUpdateListener</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setFPSUpdateListener(org.rajawali3d.util.OnFPSUpdateListener)/listener">listener</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.util/-on-f-p-s-update-listener/index.html"><span class="identifier">OnFPSUpdateListener</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-frame-rate.html">setFrameRate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setFrameRate</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setFrameRate(kotlin.Int)/frameRate">frameRate</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setFrameRate</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setFrameRate(kotlin.Double)/frameRate">frameRate</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-max-lights.html">setMaxLights</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">setMaxLights</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setMaxLights(kotlin.Int)/maxLights">maxLights</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-override-viewport-dimensions.html">setOverrideViewportDimensions</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setOverrideViewportDimensions</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setOverrideViewportDimensions(kotlin.Int, kotlin.Int)/width">width</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setOverrideViewportDimensions(kotlin.Int, kotlin.Int)/height">height</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-render-surface.html">setRenderSurface</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setRenderSurface</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setRenderSurface(org.rajawali3d.view.ISurface)/surface">surface</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.view/-i-surface/index.html"><span class="identifier">ISurface</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-render-target.html">setRenderTarget</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setRenderTarget</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setRenderTarget(org.rajawali3d.renderer.RenderTarget)/renderTarget">renderTarget</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.renderer/-render-target/index.html"><span class="identifier">RenderTarget</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the current render target. Please mind that this CAN ONLY BE called on the main OpenGL render thread. A subsequent call to <code><a href="../../org.rajawali3d.renderer/-renderer/render.html">Renderer#render(long, double)</a></code> will render the current scene into this render target. Setting the render target to null will switch back to normal rendering.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-scene-caching-enabled.html">setSceneCachingEnabled</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSceneCachingEnabled</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setSceneCachingEnabled(kotlin.Boolean)/enabled">enabled</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/set-view-port.html">setViewPort</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setViewPort</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setViewPort(kotlin.Int, kotlin.Int)/width">width</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$setViewPort(kotlin.Int, kotlin.Int)/height">height</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the GL Viewport used. User code is free to override this method, so long as the viewport is set somewhere (and the projection matrix updated).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/start-rendering.html">startRendering</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">startRendering</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/stop-rendering.html">stopRendering</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">stopRendering</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Stop rendering the scene.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/switch-scene.html">switchScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">switchScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$switchScene(org.rajawali3d.scene.Scene)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">switchScene</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$switchScene(kotlin.Int)/scene">scene</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Switches the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> currently being displayed.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/switch-scene-direct.html">switchSceneDirect</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">switchSceneDirect</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$switchSceneDirect(org.rajawali3d.scene.Scene)/nextScene">nextScene</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.scene/-scene/index.html"><span class="identifier">Scene</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Switches the <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> currently being displayed. It resets the OpenGL state and sets the projection matrix for the new scene. </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.renderer/-renderer/un-project.html">unProject</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">unProject</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$unProject(android.graphics.PointF, kotlin.Float)/p">p</span><span class="symbol">:</span>&nbsp;<span class="identifier">PointF</span><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$unProject(android.graphics.PointF, kotlin.Float)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span></code><code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">unProject</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.renderer.Renderer$unProject(kotlin.Double, kotlin.Double, kotlin.Double)/x">x</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$unProject(kotlin.Double, kotlin.Double, kotlin.Double)/y">y</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.renderer.Renderer$unProject(kotlin.Double, kotlin.Double, kotlin.Double)/z">z</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">!</span></code>
+<p>Unprojects screen position into world space; 0,0,0 is center of screen</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

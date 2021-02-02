@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Etc2Texture - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.materials.textures</a>&nbsp;/&nbsp;<a href="./index.html">Etc2Texture</a><br/>
+<br/>
+<h1>Etc2Texture</h1>
+<a name="org.rajawali3d.materials.textures.Etc2Texture"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Etc2Texture</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-compressed-texture/index.html"><span class="identifier">ACompressedTexture</span></a></code><br/>
+<a name="org.rajawali3d.materials.textures.Etc2Texture"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Etc2Texture</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-a-compressed-texture/index.html"><span class="identifier">ACompressedTexture</span></a></code>
+<p>Rajawali container for an ETC2 texture. Due to the nature of ETC2 textures, you may also use this to load an ETC1 texture. The following GL internal formats are supported: - <code><a href="#">GLES11Ext#GL_ETC1_RGB8_OES</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_RGB8_ETC2</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_RGBA8_ETC2_EAC</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_R11_EAC</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_RG11_EAC</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_SIGNED_R11_EAC</a></code> - <code><a href="#">GLES30#GL_COMPRESSED_SIGNED_RG11_EAC</a></code> In theory, the sRGB types <code><a href="#">GLES30#GL_COMPRESSED_SRGB8_ETC2</a></code>, <code><a href="#">GLES30#GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC</a></code>, and <code><a href="#">GLES30#GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2</a></code> are also supported, but they will currently fail the header check because no source was available to determine their internal type codes. //TODO: Find internal type codes for sRGB formats.</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+</BODY>
+</HTML>

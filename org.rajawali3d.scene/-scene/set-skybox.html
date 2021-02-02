@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Scene.setSkybox - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.scene</a>&nbsp;/&nbsp;<a href="index.html">Scene</a>&nbsp;/&nbsp;<a href="./set-skybox.html">setSkybox</a><br/>
+<br/>
+<h1>setSkybox</h1>
+<a name="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int)/resourceId">resourceId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Creates a skybox with the specified single texture.</p>
+<h3>Parameters</h3>
+<p><a name="resourceId"></a>
+<code>resourceId</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resouce id of the skybox texture.</p>
+<h3>Exceptions</h3>
+<p><a name="TextureException"></a>
+<code>TextureException</code> - </p>
+<p><strong>Return</strong><br/>
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> True if the clear task was queued successfully.</p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/posx">posx</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/negx">negx</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/posy">posy</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/negy">negy</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/posz">posz</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/negz">negz</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Creates a skybox with the specified 6 textures.</p>
+<h3>Parameters</h3>
+<p><a name="posx"></a>
+<code>posx</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the front face.</p>
+<p><a name="negx"></a>
+<code>negx</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the right face.</p>
+<p><a name="posy"></a>
+<code>posy</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the back face.</p>
+<p><a name="negy"></a>
+<code>negy</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the left face.</p>
+<p><a name="posz"></a>
+<code>posz</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the up face.</p>
+<p><a name="negz"></a>
+<code>negz</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the down face.</p>
+<h3>Exceptions</h3>
+<p><a name="TextureException"></a>
+<code>TextureException</code> - </p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(kotlin.Array((android.graphics.Bitmap)))"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Array((android.graphics.Bitmap)))/bitmaps">bitmaps</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">Bitmap</span><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Creates a skybox with the specified 6 <code><a href="#">Bitmap</a></code> textures.</p>
+<h3>Parameters</h3>
+<p><a name="bitmaps"></a>
+<code>bitmaps</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">Bitmap</span><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">:</span> <code><a href="#">Bitmap</a></code> array containing the cube map textures.</p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(org.rajawali3d.primitives.Cube, org.rajawali3d.materials.textures.ATexture)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(org.rajawali3d.primitives.Cube, org.rajawali3d.materials.textures.ATexture)/skybox">skybox</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.primitives/-cube/index.html"><span class="identifier">Cube</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(org.rajawali3d.primitives.Cube, org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Sets the provided <code><a href="../../org.rajawali3d.primitives/-cube/index.html">Cube</a></code> as a skybox.</p>
+<h3>Parameters</h3>
+<p><a name="skybox"></a>
+<code>skybox</code> - <a href="../../org.rajawali3d.primitives/-cube/index.html"><span class="identifier">Cube</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.primitives/-cube/index.html">Cube</a></code> object defining skybox geometry.</p>
+<p><a name="texture"></a>
+<code>texture</code> - <a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.materials.textures/-texture/index.html">Texture</a></code> the texture added to the skybox.</p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int)/resourceId">resourceId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Creates a skybox with the specified single texture.</p>
+<h3>Parameters</h3>
+<p><a name="resourceId"></a>
+<code>resourceId</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resouce id of the skybox texture.</p>
+<h3>Exceptions</h3>
+<p><a name="TextureException"></a>
+<code>TextureException</code> - </p>
+<p><strong>Return</strong><br/>
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">:</span> <code>boolean</code> True if the clear task was queued successfully.</p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/posx">posx</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/negx">negx</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/posy">posy</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/negy">negy</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/posz">posz</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/negz">negz</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Creates a skybox with the specified 6 textures.</p>
+<h3>Parameters</h3>
+<p><a name="posx"></a>
+<code>posx</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the front face.</p>
+<p><a name="negx"></a>
+<code>negx</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the right face.</p>
+<p><a name="posy"></a>
+<code>posy</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the back face.</p>
+<p><a name="negy"></a>
+<code>negy</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the left face.</p>
+<p><a name="posz"></a>
+<code>posz</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the up face.</p>
+<p><a name="negz"></a>
+<code>negz</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> int Resource id for the down face.</p>
+<h3>Exceptions</h3>
+<p><a name="TextureException"></a>
+<code>TextureException</code> - </p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(kotlin.Array((android.graphics.Bitmap)))"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(kotlin.Array((android.graphics.Bitmap)))/bitmaps">bitmaps</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">Bitmap</span><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Creates a skybox with the specified 6 <code><a href="#">Bitmap</a></code> textures.</p>
+<h3>Parameters</h3>
+<p><a name="bitmaps"></a>
+<code>bitmaps</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">Bitmap</span><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">:</span> <code><a href="#">Bitmap</a></code> array containing the cube map textures.</p>
+<a name="org.rajawali3d.scene.Scene$setSkybox(org.rajawali3d.primitives.Cube, org.rajawali3d.materials.textures.ATexture)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSkybox</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(org.rajawali3d.primitives.Cube, org.rajawali3d.materials.textures.ATexture)/skybox">skybox</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.primitives/-cube/index.html"><span class="identifier">Cube</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.scene.Scene$setSkybox(org.rajawali3d.primitives.Cube, org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Sets the provided <code><a href="../../org.rajawali3d.primitives/-cube/index.html">Cube</a></code> as a skybox.</p>
+<h3>Parameters</h3>
+<p><a name="skybox"></a>
+<code>skybox</code> - <a href="../../org.rajawali3d.primitives/-cube/index.html"><span class="identifier">Cube</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.primitives/-cube/index.html">Cube</a></code> object defining skybox geometry.</p>
+<p><a name="texture"></a>
+<code>texture</code> - <a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">:</span> <code><a href="../../org.rajawali3d.materials.textures/-texture/index.html">Texture</a></code> the texture added to the skybox.</p>
+</BODY>
+</HTML>

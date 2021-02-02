@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureView.setEGLContextClientVersion - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.view</a>&nbsp;/&nbsp;<a href="index.html">TextureView</a>&nbsp;/&nbsp;<a href="./set-e-g-l-context-client-version.html">setEGLContextClientVersion</a><br/>
+<br/>
+<h1>setEGLContextClientVersion</h1>
+<a name="org.rajawali3d.view.TextureView$setEGLContextClientVersion(kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLContextClientVersion</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLContextClientVersion(kotlin.Int)/version">version</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inform the default EGLContextFactory and default EGLConfigChooser
+which EGLContext client version to pick.</p>
+<p>Use this method to create an OpenGL ES 2.0-compatible context.
+Example:</p>
+<p>Note: Activities which require OpenGL ES 2.0 should indicate this by
+setting @lt;uses-feature android:glEsVersion="0x00020000" /&gt; in the activity's
+AndroidManifest.xml file.</p>
+<p>If this method is called, it must be called before <a href="#">.setSurfaceRenderer</a>
+is called.</p>
+<p>This method only affects the behavior of the default EGLContexFactory and the
+default EGLConfigChooser. If
+<a href="#">.setEGLContextFactory</a> has been called, then the supplied
+EGLContextFactory is responsible for creating an OpenGL ES 2.0-compatible context.
+If
+<a href="#">.setEGLConfigChooser</a> has been called, then the supplied
+EGLConfigChooser is responsible for choosing an OpenGL ES 2.0-compatible config.</p>
+<h3>Parameters</h3>
+<p><a name="version"></a>
+<code>version</code> - The EGLContext client version to choose. Use 2 for OpenGL ES 2.0</p>
+</BODY>
+</HTML>

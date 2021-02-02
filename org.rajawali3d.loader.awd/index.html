@@ -1,0 +1,289 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.loader.awd - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.loader.awd</a><br/>
+<br/>
+<h2>Package org.rajawali3d.loader.awd</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-a-base-object-block-parser/index.html">ABaseObjectBlockParser</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ABaseObjectBlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ABaseObjectBlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-a-block-loader/index.html">ABlockLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ABlockLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.loader/-loader-a-w-d/-i-block-parser/index.html"><span class="identifier">LoaderAWD.IBlockParser</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ABlockLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.loader/-loader-a-w-d/-i-block-parser/index.html"><span class="identifier">LoaderAWD.IBlockParser</span></a></code>
+<p>Base class for parsing blocks. Blocks are instantiated by the <code><a href="../org.rajawali3d.loader/-loader-a-w-d/index.html">LoaderAWD</a></code> directly and are not intended for any other use case.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-a-block-parser/index.html">ABlockParser</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ABlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.loader/-loader-a-w-d/-i-block-parser/index.html"><span class="identifier">LoaderAWD.IBlockParser</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ABlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.loader/-loader-a-w-d/-i-block-parser/index.html"><span class="identifier">LoaderAWD.IBlockParser</span></a></code>
+<p>Base class for parsing blocks. Blocks are instantiated by the AWDParser directly and are not intended for any other use case.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-a-exportable-block-parser/index.html">AExportableBlockParser</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AExportableBlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AExportableBlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-a-texture-block-parser/index.html">ATextureBlockParser</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ATextureBlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ATextureBlockParser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-animation-set/index.html">BlockAnimationSet</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockAnimationSet</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockAnimationSet</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code>
+<p>Groups a number of BlockSkeletonAnimations or BlockMeshPoseAnimations together. The BlockAnimator which actually binds the various animation components together only references BlockAnimationSets, rather than individual animation sequences or frames.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-animator/index.html">BlockAnimator</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockAnimator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockAnimator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code>
+<p>This class is responsible for binding a BlockMeshInstance to a BlockSkeleton and assigning it a single BlockAnimationSet. It is the final stage in the AWD animation "pipeline".</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-bitmap-texture/index.html">BlockBitmapTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockBitmapTexture</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockBitmapTexture</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-camera/index.html">BlockCamera</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockCamera</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockCamera</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-command/index.html">BlockCommand</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockCommand</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockCommand</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-container/index.html">BlockContainer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockContainer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockContainer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-cube-texture/index.html">BlockCubeTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockCubeTexture</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockCubeTexture</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-light/index.html">BlockLight</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockLight</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockLight</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-light-picker/index.html">BlockLightPicker</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockLightPicker</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockLightPicker</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-mesh-instance/index.html">BlockMeshInstance</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMeshInstance</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-exportable-block-parser/index.html"><span class="identifier">AExportableBlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMeshInstance</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-exportable-block-parser/index.html"><span class="identifier">AExportableBlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-mesh-pose/index.html">BlockMeshPose</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMeshPose</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMeshPose</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-mesh-pose-animation/index.html">BlockMeshPoseAnimation</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMeshPoseAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMeshPoseAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-meta-data/index.html">BlockMetaData</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMetaData</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockMetaData</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-namespace/index.html">BlockNamespace</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockNamespace</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockNamespace</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-primitive-geometry/index.html">BlockPrimitiveGeometry</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockPrimitiveGeometry</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockPrimitiveGeometry</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-scene/index.html">BlockScene</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockScene</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockScene</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-shadow-method/index.html">BlockShadowMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockShadowMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockShadowMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-shared-method/index.html">BlockSharedMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSharedMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSharedMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-simple-material/index.html">BlockSimpleMaterial</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSimpleMaterial</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-texture-block-parser/index.html"><span class="identifier">ATextureBlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSimpleMaterial</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-texture-block-parser/index.html"><span class="identifier">ATextureBlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-skeleton/index.html">BlockSkeleton</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkeleton</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkeleton</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code>
+<p>Specifies the joint hierarchy and inverse-bind-pose matrices. The skeleton itself is not bound to any particular mesh; it is only assigned geometry by instances of BlockAnimator, where present.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-skeleton-animation/index.html">BlockSkeletonAnimation</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkeletonAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkeletonAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code>
+<p>Groups a series of BlockSkeletonPose frames into an animation. This block produces a single SkeletalAnimationSequence object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-skeleton-pose/index.html">BlockSkeletonPose</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkeletonPose</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkeletonPose</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code>
+<p>Transformations of certain (not necessarily all) joints, specifying a single keyframe. NB: pose transformations are not bound to a skeleton, this is done through BlockAnimator. At the end of this block, a SkeletalAnimationFrame object has been created and assigned the poses.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-skybox/index.html">BlockSkybox</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkybox</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockSkybox</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-texture-projector/index.html">BlockTextureProjector</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockTextureProjector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockTextureProjector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-triangle-geometry/index.html">BlockTriangleGeometry</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockTriangleGeometry</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockTriangleGeometry</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-base-object-block-parser/index.html"><span class="identifier">ABaseObjectBlockParser</span></a></code>
+<p>The TriangleGeometry block describes a single mesh of an AWD file. Multiple TriangleGeometry blocks may exists in a single AWD file as part of a single model, multiple models, or scene.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-block-u-v-animation/index.html">BlockUVAnimation</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockUVAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BlockUVAnimation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-block-parser/index.html"><span class="identifier">ABlockParser</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-scene-graph-block/index.html">SceneGraphBlock</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SceneGraphBlock</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SceneGraphBlock</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

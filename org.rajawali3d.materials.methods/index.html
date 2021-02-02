@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.materials.methods - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.materials.methods</a><br/>
+<br/>
+<h2>Package org.rajawali3d.materials.methods</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-diffuse-method/index.html">DiffuseMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DiffuseMethod</span></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DiffuseMethod</span></code>
+<p>Contains a collection of diffuse shading methods. These methods are used by materials that have lighting enabled. Diffuse shading determines the color of a material when a light shines on it. To use a diffuse method you need to create an instance of one of the classes and then assign it to a material using the <code><a href="../org.rajawali3d.materials/-material/set-diffuse-method.html">Material#setDiffuseMethod(IDiffuseMethod)</a></code> method: <pre><code>
+  material.setDiffuseMethod(new DiffuseMethod.Lambert());
+  </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-diffuse-method/index.html">IDiffuseMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IDiffuseMethod</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IDiffuseMethod</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-specular-method/index.html">ISpecularMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ISpecularMethod</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">ISpecularMethod</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-specular-method/index.html">SpecularMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SpecularMethod</span></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SpecularMethod</span></code>
+<p>Contains a collection of diffuse shading methods. These methods are used by materials that have lighting enabled. A specular highlight is the bright spot of light that appears on shiny objects when illuminated. The term specular means that light is perfectly reflected in a mirror-like way from the light source to the viewer. To use a specular method you need to create an instance of one of the classes and then assign it to a material using the <code><a href="../org.rajawali3d.materials/-material/set-specular-method.html">Material#setSpecularMethod(ISpecularMethod)</a></code> method: <pre><code>
+  material.setSpecularMethod(new SpecularMethod.Phong());
+  </code></pre></p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

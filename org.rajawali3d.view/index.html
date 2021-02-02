@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.view - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.view</a><br/>
+<br/>
+<h2>Package org.rajawali3d.view</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-daydream/index.html">Daydream</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Daydream</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DreamService</span><span class="symbol">, </span><a href="-i-display/index.html"><span class="identifier">IDisplay</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Daydream</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DreamService</span><span class="symbol">, </span><a href="-i-display/index.html"><span class="identifier">IDisplay</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-display/index.html">IDisplay</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IDisplay</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IDisplay</span></code>
+<p>Interface defining some common methods which all Rajawali displays methods must implement.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-rajawali-egl-config-chooser/index.html">IRajawaliEglConfigChooser</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IRajawaliEglConfigChooser</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">EGLConfigChooser</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-surface/index.html">ISurface</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ISurface</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">ISurface</span></code>
+<p>Interface which all rendering surfaces must implement so that <code><a href="../org.rajawali3d.renderer/-renderer/index.html">Renderer</a></code> may send the few control signals it needs.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-surface-view/index.html">SurfaceView</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SurfaceView</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">GLSurfaceView</span><span class="symbol">, </span><a href="-i-surface/index.html"><span class="identifier">ISurface</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SurfaceView</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">GLSurfaceView</span><span class="symbol">, </span><a href="-i-surface/index.html"><span class="identifier">ISurface</span></a></code>
+<p>Rajawali version of a <code><a href="#">GLSurfaceView</a></code>. If you plan on using Rajawali with a <code><a href="#">GLSurfaceView</a></code>, it is imperative that you extend this class or life cycle events may not function as you expect.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-texture-view/index.html">TextureView</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TextureView</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">TextureView</span><span class="symbol">, </span><a href="-i-surface/index.html"><span class="identifier">ISurface</span></a></code>
+<p>Rajawali version of a <a href="-texture-view/index.html">TextureView</a>. If you plan on using Rajawali with a <a href="-texture-view/index.html">TextureView</a>,
+it is imperative that you extend this class or life cycle events may not function as you expect.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

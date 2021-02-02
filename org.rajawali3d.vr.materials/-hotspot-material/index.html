@@ -1,0 +1,628 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>HotspotMaterial - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.vr.materials</a>&nbsp;/&nbsp;<a href="./index.html">HotspotMaterial</a><br/>
+<br/>
+<h1>HotspotMaterial</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">HotspotMaterial</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials/-material/index.html"><span class="identifier">Material</span></a></code>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">HotspotMaterial</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$<init>(kotlin.Boolean)/useTexture">useTexture</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code><br/>
+<code><span class="identifier">HotspotMaterial</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$<init>(kotlin.Boolean, kotlin.Boolean)/useTexture">useTexture</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$<init>(kotlin.Boolean, kotlin.Boolean)/discardAlpha">discardAlpha</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-custom-fragment-shader.html">mCustomFragmentShader</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mCustomFragmentShader</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.shaders/-fragment-shader/index.html"><span class="identifier">FragmentShader</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-custom-vertex-shader.html">mCustomVertexShader</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mCustomVertexShader</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.shaders/-vertex-shader/index.html"><span class="identifier">VertexShader</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-lights.html">mLights</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mLights</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.lights/-a-light/index.html"><span class="identifier">ALight</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code>
+<p>The lights that affect the material. Lights shouldn't be managed by any other class than <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code>. To add lights to a scene call <code><a href="../../org.rajawali3d.scene/-scene/add-light.html">Scene#addLight(ALight)</a></code></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-normal-floats.html">mNormalFloats</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">mNormalFloats</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html"><span class="identifier">FloatArray</span></a><span class="symbol">!</span></code>
+<p>Contains the normal matrix. The normal matrix is used in the shaders to transform the normal into eye space.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-normal-matrix.html">mNormalMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mNormalMatrix</span><span class="symbol">: </span><a href="../../org.rajawali3d.math/-matrix4/index.html"><span class="identifier">Matrix4</span></a><span class="symbol">!</span></code>
+<p>Scratch normal matrix. The normal matrix is used in the shaders to transform the normal into eye space.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-owner-identity.html">mOwnerIdentity</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mOwnerIdentity</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">!</span></code>
+<p>This texture's unique owner identity String. This is usually the fully qualified name of the <code><a href="../../org.rajawali3d.renderer/-renderer/index.html">Renderer</a></code> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-plugins.html">mPlugins</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mPlugins</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.materials.plugins/-i-material-plugin/index.html"><span class="identifier">IMaterialPlugin</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code>
+<p>A list of material plugins that are used by this material. A material plugin is basically a class that contains a vertex shader fragment and a fragment shader fragment. Material plugins can be used for custom shader effects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-texture-handles.html">mTextureHandles</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mTextureHandles</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">!</span><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/m-texture-list.html">mTextureList</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">mTextureList</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/ArrayList.html"><span class="identifier">ArrayList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code>
+<p>The list of textures that are assigned by this materials.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-progress.html">getProgress</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getProgress</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-border-thickness.html">setBorderThickness</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setBorderThickness</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setBorderThickness(kotlin.Float)/borderThickness">borderThickness</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-circle-center.html">setCircleCenter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setCircleCenter</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setCircleCenter(org.rajawali3d.math.vector.Vector2)/center">center</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector2/index.html"><span class="identifier">Vector2</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-circle-radius.html">setCircleRadius</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setCircleRadius</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setCircleRadius(kotlin.Float)/circleRadius">circleRadius</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-progress.html">setProgress</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setProgress</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setProgress(kotlin.Float)/progress">progress</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-progress-color.html">setProgressColor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setProgressColor</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setProgressColor(kotlin.Int)/color">color</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-texture-rotation-speed.html">setTextureRotationSpeed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setTextureRotationSpeed</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setTextureRotationSpeed(kotlin.Float)/textureRotationSpeed">textureRotationSpeed</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-track-color.html">setTrackColor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setTrackColor</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.vr.materials.HotspotMaterial$setTrackColor(kotlin.Int)/color">color</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/add-plugin.html">addPlugin</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addPlugin</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$addPlugin(org.rajawali3d.materials.plugins.IMaterialPlugin)/plugin">plugin</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.plugins/-i-material-plugin/index.html"><span class="identifier">IMaterialPlugin</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Add a material plugin. A material plugin is basically a class that contains a vertex shader fragment and a fragment shader fragment. Material plugins can be used for custom shader effects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/add-texture.html">addTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addTexture</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$addTexture(org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds a texture to this material. Throws and error if the maximum number of textures was reached.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/apply-params.html">applyParams</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">applyParams</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Applies parameters that should be set on the shaders. These are parameters like time, color, buffer handles, etc.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/bind-texture-by-name.html">bindTextureByName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">bindTextureByName</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$bindTextureByName(kotlin.Int, org.rajawali3d.materials.textures.ATexture)/index">index</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$bindTextureByName(kotlin.Int, org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">bindTextureByName</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$bindTextureByName(kotlin.String, kotlin.Int, org.rajawali3d.materials.textures.ATexture)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$bindTextureByName(kotlin.String, kotlin.Int, org.rajawali3d.materials.textures.ATexture)/index">index</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$bindTextureByName(kotlin.String, kotlin.Int, org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/bind-textures.html">bindTextures</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">bindTextures</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Binds the textures to an OpenGL texturing target. Called every frame by <code><a href="../../org.rajawali3d.scene/-scene/render.html">Scene#render(long, double, org.rajawali3d.renderer.RenderTarget)</a></code>. Shouldn't be called manually.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/copy-textures-to.html">copyTexturesTo</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyTexturesTo</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$copyTexturesTo(org.rajawali3d.materials.Material)/material">material</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials/-material/index.html"><span class="identifier">Material</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies this material's textures to another material.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/create-shaders.html">createShaders</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">createShaders</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Takes all material parameters and creates the vertex shader and fragment shader and then compiles the program. This method should only be called on initialization or when parameters have changed.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/enable-lighting.html">enableLighting</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">enableLighting</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$enableLighting(kotlin.Boolean)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Indicates whether lighting should be used or not. This must be set to true when using a <code><a href="../../org.rajawali3d.materials.methods/-diffuse-method/index.html">DiffuseMethod</a></code> or a <code><a href="../../org.rajawali3d.materials.methods/-specular-method/index.html">SpecularMethod</a></code>. Lights are added to a scene <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> and are automatically added to the material.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/enable-time.html">enableTime</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">enableTime</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$enableTime(kotlin.Boolean)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Indicates that the time shader parameter should be used. This is used when creating shaders that should change during the course of time. This is used to accomplish effects like animated vertices, vertex colors, plasma effects, etc. The time needs to be manually updated using the <code><a href="../../org.rajawali3d.materials/-material/set-time.html">Material#setTime(float)</a></code> method.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-ambient-color.html">getAmbientColor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getAmbientColor</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns this material's ambient color. Ambient color is the color of an object where it is in shadow.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-color.html">getColor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getColor</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns this material's diffuse color.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-color-influence.html">getColorInfluence</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getColorInfluence</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a></code>
+<p>Indicates the color influence. Use .5 for 50% color influence, .75 for 75% color influence, etc.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-diffuse-method.html">getDiffuseMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getDiffuseMethod</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.methods/-i-diffuse-method/index.html"><span class="identifier">IDiffuseMethod</span></a><span class="symbol">!</span></code>
+<p>The diffuse method specifies the reflection of light from a surface such that an incident ray is reflected at many angles rather than at just one angle as in the case of specular reflection. This can be set using the setDiffuseMethod() method: <pre><code>
+      material.setDiffuseMethod(new DiffuseMethod.Lambert());
+      </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-inverse-view-matrix.html">getInverseViewMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getInverseViewMatrix</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html"><span class="identifier">FloatArray</span></a><span class="symbol">!</span></code>
+<p>Returns the inverse view matrix. The inverse view matrix is used to transform reflections.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-model-view-matrix.html">getModelViewMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getModelViewMatrix</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html"><span class="identifier">FloatArray</span></a><span class="symbol">!</span></code>
+<p>Returns the model view matrix. The model view matrix is used to transform vertices to eye coordinates.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-owner-identity.html">getOwnerIdentity</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getOwnerIdentity</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">!</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-plugin.html">getPlugin</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getPlugin</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$getPlugin(java.lang.Class((kotlin.Any)))/pluginClass">pluginClass</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.plugins/-i-material-plugin/index.html"><span class="identifier">IMaterialPlugin</span></a><span class="symbol">!</span></code>
+<p>Get a material plugin by using its class type. A material plugin is basically a class that contains a vertex shader fragment and a fragment shader fragment. Material plugins can be used for custom shader effects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-specular-method.html">getSpecularMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getSpecularMethod</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.materials.methods/-i-specular-method/index.html"><span class="identifier">ISpecularMethod</span></a><span class="symbol">!</span></code>
+<p>The specular method specifies the mirror-like reflection of light (or of other kinds of wave) from a surface, in which light from a single incoming direction (a ray) is reflected into a single outgoing direction. This can be set using the setSpecularMethod() method: <pre><code>
+      material.setSpecularMethod(new SpecularMethod.Phong());
+      </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-texture-list.html">getTextureList</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTextureList</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/ArrayList.html"><span class="identifier">ArrayList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span></code>
+<p>Gets a list of textures bound to this material.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/get-time.html">getTime</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTime</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a></code>
+<p>Sets the time value that is used in the shaders to create animated effects. </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/lighting-enabled.html">lightingEnabled</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">lightingEnabled</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Indicates whether lighting should be used or not. This must be set to true when using a <code><a href="../../org.rajawali3d.materials.methods/-diffuse-method/index.html">DiffuseMethod</a></code> or a <code><a href="../../org.rajawali3d.materials.methods/-specular-method/index.html">SpecularMethod</a></code>. Lights are added to a scene <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code> and are automatically added to the material.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/on-pre-fragment-shader-initialize.html">onPreFragmentShaderInitialize</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onPreFragmentShaderInitialize</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$onPreFragmentShaderInitialize(org.rajawali3d.materials.shaders.FragmentShader)/fragmentShader">fragmentShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-fragment-shader/index.html"><span class="identifier">FragmentShader</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called prior to <code><a href="../../org.rajawali3d.materials.shaders/-fragment-shader/initialize.html">FragmentShader#initialize()</a></code> being called when creating auto-generated materials.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/on-pre-vertex-shader-initialize.html">onPreVertexShaderInitialize</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">onPreVertexShaderInitialize</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$onPreVertexShaderInitialize(org.rajawali3d.materials.shaders.VertexShader)/vertexShader">vertexShader</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.shaders/-vertex-shader/index.html"><span class="identifier">VertexShader</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called prior to <code><a href="../../org.rajawali3d.materials.shaders/-vertex-shader/initialize.html">VertexShader#initialize()</a></code> being called when creating auto-generated materials.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/remove-plugin.html">removePlugin</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removePlugin</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$removePlugin(org.rajawali3d.materials.plugins.IMaterialPlugin)/plugin">plugin</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.plugins/-i-material-plugin/index.html"><span class="identifier">IMaterialPlugin</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Remove a material plugin. A material plugin is basically a class that contains a vertex shader fragment and a fragment shader fragment. Material plugins can be used for custom shader effects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/remove-texture.html">removeTexture</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeTexture</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$removeTexture(org.rajawali3d.materials.textures.ATexture)/texture">texture</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.textures/-a-texture/index.html"><span class="identifier">ATexture</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Removes a texture from this material.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-ambient-color.html">setAmbientColor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setAmbientColor</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientColor(kotlin.Int)/color">color</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setAmbientColor</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientColor(kotlin.FloatArray)/color">color</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html"><span class="identifier">FloatArray</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>This material's ambient color. Ambient color is the color of an object where it is in shadow.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-ambient-intensity.html">setAmbientIntensity</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setAmbientIntensity</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientIntensity(kotlin.Double, kotlin.Double, kotlin.Double)/r">r</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientIntensity(kotlin.Double, kotlin.Double, kotlin.Double)/g">g</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientIntensity(kotlin.Double, kotlin.Double, kotlin.Double)/b">b</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setAmbientIntensity</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientIntensity(kotlin.Float, kotlin.Float, kotlin.Float)/r">r</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientIntensity(kotlin.Float, kotlin.Float, kotlin.Float)/g">g</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.materials.Material$setAmbientIntensity(kotlin.Float, kotlin.Float, kotlin.Float)/b">b</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>This material's ambient intensity for the r, g, b channels.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-color.html">setColor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setColor</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setColor(kotlin.Int)/color">color</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setColor</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setColor(kotlin.FloatArray)/color">color</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html"><span class="identifier">FloatArray</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The material's diffuse color. This can be overwritten by <code><a href="../../org.rajawali3d/-object3-d/set-color.html">Object3D#setColor(int)</a></code>. This color will be applied to the whole object. For vertex colors use <code><a href="../../org.rajawali3d.materials/-material/use-vertex-colors.html">Material#useVertexColors(boolean)</a></code> and <code><a href="../../org.rajawali3d.materials/-material/set-vertex-colors.html">Material#setVertexColors(int)</a></code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-color-influence.html">setColorInfluence</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setColorInfluence</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setColorInfluence(kotlin.Float)/influence">influence</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The color influence indicates how big the influence of the color is. This should be used in conjunction with <code><a href="../../org.rajawali3d.materials.textures/-a-texture/set-influence.html">ATexture#setInfluence(float)</a></code>. A value of .5 indicates an influence of 50%. This examples shows how to use 50% color and 50% texture: </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-current-object.html">setCurrentObject</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setCurrentObject</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setCurrentObject(org.rajawali3d.Object3D)/currentObject">currentObject</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-diffuse-method.html">setDiffuseMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setDiffuseMethod</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setDiffuseMethod(org.rajawali3d.materials.methods.IDiffuseMethod)/diffuseMethod">diffuseMethod</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.methods/-i-diffuse-method/index.html"><span class="identifier">IDiffuseMethod</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The diffuse method specifies the reflection of light from a surface such that an incident ray is reflected at many angles rather than at just one angle as in the case of specular reflection. This can be set using the setDiffuseMethod() method: <pre><code>
+      material.setDiffuseMethod(new DiffuseMethod.Lambert());
+      </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-inverse-view-matrix.html">setInverseViewMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setInverseViewMatrix</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setInverseViewMatrix(org.rajawali3d.math.Matrix4)/inverseViewMatrix">inverseViewMatrix</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math/-matrix4/index.html"><span class="identifier">Matrix4</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the inverse view matrix. The inverse view matrix is used to transform reflections</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-lights.html">setLights</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setLights</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setLights(kotlin.collections.MutableList((org.rajawali3d.lights.ALight)))/lights">lights</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../../org.rajawali3d.lights/-a-light/index.html"><span class="identifier">ALight</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The lights that affect the material. Lights shouldn't be managed by any other class than <code><a href="../../org.rajawali3d.scene/-scene/index.html">Scene</a></code>. To add lights to a scene call <code><a href="../../org.rajawali3d.scene/-scene/add-light.html"> </a></code></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-model-matrix.html">setModelMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setModelMatrix</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setModelMatrix(org.rajawali3d.math.Matrix4)/modelMatrix">modelMatrix</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math/-matrix4/index.html"><span class="identifier">Matrix4</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the model matrix. The model matrix holds the object's local coordinates.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-model-view-matrix.html">setModelViewMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setModelViewMatrix</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setModelViewMatrix(org.rajawali3d.math.Matrix4)/modelViewMatrix">modelViewMatrix</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math/-matrix4/index.html"><span class="identifier">Matrix4</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the model view matrix. The model view matrix is used to transform vertices to eye coordinates</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-m-v-p-matrix.html">setMVPMatrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setMVPMatrix</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setMVPMatrix(org.rajawali3d.math.Matrix4)/mvpMatrix">mvpMatrix</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math/-matrix4/index.html"><span class="identifier">Matrix4</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the model view projection matrix. The model view projection matrix is used to transform vertices to screen coordinates.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-normals.html">setNormals</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setNormals</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setNormals(kotlin.Int)/normalBufferHandle">normalBufferHandle</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setNormals</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setNormals(org.rajawali3d.BufferInfo)/bufferInfo">bufferInfo</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Set the normal buffer handle. This is passed to <code><a href="../../org.rajawali3d.materials.shaders/-vertex-shader/set-normals.html">VertexShader#setNormals(int)</a></code></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-owner-identity.html">setOwnerIdentity</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setOwnerIdentity</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setOwnerIdentity(kotlin.String)/identity">identity</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-specular-method.html">setSpecularMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSpecularMethod</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setSpecularMethod(org.rajawali3d.materials.methods.ISpecularMethod)/specularMethod">specularMethod</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.materials.methods/-i-specular-method/index.html"><span class="identifier">ISpecularMethod</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The specular method specifies the mirror-like reflection of light (or of other kinds of wave) from a surface, in which light from a single incoming direction (a ray) is reflected into a single outgoing direction. This can be set using the setSpecularMethod() method: <pre><code>
+      material.setSpecularMethod(new SpecularMethod.Phong());
+      </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-texture-coords.html">setTextureCoords</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setTextureCoords</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setTextureCoords(kotlin.Int)/textureCoordBufferHandle">textureCoordBufferHandle</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setTextureCoords</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setTextureCoords(org.rajawali3d.BufferInfo)/bufferInfo">bufferInfo</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Set the texture coordinates buffer handle. This is passed to <code><a href="../../org.rajawali3d.materials.shaders/-vertex-shader/set-texture-coords.html">VertexShader#setTextureCoords(int)</a></code></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-texture-handle-for-name.html">setTextureHandleForName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setTextureHandleForName</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setTextureHandleForName(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-time.html">setTime</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setTime</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setTime(kotlin.Float)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the time value that is used in the shaders to create animated effects. </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-vertex-colors.html">setVertexColors</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setVertexColors</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setVertexColors(kotlin.Int)/vertexColorBufferHandle">vertexColorBufferHandle</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setVertexColors</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setVertexColors(org.rajawali3d.BufferInfo)/bufferInfo">bufferInfo</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Set the vertex color buffer handle. This is passed to <code><a href="../../org.rajawali3d.materials.shaders/-vertex-shader/set-vertex-colors.html">VertexShader#setVertexColors(int)</a></code></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/set-vertices.html">setVertices</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setVertices</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setVertices(kotlin.Int)/vertexBufferHandle">vertexBufferHandle</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setVertices</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$setVertices(org.rajawali3d.BufferInfo)/bufferInfo">bufferInfo</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Set the vertex buffer handle. This is passed to <code><a href="../../org.rajawali3d.materials.shaders/-vertex-shader/set-vertices.html">VertexShader#setVertices(int)</a></code></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/time-enabled.html">timeEnabled</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">timeEnabled</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Indicates that the time shader parameter should be used. This is used when creating shaders that should change during the course of time. This is used to accomplish effects like animated vertices, vertex colors, plasma effects, etc. The time needs to be manually updated using the <code><a href="../../org.rajawali3d.materials/-material/set-time.html">Material#setTime(float)</a></code> method.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/unbind-textures.html">unbindTextures</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">unbindTextures</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Unbinds the texture from an OpenGL texturing target.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/unset-current-object.html">unsetCurrentObject</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">unsetCurrentObject</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$unsetCurrentObject(org.rajawali3d.Object3D)/currentObject">currentObject</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a><span class="symbol">!</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/use-program.html">useProgram</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">useProgram</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Tells the OpenGL context to use this program. This should be called every frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/use-vertex-colors.html">useVertexColors</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">useVertexColors</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.materials.Material$useVertexColors(kotlin.Boolean)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Indicates that this material should use a color value for every vertex. These colors are contained in a separate color buffer.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../org.rajawali3d.materials/-material/using-vertex-colors.html">usingVertexColors</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">usingVertexColors</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Indicates that this material should use a color value for every vertex. These colors are contained in a separate color buffer.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

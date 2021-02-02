@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.debug - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.debug</a><br/>
+<br/>
+<h2>Package org.rajawali3d.debug</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-coordinate-trident/index.html">CoordinateTrident</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CoordinateTrident</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CoordinateTrident</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-debug-bounding-box/index.html">DebugBoundingBox</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugBoundingBox</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugBoundingBox</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-debug-camera/index.html">DebugCamera</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugCamera</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugCamera</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-debug-light/index.html">DebugLight</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugLight</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugLight</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-debug-object3-d/index.html">DebugObject3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugObject3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.primitives/-line3-d/index.html"><span class="identifier">Line3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugObject3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.primitives/-line3-d/index.html"><span class="identifier">Line3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-debug-renderer/index.html">DebugRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DebugRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.renderer/-renderer/index.html"><span class="identifier">Renderer</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DebugRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.renderer/-renderer/index.html"><span class="identifier">Renderer</span></a></code>
+<p>Special Debugging enabled <code><a href="../org.rajawali3d.renderer/-renderer/index.html">Renderer</a></code>. By extending this class for your renderer rather than <code><a href="../org.rajawali3d.renderer/-renderer/index.html">Renderer</a></code>, whatever debugging configuration you have specified will be automatically applied. In particular, if you enable GL error checks for every GL call, it will provide you with the exact call which failed. You should use this renderer if you see unexpected results in rendering to confirm if it is a GL error or something else.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-debug-visualizer/index.html">DebugVisualizer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugVisualizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DebugVisualizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d/-object3-d/index.html"><span class="identifier">Object3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-g-l-debugger/index.html">GLDebugger</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">GLDebugger</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">GLDebugger</span></code>
+<p>Immutable helper class for OpenGL debugging. Instances can be created through <code><a href="-g-l-debugger/-builder/index.html">GLDebugger.Builder</a></code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-grid-floor/index.html">GridFloor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">GridFloor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">GridFloor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-normals-object3-d/index.html">NormalsObject3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">NormalsObject3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">NormalsObject3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-debug-object3-d/index.html"><span class="identifier">DebugObject3D</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

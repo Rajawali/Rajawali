@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureView.setEGLConfigChooser - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.view</a>&nbsp;/&nbsp;<a href="index.html">TextureView</a>&nbsp;/&nbsp;<a href="./set-e-g-l-config-chooser.html">setEGLConfigChooser</a><br/>
+<br/>
+<h1>setEGLConfigChooser</h1>
+<a name="org.rajawali3d.view.TextureView$setEGLConfigChooser(org.rajawali3d.view.IRajawaliEglConfigChooser)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLConfigChooser</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(org.rajawali3d.view.IRajawaliEglConfigChooser)/configChooser">configChooser</span><span class="symbol">:</span>&nbsp;<a href="../-i-rajawali-egl-config-chooser/index.html"><span class="identifier">IRajawaliEglConfigChooser</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install a custom EGLConfigChooser.</p>
+<p>If this method is
+called, it must be called before <a href="#">.setSurfaceRenderer</a>
+is called.</p>
+<p>If no setEGLConfigChooser method is called, then by default the
+view will choose an EGLConfig that is compatible with the current
+android.view.Surface, with a depth buffer depth of
+at least 16 bits.</p>
+<h3>Parameters</h3>
+<p><a name="configChooser"></a>
+<code>configChooser</code> - <a href="#">GLSurfaceView.EGLConfigChooser</a> The EGL Configuration chooser.</p>
+<a name="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setEGLConfigChooser</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/redSize">redSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/greenSize">greenSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/blueSize">blueSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/alphaSize">alphaSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/depthSize">depthSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView$setEGLConfigChooser(kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/stencilSize">stencilSize</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install a config chooser which will choose a config
+with at least the specified depthSize and stencilSize,
+and exactly the specified redSize, greenSize, blueSize and alphaSize.</p>
+<p>If this method is
+called, it must be called before <a href="#">.setSurfaceRenderer</a>
+is called.</p>
+<p>If no setEGLConfigChooser method is called, then by default the
+view will choose an RGB_888 surface with a depth buffer depth of
+at least 16 bits.</p>
+</BODY>
+</HTML>

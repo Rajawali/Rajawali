@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Quaternion.multiply - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.math</a>&nbsp;/&nbsp;<a href="index.html">Quaternion</a>&nbsp;/&nbsp;<a href="./multiply.html">multiply</a><br/>
+<br/>
+<h1>multiply</h1>
+<a name="org.rajawali3d.math.Quaternion$multiply(kotlin.Double)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">multiply</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.math.Quaternion$multiply(kotlin.Double)/scalar">scalar</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Multiplies each component of this <code><a href="index.html">Quaternion</a></code> by the input value.</p>
+<h3>Parameters</h3>
+<p><a name="scalar"></a>
+<code>scalar</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> double The value to multiply by.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.Quaternion)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">multiply</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.Quaternion)/quat">quat</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Multiplies this <code><a href="index.html">Quaternion</a></code> with another one. this = this * quat.</p>
+<h3>Parameters</h3>
+<p><a name="quat"></a>
+<code>quat</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The other <code><a href="index.html">Quaternion</a></code>.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.vector.Vector3)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">multiply</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.vector.Vector3)/vector">vector</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a></code>
+<p>Multiplies this <code><a href="index.html">Quaternion</a></code> by a <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code>. Note that if you plan on using the returned <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code>, you should clone it immediately as it is an internal scratch member of this <code><a href="index.html">Quaternion</a></code> and may be modified at any time. This is the same as out = q*vector*`q, meaning the magnitude will be maintained.</p>
+<h3>Parameters</h3>
+<p><a name="vector"></a>
+<code>vector</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> to multiply by.</p>
+<p><strong>Return</strong><br/>
+<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The result of the multiplication.</p>
+<a name="org.rajawali3d.math.Quaternion$multiply(kotlin.Double)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">multiply</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.math.Quaternion$multiply(kotlin.Double)/scalar">scalar</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Multiplies each component of this <code><a href="index.html">Quaternion</a></code> by the input value.</p>
+<h3>Parameters</h3>
+<p><a name="scalar"></a>
+<code>scalar</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">:</span> double The value to multiply by.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.Quaternion)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">multiply</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.Quaternion)/quat">quat</span><span class="symbol">:</span>&nbsp;<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html"><span class="identifier">Quaternion</span></a></code>
+<p>Multiplies this <code><a href="index.html">Quaternion</a></code> with another one. this = this * quat.</p>
+<h3>Parameters</h3>
+<p><a name="quat"></a>
+<code>quat</code> - <a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> <code><a href="index.html">Quaternion</a></code> The other <code><a href="index.html">Quaternion</a></code>.</p>
+<p><strong>Return</strong><br/>
+<a href="index.html"><span class="identifier">Quaternion</span></a><span class="symbol">:</span> A reference to this <code><a href="index.html">Quaternion</a></code> to facilitate chaining.</p>
+<a name="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.vector.Vector3)"></a>
+<code><span class="identifier">@NonNull</span> <span class="keyword">fun </span><span class="identifier">multiply</span><span class="symbol">(</span><span class="identifier">@NonNull</span> <span class="identifier" id="org.rajawali3d.math.Quaternion$multiply(org.rajawali3d.math.vector.Vector3)/vector">vector</span><span class="symbol">:</span>&nbsp;<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a></code>
+<p>Multiplies this <code><a href="index.html">Quaternion</a></code> by a <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code>. Note that if you plan on using the returned <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code>, you should clone it immediately as it is an internal scratch member of this <code><a href="index.html">Quaternion</a></code> and may be modified at any time. This is the same as out = q*vector*`q, meaning the magnitude will be maintained.</p>
+<h3>Parameters</h3>
+<p><a name="vector"></a>
+<code>vector</code> - <a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> to multiply by.</p>
+<p><strong>Return</strong><br/>
+<a href="../../org.rajawali3d.math.vector/-vector3/index.html"><span class="identifier">Vector3</span></a><span class="symbol">:</span> <code><a href="../../org.rajawali3d.math.vector/-vector3/index.html">Vector3</a></code> The result of the multiplication.</p>
+</BODY>
+</HTML>

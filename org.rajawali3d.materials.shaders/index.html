@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.materials.shaders - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.materials.shaders</a><br/>
+<br/>
+<h2>Package org.rajawali3d.materials.shaders</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-a-shader/index.html">AShader</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-shader-base/index.html"><span class="identifier">AShaderBase</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-shader-base/index.html"><span class="identifier">AShaderBase</span></a></code>
+<p>This class is a wrapper class for shader creation. GLSL shaders are text files that are compiled at runtime. The GLSL language is based on C. This class is like a mini framework that lets you write shaders in Java. The main reason for this is maintainability and code reuse. The lack of operator overloading makes this slightly verbose however. Instead of writing this in GLSL: <pre><code>
+  myVar *= myOtherVar;
+  </code></pre> You'll have to write this: <pre><code>
+  myVar.assignAdd(myOtherVar);
+  </code></pre> GLSL data types are wrapped into their own classes. Because most of the data type names are reserved keywords in Java they are prefixed with 'R'. For instance: </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-a-shader-base/index.html">AShaderBase</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AShaderBase</span></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AShaderBase</span></code>
+<p> This abstract class defines all the data types that are used in a shader. The data types reflect the data types that are used in GLSL. Because most of the data type names are reserved keywords in Java they are prefixed with 'R'. For instance: </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-fragment-shader/index.html">FragmentShader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">FragmentShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-shader/index.html"><span class="identifier">AShader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">FragmentShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-shader/index.html"><span class="identifier">AShader</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-shader-fragment/index.html">IShaderFragment</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">IShaderFragment</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">IShaderFragment</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-vertex-shader/index.html">VertexShader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">VertexShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-shader/index.html"><span class="identifier">AShader</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">VertexShader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-shader/index.html"><span class="identifier">AShader</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

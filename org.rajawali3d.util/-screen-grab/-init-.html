@@ -1,0 +1,24 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ScreenGrab.<init> - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.util</a>&nbsp;/&nbsp;<a href="index.html">ScreenGrab</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="org.rajawali3d.util.ScreenGrab$&lt;init&gt;()"></a>
+<code><span class="identifier">ScreenGrab</span><span class="symbol">(</span><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.util.ScreenGrab$&lt;init&gt;()"></a>
+<code><span class="identifier">ScreenGrab</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Grabs the pixels from the buffer and saves it to a file on the SD card. Usage example (saves every frame to a separate .png file): <pre><code>
+  public void onDrawFrame(GL10 glUnused) {
+  		super.onDrawFrame(glUnused);
+  		Screengrab.saveAsImage(0, 0, mDefaultViewportWidth, mDefaultViewportHeight, "/frame_" + mFrameCount + ".png", CompressFormat.PNG);
+  }
+  </code></pre></p>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ASceneFrameCallback.<init> - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.scene</a>&nbsp;/&nbsp;<a href="index.html">ASceneFrameCallback</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="org.rajawali3d.scene.ASceneFrameCallback$&lt;init&gt;()"></a>
+<code><span class="identifier">ASceneFrameCallback</span><span class="symbol">(</span><span class="symbol">)</span></code><br/>
+<a name="org.rajawali3d.scene.ASceneFrameCallback$&lt;init&gt;()"></a>
+<code><span class="identifier">ASceneFrameCallback</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Abstract class for receiving frame callbacks from <code><a href="../-scene/index.html">Scene</a></code>. The timing of this interface assumes that the rendering time does not affect the timing of operations before and after the frame. Pre- and Post- operations are provided because of how these tie in with the animation system. Pre- tasks will be executed prior to animation updates. Post- tasks will be executed after all drawing has occurred. <code><a href="call-pre-frame.html">#callPreFrame()</a></code> and <code><a href="call-post-frame.html">#callPostFrame()</a></code> frame exist to simplify interfacing to Rajawali's frame task system. By default they both return <code>false</code>, signalling that the callback should be ignored by the scene. Implementing classes must override these methods to return <code>true</code> as appropriate for the tasks they are handling.</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@tenkiv.com)</p>
+</BODY>
+</HTML>

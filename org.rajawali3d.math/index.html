@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.math - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.math</a><br/>
+<br/>
+<h2>Package org.rajawali3d.math</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-math-util/index.html">MathUtil</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">MathUtil</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">MathUtil</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-matrix/index.html">Matrix</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Matrix</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Matrix</span></code>
+<p>NOTE: This class taken from Android Open Source Project source code and modified to support double precision matrices. Matrix math utilities. These methods operate on OpenGL ES format matrices and vectors stored in double arrays. Matrices are 4 x 4 column-vector matrices stored in column-major order: <pre><code>
+   m[offset +  0] m[offset +  4] m[offset +  8] m[offset + 12]
+   m[offset +  1] m[offset +  5] m[offset +  9] m[offset + 13]
+   m[offset +  2] m[offset +  6] m[offset + 10] m[offset + 14]
+   m[offset +  3] m[offset +  7] m[offset + 11] m[offset + 15]
+  </code></pre> Vectors are 4 row x 1 column column-vectors stored in order: <pre><code>
+  v[offset + 0]
+  v[offset + 1]
+  v[offset + 2]
+  v[offset + 3]
+  </code></pre></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-matrix4/index.html">Matrix4</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Matrix4</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-cloneable/index.html"><span class="identifier">Cloneable</span></a></code><br/>
+<code><span class="keyword">class </span><span class="identifier">Matrix4</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-cloneable/index.html"><span class="identifier">Cloneable</span></a></code>
+<p>Encapsulates a column major 4x4 Matrix. This class is not thread safe and must be confined to a single thread or protected by some external locking mechanism if necessary. All static methods are thread safe. Rewritten August 8, 2013 by Jared Woolston (jwoolston@tenkiv.com) with heavy influence from libGDX</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-plane/index.html">Plane</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Plane</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Plane</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-quaternion/index.html">Quaternion</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Quaternion</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-cloneable/index.html"><span class="identifier">Cloneable</span></a></code><br/>
+<code><span class="keyword">class </span><span class="identifier">Quaternion</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-cloneable/index.html"><span class="identifier">Cloneable</span></a></code>
+<p>Encapsulates a quaternion. Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html Rewritten July 27, 2013 by Jared Woolston with heavy influence from libGDX</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

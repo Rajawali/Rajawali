@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d.renderer - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d.renderer</a><br/>
+<br/>
+<h2>Package org.rajawali3d.renderer</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-a-frame-task/index.html">AFrameTask</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AFrameTask</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Runnable.html"><span class="identifier">Runnable</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AFrameTask</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Runnable.html"><span class="identifier">Runnable</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-surface-renderer/index.html">ISurfaceRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ISurfaceRenderer</span></code><br/>
+<code><span class="keyword">interface </span><span class="identifier">ISurfaceRenderer</span></code>
+<p>Interface that a class must implement to be able to render to an <code><a href="../org.rajawali3d.view/-i-surface/index.html">ISurface</a></code>. Most often you will want to simply extend <code><a href="-renderer/index.html">Renderer</a></code> which handles much of this for you.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-null-renderer/index.html">NullRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NullRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-renderer/index.html"><span class="identifier">Renderer</span></a></code><br/>
+<code><span class="keyword">class </span><span class="identifier">NullRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-renderer/index.html"><span class="identifier">Renderer</span></a></code>
+<p>Minimal <code><a href="-renderer/index.html">Renderer</a></code> implementation which will cause no rendering to occur.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-pip-renderer/index.html">PipRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PipRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-renderer/index.html"><span class="identifier">Renderer</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PipRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-renderer/index.html"><span class="identifier">Renderer</span></a></code>
+<p> Creates a renderer that renders two scenes through separate <code>SubRenderer</code>s. In order to use this, first create the <code>PipRenderer</code>, then create and assign the <code>SubRenderer</code>s through <code>setMainRenderer</code> (for the main content) <code>setMinirenderer</code> (for the content in the mini view). The <code>pipScale</code> and <code>pipMargin</code> parameters control how the mini scene is placed. </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-renderer/index.html">Renderer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Renderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-surface-renderer/index.html"><span class="identifier">ISurfaceRenderer</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Renderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i-surface-renderer/index.html"><span class="identifier">ISurfaceRenderer</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-render-target/index.html">RenderTarget</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RenderTarget</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RenderTarget</span></code>
+<p>Defines configurations for a given render target.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-render-target-cube/index.html">RenderTargetCube</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RenderTargetCube</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-render-target/index.html"><span class="identifier">RenderTarget</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RenderTargetCube</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-render-target/index.html"><span class="identifier">RenderTarget</span></a></code>
+<p>Defines a render target to be mapped to a cubemap texture.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-side-by-side-renderer/index.html">SideBySideRenderer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SideBySideRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-renderer/index.html"><span class="identifier">Renderer</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SideBySideRenderer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-renderer/index.html"><span class="identifier">Renderer</span></a></code>
+<p> This renderer is typically used by virtual reality glasses like the Open Dive. It renders the scene from two different viewpoints. The x position of the two cameras are slightly offset while the z and y position stay 0. </p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

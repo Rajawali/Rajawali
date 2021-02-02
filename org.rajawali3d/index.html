@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>org.rajawali3d - </title>
+<link rel="stylesheet" href="../style.css">
+</HEAD>
+<BODY>
+<a href="./index.html">org.rajawali3d</a><br/>
+<br/>
+<h2>Package org.rajawali3d</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-a-transformable3-d/index.html">ATransformable3D</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ATransformable3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.scenegraph/-i-graph-node-member/index.html"><span class="identifier">IGraphNodeMember</span></a></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ATransformable3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../org.rajawali3d.scenegraph/-i-graph-node-member/index.html"><span class="identifier">IGraphNodeMember</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-buffer-info/index.html">BufferInfo</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BufferInfo</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BufferInfo</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-build-config/index.html">BuildConfig</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">BuildConfig</span></code><br/>
+<code><span class="keyword">class </span><span class="identifier">BuildConfig</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-geometry3-d/index.html">Geometry3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Geometry3D</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Geometry3D</span></code>
+<p>This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in FloatBuffers, IntBuffers and ShortBuffers. The data is uploaded to the graphics card using Vertex Buffer Objects (VBOs). The data in the FloatBuffers is kept in memory in order to restore the VBOs when the OpenGL context needs to be restored (typically when the application regains focus). </p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-object3-d/index.html">Object3D</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Object3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-transformable3-d/index.html"><span class="identifier">ATransformable3D</span></a><span class="symbol">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="-object3-d/index.html"><span class="identifier">Object3D</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">, </span><a href="../org.rajawali3d.visitors/-i-node/index.html"><span class="identifier">INode</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Object3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-a-transformable3-d/index.html"><span class="identifier">ATransformable3D</span></a><span class="symbol">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="-object3-d/index.html"><span class="identifier">Object3D</span></a><span class="symbol">!</span><span class="symbol">&gt;</span><span class="symbol">, </span><a href="../org.rajawali3d.visitors/-i-node/index.html"><span class="identifier">INode</span></a></code>
+<p>This is the main object that all other 3D objects inherit from.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-world-parameters/index.html">WorldParameters</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WorldParameters</span></code><br/>
+<code><span class="keyword">class </span><span class="identifier">WorldParameters</span></code>
+<p>Collection of world global parameters. These parameters are constant across all scenes. This class is intended to be read only after setup, and so does not include any thread safety mechanisms in the interest of speed. Extreme care must be taken if you desire to modify anything in this class while other threads are actively using it.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

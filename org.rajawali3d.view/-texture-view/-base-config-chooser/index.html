@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureView.BaseConfigChooser - </title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">org.rajawali3d.view</a>&nbsp;/&nbsp;<a href="../index.html">TextureView</a>&nbsp;/&nbsp;<a href="./index.html">BaseConfigChooser</a><br/>
+<br/>
+<h1>BaseConfigChooser</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">BaseConfigChooser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../-i-rajawali-egl-config-chooser/index.html"><span class="identifier">IRajawaliEglConfigChooser</span></a></code>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">BaseConfigChooser</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView.BaseConfigChooser$<init>(org.rajawali3d.view.TextureView, kotlin.IntArray)/textureView">textureView</span><span class="symbol">:</span>&nbsp;<a href="../index.html"><span class="identifier">TextureView</span></a><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView.BaseConfigChooser$<init>(org.rajawali3d.view.TextureView, kotlin.IntArray)/requestedConfigSpec">requestedConfigSpec</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int-array/index.html"><span class="identifier">IntArray</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="texture-view.html">textureView</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">textureView</span><span class="symbol">: </span><a href="../index.html"><span class="identifier">TextureView</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="choose-config.html">chooseConfig</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">chooseConfig</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.TextureView.BaseConfigChooser$chooseConfig(javax.microedition.khronos.egl.EGL10, javax.microedition.khronos.egl.EGLDisplay)/egl">egl</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGL10</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.TextureView.BaseConfigChooser$chooseConfig(javax.microedition.khronos.egl.EGL10, javax.microedition.khronos.egl.EGLDisplay)/display">display</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGLDisplay</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">EGLConfig</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../-i-rajawali-egl-config-chooser/choose-config-with-reason.html">chooseConfigWithReason</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">chooseConfigWithReason</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.view.IRajawaliEglConfigChooser$chooseConfigWithReason(javax.microedition.khronos.egl.EGL10, javax.microedition.khronos.egl.EGLDisplay)/egl">egl</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGL10</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.view.IRajawaliEglConfigChooser$chooseConfigWithReason(javax.microedition.khronos.egl.EGL10, javax.microedition.khronos.egl.EGLDisplay)/display">display</span><span class="symbol">:</span>&nbsp;<span class="identifier">EGLDisplay</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../../org.rajawali3d.util.egl/-result-config-chooser/index.html"><span class="identifier">ResultConfigChooser</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-component-size-chooser/index.html">ComponentSizeChooser</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ComponentSizeChooser</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">TextureView.BaseConfigChooser</span></a></code>
+<p>Choose a configuration with exactly the specified r,g,b,a sizes,
+and at least the specified depth and stencil sizes.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

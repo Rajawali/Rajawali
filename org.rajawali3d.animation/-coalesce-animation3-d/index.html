@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>CoalesceAnimation3D - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.animation</a>&nbsp;/&nbsp;<a href="./index.html">CoalesceAnimation3D</a><br/>
+<br/>
+<h1>CoalesceAnimation3D</h1>
+<a name="org.rajawali3d.animation.CoalesceAnimation3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CoalesceAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code><br/>
+<a name="org.rajawali3d.animation.CoalesceAnimation3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CoalesceAnimation3D</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-animation3-d/index.html"><span class="identifier">Animation3D</span></a></code>
+<p><code><a href="../../org.rajawali3d/-a-transformable3-d/index.html">ATransformable3D</a></code> Coalescence animation. This animation <em>ROUGHLY</em> approximates a decaying orbit. This is a non-physics based animation. The paths objects follow are defined by <code><a href="../../org.rajawali3d.curves/-a-spiral3-d/index.html">ASpiral3D</a></code> paths. Any number of objects can be added to the animation, and objects can have their spiral focused on a fixed point, or on another object in the animation. For example, a system of a sun, planet and moon. The moon decays into the planet while the planet decays into the sun. It is important to note that any dependencies in the animation take place in insertion order. If the 4th item is set to converge on the 5th item, then the position of the 4th item will always be one time step behind where it should be. This class is thread safe, and should you want to, configurations can be added while the animation is playing.</p>
+<p><strong>Author</strong><br/>
+Jared Woolston (jwoolston@idealcorp.com)</p>
+</BODY>
+</HTML>

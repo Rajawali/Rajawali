@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Geometry3D - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d</a>&nbsp;/&nbsp;<a href="./index.html">Geometry3D</a><br/>
+<br/>
+<h1>Geometry3D</h1>
+<a name="org.rajawali3d.Geometry3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Geometry3D</span></code><br/>
+<a name="org.rajawali3d.Geometry3D"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Geometry3D</span></code>
+<p>This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in FloatBuffers, IntBuffers and ShortBuffers. The data is uploaded to the graphics card using Vertex Buffer Objects (VBOs). The data in the FloatBuffers is kept in memory in order to restore the VBOs when the OpenGL context needs to be restored (typically when the application regains focus). </p>
+<p> An object's Geometry3D and its data can be accessed by calling the getGeometry() and its methods: </p>
+<pre><code> // Get the geometry instance
+  Geometry3D geom = mMyObject3D.getGeometry();
+  // Get vertices (x, y, z)
+  FloatBuffer verts = geom.getVertices();
+  // Get normals (x, y, z)
+  FloatBuffer normals = geom.getNormals();
+  // Get texture coordinates (u, v)
+  FloatBuffer texCoords = geom.getTextureCoords();
+  // Get colors (r, g, b, a)
+  FloatBuffer colors = geom.getColors();
+  // Get indices.
+  IntBuffer indices = geom.getIndices();
+  </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>

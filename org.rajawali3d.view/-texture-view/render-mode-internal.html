@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureView.renderModeInternal - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.view</a>&nbsp;/&nbsp;<a href="index.html">TextureView</a>&nbsp;/&nbsp;<a href="./render-mode-internal.html">renderModeInternal</a><br/>
+<br/>
+<h1>renderModeInternal</h1>
+<a name="org.rajawali3d.view.TextureView$renderModeInternal"></a>
+<code><span class="keyword">protected</span> <span class="keyword">var </span><span class="identifier">renderModeInternal</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The rendering mode.</p>
+<p>When renderMode is <a href="../-i-surface/-r-e-n-d-e-r-m-o-d-e_-c-o-n-t-i-n-u-o-u-s-l-y.html">ISurface.RENDERMODE_CONTINUOUSLY</a>, the renderer is called repeatedly to re-render the scene.
+When renderMode is <a href="../-i-surface/-r-e-n-d-e-r-m-o-d-e_-w-h-e-n_-d-i-r-t-y.html">ISurface.RENDERMODE_WHEN_DIRTY</a>, the renderer only rendered when the surface is created, or
+when <a href="#">.requestRenderUpdate</a> is called. Defaults to <a href="../-i-surface/-r-e-n-d-e-r-m-o-d-e_-c-o-n-t-i-n-u-o-u-s-l-y.html">ISurface.RENDERMODE_CONTINUOUSLY</a>.</p>
+<p>Using <a href="../-i-surface/-r-e-n-d-e-r-m-o-d-e_-w-h-e-n_-d-i-r-t-y.html">ISurface.RENDERMODE_WHEN_DIRTY</a> can improve battery life and overall system performance by allowing the
+GPU and CPU to idle when the view does not need to be updated.</p>
+<p>This method can only be called after <a href="set-surface-renderer.html">setSurfaceRenderer</a></p>
+<p><strong>See Also</strong><br/>
+<p><a href="../-i-surface/-r-e-n-d-e-r-m-o-d-e_-c-o-n-t-i-n-u-o-u-s-l-y.html">ISurface.RENDERMODE_CONTINUOUSLY</a></p>
+<p><a href="../-i-surface/-r-e-n-d-e-r-m-o-d-e_-w-h-e-n_-d-i-r-t-y.html">ISurface.RENDERMODE_WHEN_DIRTY</a></p>
+</p>
+</BODY>
+</HTML>

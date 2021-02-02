@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Geometry3D.changeBufferUsage - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d</a>&nbsp;/&nbsp;<a href="index.html">Geometry3D</a>&nbsp;/&nbsp;<a href="./change-buffer-usage.html">changeBufferUsage</a><br/>
+<br/>
+<h1>changeBufferUsage</h1>
+<a name="org.rajawali3d.Geometry3D$changeBufferUsage(org.rajawali3d.BufferInfo, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeBufferUsage</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.Geometry3D$changeBufferUsage(org.rajawali3d.BufferInfo, kotlin.Int)/bufferInfo">bufferInfo</span><span class="symbol">:</span>&nbsp;<a href="../-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Geometry3D$changeBufferUsage(org.rajawali3d.BufferInfo, kotlin.Int)/usage">usage</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Specifies the expected usage pattern of the data store. The symbolic constant must be GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW, GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ, or GLES20.GL_DYNAMIC_COPY. Usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these: </p>
+<p> STREAM The data store contents will be modified once and used at most a few times. </p>
+<p> STATIC The data store contents will be modified once and used many times. </p>
+<p> DYNAMIC The data store contents will be modified repeatedly and used many times. </p>
+<p> The nature of access may be one of these: </p>
+<p> DRAW The data store contents are modified by the application, and used as the source for GL drawing and image specification commands. </p>
+<p> READ The data store contents are modified by reading data from the GL, and used to return that data when queried by the application. </p>
+<p> COPY The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.</p>
+<h3>Parameters</h3>
+<p><a name="bufferInfo"></a>
+<code>bufferInfo</code> - <a href="../-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">:</span> </p>
+<p><a name="usage"></a>
+<code>usage</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> </p>
+<a name="org.rajawali3d.Geometry3D$changeBufferUsage(org.rajawali3d.BufferInfo, kotlin.Int)"></a>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeBufferUsage</span><span class="symbol">(</span><span class="identifier" id="org.rajawali3d.Geometry3D$changeBufferUsage(org.rajawali3d.BufferInfo, kotlin.Int)/bufferInfo">bufferInfo</span><span class="symbol">:</span>&nbsp;<a href="../-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">, </span><span class="identifier" id="org.rajawali3d.Geometry3D$changeBufferUsage(org.rajawali3d.BufferInfo, kotlin.Int)/usage">usage</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Specifies the expected usage pattern of the data store. The symbolic constant must be GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW, GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ, or GLES20.GL_DYNAMIC_COPY. Usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these: </p>
+<p> STREAM The data store contents will be modified once and used at most a few times. </p>
+<p> STATIC The data store contents will be modified once and used many times. </p>
+<p> DYNAMIC The data store contents will be modified repeatedly and used many times. </p>
+<p> The nature of access may be one of these: </p>
+<p> DRAW The data store contents are modified by the application, and used as the source for GL drawing and image specification commands. </p>
+<p> READ The data store contents are modified by reading data from the GL, and used to return that data when queried by the application. </p>
+<p> COPY The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.</p>
+<h3>Parameters</h3>
+<p><a name="bufferInfo"></a>
+<code>bufferInfo</code> - <a href="../-buffer-info/index.html"><span class="identifier">BufferInfo</span></a><span class="symbol">!</span><span class="symbol">:</span> </p>
+<p><a name="usage"></a>
+<code>usage</code> - <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">:</span> </p>
+</BODY>
+</HTML>

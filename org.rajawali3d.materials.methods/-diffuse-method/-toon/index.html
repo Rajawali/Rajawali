@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>DiffuseMethod.Toon - </title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">org.rajawali3d.materials.methods</a>&nbsp;/&nbsp;<a href="../index.html">DiffuseMethod</a>&nbsp;/&nbsp;<a href="./index.html">Toon</a><br/>
+<br/>
+<h1>Toon</h1>
+<a name="org.rajawali3d.materials.methods.DiffuseMethod.Toon"></a>
+<code><span class="keyword">class </span><span class="identifier">Toon</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../-i-diffuse-method/index.html"><span class="identifier">IDiffuseMethod</span></a></code><br/>
+<a name="org.rajawali3d.materials.methods.DiffuseMethod.Toon"></a>
+<code><span class="keyword">class </span><span class="identifier">Toon</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../-i-diffuse-method/index.html"><span class="identifier">IDiffuseMethod</span></a></code>
+<p>Toon shading or cel shading is a type of non-photorealistic rendering designed to make a model appear to be hand-drawn. It is often used to mimic the style of a comic book or cartoon. Smooth lighting values are calculated for each pixel and then mapped to a small number of discrete shades to create a characteristic flat look. </p>
+<p> To use the Toon diffuse method you need to create an instance of one of the methods and then assign it to a material using the <code><a href="../../../org.rajawali3d.materials/-material/set-diffuse-method.html">Material#setDiffuseMethod(IDiffuseMethod)</a></code> method: </p>
+<pre><code>
+      material.setDiffuseMethod(new DiffuseMethod.Toon(int toonColor1, int toonColor2, int toonColor3, int toonColor4));
+      </code></pre>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+<p><strong>See Also</strong><br/>
+&lt;a href="http://en.wikipedia.org/wiki/Cel_shading"&gt;http://en.wikipedia.org/wiki/Cel_shading&lt;/a&gt;</p>
+</BODY>
+</HTML>

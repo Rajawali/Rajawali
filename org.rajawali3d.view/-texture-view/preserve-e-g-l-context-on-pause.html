@@ -1,0 +1,24 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextureView.preserveEGLContextOnPause - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.view</a>&nbsp;/&nbsp;<a href="index.html">TextureView</a>&nbsp;/&nbsp;<a href="./preserve-e-g-l-context-on-pause.html">preserveEGLContextOnPause</a><br/>
+<br/>
+<h1>preserveEGLContextOnPause</h1>
+<a name="org.rajawali3d.view.TextureView$preserveEGLContextOnPause"></a>
+<code><span class="keyword">var </span><span class="identifier">preserveEGLContextOnPause</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Control whether the EGL context is preserved when the TextureView is paused and
+resumed.</p>
+<p>If set to true, then the EGL context may be preserved when the TextureView is paused.
+Whether the EGL context is actually preserved or not depends upon whether the
+Android device that the program is running on can support an arbitrary number of EGL
+contexts or not. Devices that can only support a limited number of EGL contexts must
+release the  EGL context in order to allow multiple applications to share the GPU.</p>
+<p>If set to false, the EGL context will be released when the TextureView is paused,
+and recreated when the TextureView is resumed.</p>
+<p>The default is false.</p>
+</BODY>
+</HTML>

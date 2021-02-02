@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SVGPath - </title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">org.rajawali3d.curves</a>&nbsp;/&nbsp;<a href="./index.html">SVGPath</a><br/>
+<br/>
+<h1>SVGPath</h1>
+<a name="org.rajawali3d.curves.SVGPath"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SVGPath</span></code><br/>
+<a name="org.rajawali3d.curves.SVGPath"></a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SVGPath</span></code>
+<p>Parses a path from an SVG string. Please bear in mind that this is not a full XML parser. This is also an incomplete implementation. If you encounter anything that's missing please post an issue on Github and we'll add whatever you're after. What you can use is either a path <code><a href="https://docs.oracle.com/javase/6/docs/api/java/lang/String.html">String</a></code>: <pre><code>
+  String path = "M22.395-127.223c-4.492,11.344-4.688,33.75,0,44.883" +
+  	"c-11.328-4.492-33.656-4.579-44.789,0.109c4.491-11.354,4.688-33.75,0-44.892" +
+  	"C-11.066-122.63,11.262-122.536,22.395-127.223z";
+  
+  SVGPath svgPath = new SVGPath();
+  List paths = svgPath.parseString(path);
+  </code></pre> Or you could use a string resource from the "raw" folder: <pre><code>
+  SVGPath svgPath = new SVGPath();
+  List paths = svgPath.parseResourceString(mContext, R.raw.lavatories_svg_path);
+  </code></pre> To draw a path: <pre><code>
+  for(int i=0; i points = new Stack();
+  	int subdiv = 1000;
+  	for(int j=0; j&lt;=subdiv; j++)
+  	{
+  		points.add(subPath.calculatePoint(j / subdiv));
+  	}
+  	pathPoints.add(points);
+  	Line3D line = new Line3D(points, 1);
+  	SimpleMaterial material = new SimpleMaterial();
+  	material.setUseSingleColor(true);
+  	line.setMaterial(material);
+ 	getCurrentScene().addChild(line);
+  }
+  </code></pre></p>
+<p><strong>Author</strong><br/>
+dennis.ippel</p>
+</BODY>
+</HTML>
