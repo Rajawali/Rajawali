@@ -4,7 +4,7 @@
 [![Maven Central](https://img.shields.io/maven-metadata/v/https/oss.sonatype.org/content/repositories/snapshots/org/rajawali3d/rajawali/maven-metadata.xml.svg)](https://oss.sonatype.org/content/repositories/snapshots/org/rajawali3d)
 [![](https://jitpack.io/v/rajawali/rajawali.svg)](https://jitpack.io/#rajawali/rajawali)
 
-### Build Status
+# Build Status
 **Master Branch Status**  
 [![CircleCI](https://circleci.com/gh/Rajawali/Rajawali/tree/master.svg?style=svg)](https://circleci.com/gh/Rajawali/Rajawali/)
 [![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/master/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
