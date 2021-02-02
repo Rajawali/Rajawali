@@ -54,35 +54,33 @@ task clean(type: Delete) {
 }
 
 static def getVersion() {
+    final majorMinorVersion = "1.3"
+    final isCI = !"$System.env.CI".isEmpty()
+    final isMaster = "$System.env.CIRCLE_BRANCH" == "master"
+    final isDevelop = "$System.env.CIRCLE_BRANCH" == "develop"
     def tagVersion = "$System.env.VERSION"
-    def isCI = !"$System.env.CI".isEmpty()
-    def isPR = !"$System.env.CIRCLE_PR_REPONAME".isEmpty()
-    def isMaster = "$System.env.CIRCLE_BRANCH" == "master"
+
     if (tagVersion == "null") {
-        // with local un-commited changes a -DIRTY is added
-        def processChanges = "git diff-index --name-only HEAD --".execute()
-        def hasLocalChanges = !processChanges.text.toString().trim().isEmpty()
-        def modifier = ""
+        final commitCount = getGitCommitCount()
 
-        // Dirty if local, a PR, or has local changes
-        // Snapshot if not dirty but not master
+        // If CI and master branch -> release build, no modifier
+        // If CI and develop branch -> snapshot build
+        // Any other case is a DIRTY build and should not be published. Publish script disables
+        //   remote publication for versions marked DIRTY
         if (isCI && isMaster) {
-            def commitCount = getGitCommitCount()
-            return "1.2.$commitCount"
-        } else if (!isCI || isPR || hasLocalChanges) {
-            modifier = "-DIRTY"
-        } else if(!isMaster) {
-            modifier = "-SNAPSHOT"
+            tagVersion = "$majorMinorVersion.$commitCount"
+        } else if (isCI && isDevelop) {
+            tagVersion = "$majorMinorVersion.$commitCount-SNAPSHOT"
+        } else {
+            tagVersion = "$majorMinorVersion.$commitCount-DIRTY"
         }
-
-        def process = "git describe --tags".execute()
-        tagVersion = process.text.toString().trim() + modifier
     } else {
         def tagVersionToken = tagVersion.split("/")
-        if (tagVersionToken.size() > 2)
+        if (tagVersionToken.size() > 2) {
             tagVersion = tagVersionToken[2]
-        else
+        } else {
             tagVersion = tagVersionToken[0]
+        }
     }
     return tagVersion
 }
