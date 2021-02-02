@@ -32,7 +32,7 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 	private RFloat muRoughness;
 	private RFloat muExtinctionCoefficient;
 	
-	private float[] mSpecularColor;
+	private float[] mSpecularColor = { 1,1,1 };
 	private float mRoughness;
 	private float mExtinctionCoefficient;
 	
@@ -42,16 +42,13 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 	
 	private List<ALight> mLights;
 	
-	public CookTorranceFragmentShaderFragment(List<ALight> lights, int specularColor, float roughness) {
+	public CookTorranceFragmentShaderFragment(List<ALight> lights, float[] specularColor, float roughness) {
 		this(lights, specularColor, roughness, 1/8f, null);
 	}
 	
-	public CookTorranceFragmentShaderFragment(List<ALight> lights, int specularColor, float roughness, float extinctionCoefficient, List<ATexture> textures) {
+	public CookTorranceFragmentShaderFragment(List<ALight> lights, float[] specularColor, float roughness, float extinctionCoefficient, List<ATexture> textures) {
 		super(textures);
-		mSpecularColor = new float[] { 1, 1, 1 };
-		mSpecularColor[0] = (float)Color.red(specularColor) / 255.f;
-		mSpecularColor[1] = (float)Color.green(specularColor) / 255.f;
-		mSpecularColor[2] = (float)Color.blue(specularColor) / 255.f;
+		mSpecularColor = specularColor;
 		mRoughness = roughness;
 		mExtinctionCoefficient = extinctionCoefficient;
 		mLights = lights;
@@ -164,11 +161,9 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 		GLES20.glUniform1f(muExtinctionCoefficientHandle, mExtinctionCoefficient);
 	}
 	
-	public void setSpecularColor(int color)
+	public void setSpecularColor(float[] color)
 	{
-		mSpecularColor[0] = (float)Color.red(color) / 255.f;
-		mSpecularColor[1] = (float)Color.green(color) / 255.f;
-		mSpecularColor[2] = (float)Color.blue(color) / 255.f;
+		mSpecularColor = color;
 	}
 	
 	public void setExtinctionCoefficient(float extinctionCoefficient)

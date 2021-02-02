@@ -89,7 +89,7 @@ public abstract class SpecularMethod {
 	 */
 	public static final class Phong implements ISpecularMethod
 	{
-		private int mSpecularColor;
+		private float[] mSpecularColor = {1,1,1};
 		private float mShininess;
 		private float mIntensity = 1;
 		private List<ALight> mLights;
@@ -112,6 +112,15 @@ public abstract class SpecularMethod {
 		}
 		
 		public Phong(int specularColor, float shininess, float intensity)
+		{
+			mSpecularColor [0] = (float)Color.red(specularColor) / 255f;
+			mSpecularColor [1] = (float)Color.green(specularColor) / 255f;
+			mSpecularColor [2] = (float)Color.blue(specularColor) / 255f;
+			mShininess = shininess;
+			mIntensity = intensity;
+		}
+
+		public Phong(float[] specularColor, float shininess, float intensity)
 		{
 			mSpecularColor = specularColor;
 			mShininess = shininess;
@@ -137,14 +146,25 @@ public abstract class SpecularMethod {
 		
 		public void setSpecularColor(int specularColor)
 		{
-			mSpecularColor = specularColor;
+			mSpecularColor [0] = (float)Color.red(specularColor) / 255f;
+			mSpecularColor [1] = (float)Color.green(specularColor) / 255f;
+			mSpecularColor [2] = (float)Color.blue(specularColor) / 255f;
+			if(mFragmentShader != null)
+				mFragmentShader.setSpecularColor(mSpecularColor);
+		}
+		
+		public void setSpecularColor(float[] specularColor)
+		{
 			if(mFragmentShader != null)
 				mFragmentShader.setSpecularColor(specularColor);
 		}
 		
 		public int getSpecularColor()
 		{
-			return mSpecularColor;
+			int r = Math.round(mSpecularColor[0] * 255);
+			int g = Math.round(mSpecularColor[1] * 255);
+			int b = Math.round(mSpecularColor[2] * 255);
+			return Color.rgb(r,g,b);
 		}
 		
 		/**
@@ -186,7 +206,7 @@ public abstract class SpecularMethod {
 
 	public static final class CookTorrance implements ISpecularMethod
 	{
-		private int mSpecularColor;
+		private float[] mSpecularColor = {1,1,1};
 		private float mRoughness = 1/8f;
 		private float mExtinction = 1/8f;
 		private List<ALight> mLights;
@@ -195,7 +215,7 @@ public abstract class SpecularMethod {
 		
 		public CookTorrance()
 		{
-			this(Color.WHITE, 96);
+			this(Color.WHITE, 1/8f);
 		}
 		
 		public CookTorrance(int specularColor)
@@ -207,8 +227,17 @@ public abstract class SpecularMethod {
 		{
 			this(specularColor, roughness, 1/8f);
 		}
-		
+
 		public CookTorrance(int specularColor, float roughness, float extinction)
+		{
+			mSpecularColor [0] = (float)Color.red(specularColor) / 255f;
+			mSpecularColor [1] = (float)Color.green(specularColor) / 255f;
+			mSpecularColor [2] = (float)Color.blue(specularColor) / 255f;
+			mRoughness = roughness;
+			mExtinction = extinction;
+		}
+
+		public CookTorrance(float[] specularColor, float roughness, float extinction)
 		{
 			mSpecularColor = specularColor;
 			mRoughness = roughness;
@@ -234,14 +263,25 @@ public abstract class SpecularMethod {
 		
 		public void setSpecularColor(int specularColor)
 		{
-			mSpecularColor = specularColor;
+			mSpecularColor [0] = (float)Color.red(specularColor) / 255f;
+			mSpecularColor [1] = (float)Color.green(specularColor) / 255f;
+			mSpecularColor [2] = (float)Color.blue(specularColor) / 255f;
 			if(mFragmentShader != null)
-				mFragmentShader.setSpecularColor(specularColor);
+				mFragmentShader.setSpecularColor(mSpecularColor);
+		}
+
+		public void setSpecularColor(float[] specularColor)
+		{
+			if(mFragmentShader != null)
+				mFragmentShader.setSpecularColor(mSpecularColor);
 		}
 		
 		public int getSpecularColor()
 		{
-			return mSpecularColor;
+			int r = Math.round(mSpecularColor[0] * 255);
+			int g = Math.round(mSpecularColor[1] * 255);
+			int b = Math.round(mSpecularColor[2] * 255);
+			return Color.rgb(r,g,b);
 		}
 		
 		/**
