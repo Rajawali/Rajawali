@@ -9,6 +9,9 @@
 [![CircleCI](https://circleci.com/gh/Rajawali/Rajawali/tree/master.svg?style=svg)](https://circleci.com/gh/Rajawali/Rajawali/)
 [![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/master/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
+**Develop Branch Status**  
+[![CircleCI](https://circleci.com/gh/Rajawali/Rajawali/tree/develop.svg?style=svg)](https://circleci.com/gh/Rajawali/Rajawali/)
+
 ### News
 
 **06/23/2017**
