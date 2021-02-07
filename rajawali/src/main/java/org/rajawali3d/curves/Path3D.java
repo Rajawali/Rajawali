@@ -48,14 +48,18 @@ public class Path3D implements ICurve3D {
         return x.clone().multiply(1-a).add(y.clone().multiply(a));
     }
 
+    int getNumTransitions() {
+        return mIsClosed ? getNumPoints() : getNumPoints()-1;
+    }
+
     @Override
     public void calculatePoint(Vector3 result, double t) {
         while(t < 0) t+=1;
         while(t > 1) t-=1;
 
-        int prev = (int)Math.floor(t*getNumPoints());
+        int prev = (int)Math.floor(t*getNumTransitions());
         int next = prev+1;
-        double tween = t*getNumPoints()-prev;
+        double tween = t*getNumTransitions()-prev;
         if(next < getNumPoints()) {
             result.setAll(mix(getPoint(prev), getPoint(next), tween));
             mCurrentTangent.subtractAndSet(getPoint(next), getPoint(prev));

@@ -35,13 +35,17 @@ public class Path4D implements ICurve4D {
         return mPoints.get(index);
     }
 
+    int getNumTransitions() {
+        return mIsClosed ? getNumPoints() : getNumPoints()-1;
+    }
+
     public void calculatePoint(Quaternion result, double t) {
         while(t < 0) t+=1;
         while(t > 1) t-=1;
 
-        int prev = (int)Math.floor(t*getNumPoints());
+        int prev = (int)Math.floor(t*getNumTransitions());
         int next = prev+1;
-        double tween = (t*getNumPoints()-prev);
+        double tween = (t*getNumTransitions()-prev);
         if(next < getNumPoints()) {
             result.slerp(getPoint(prev), getPoint(next), tween);
         } else {
