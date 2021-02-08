@@ -2,12 +2,17 @@ package org.rajawali3d.loader;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.view.animation.LinearInterpolator;
 
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.animation.SplineOrientationAnimation3D;
+import org.rajawali3d.animation.SplineTranslateAnimation3D;
+import org.rajawali3d.animation.SplineColorAnimation3D;
 import org.rajawali3d.cameras.Camera;
+import org.rajawali3d.curves.ColorPath1D;
+import org.rajawali3d.curves.Path3D;
 import org.rajawali3d.curves.Path4D;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;
@@ -43,12 +48,11 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 public class LoaderX3D extends AMeshLoader {
-    XPathFactory xPathfactory;
+    static XPathFactory xPathfactory  = XPathFactory.newInstance();
     Document mDoc;
 
     public LoaderX3D(Resources resources, TextureManager textureManager, int resourceId) {
         super(resources, textureManager, resourceId);
-        xPathfactory = XPathFactory.newInstance();
     }
 
     public AMeshLoader parse() throws ParsingException {
@@ -203,7 +207,7 @@ public class LoaderX3D extends AMeshLoader {
                     Double.parseDouble(rotation[1]),
                     Double.parseDouble(rotation[2])
             );
-            Double angle = Math.toDegrees(Double.parseDouble(rotation[3]));
+            double angle = Math.toDegrees(Double.parseDouble(rotation[3]));
             Quaternion q = new Quaternion(axis,-angle);
             q.normalize();
             camera.setOrientation(q);
@@ -246,11 +250,136 @@ public class LoaderX3D extends AMeshLoader {
 
             Animation3D anim = new SplineOrientationAnimation3D(path);
             anim.setDurationDelta(cycleInterval);
-            anim.setTransformable3D(mRootObject.getChildByName(target));
+            anim.setTransformable3D(findObjectByName(mRootObject, target));
             if(loop) anim.setRepeatMode(Animation.RepeatMode.INFINITE);
             animations.add(anim);
         }
+
+        NodeList positionInterpolator = scene.getElementsByTagName("PositionInterpolator");
+        for(int i=0; i<positionInterpolator.getLength(); i++) {
+            Node tag;
+            Node node;
+            NodeList nodes;
+            XPathExpression expr;
+
+            tag = positionInterpolator.item(i).getAttributes().getNamedItem("DEF");
+            String id = tag.getNodeValue();
+            tag = positionInterpolator.item(i).getAttributes().getNamedItem("keyValue");
+            Path3D path = parseEulerTo3D(tag.getNodeValue().trim());
+
+            expr = xpath.compile("//ROUTE[@fromNode=\"" + id + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            String target = node.getAttributes().getNamedItem("toNode").getNodeValue().trim();
+
+            expr = xpath.compile("//ROUTE[@toNode=\"" + id + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            String source = node.getAttributes().getNamedItem("fromNode").getNodeValue().trim();
+
+            expr = xpath.compile("//TimeSensor[@DEF=\"" + source + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            double cycleInterval = Double.parseDouble(node.getAttributes().getNamedItem("cycleInterval").getNodeValue().trim());
+            boolean loop = Boolean.parseBoolean(node.getAttributes().getNamedItem("loop").getNodeValue().trim());
+
+            Animation3D anim = new SplineTranslateAnimation3D(path);
+            anim.setDurationDelta(cycleInterval);
+            anim.setTransformable3D(findObjectByName(mRootObject, target));
+            anim.setInterpolator(new LinearInterpolator());
+            if(loop) anim.setRepeatMode(Animation.RepeatMode.INFINITE);
+            animations.add(anim);
+        }
+
+        NodeList normalInterpolator = scene.getElementsByTagName("NormalInterpolator");
+        for(int i=0; i<positionInterpolator.getLength(); i++) {
+            Node tag;
+            Node node;
+            NodeList nodes;
+            XPathExpression expr;
+
+            tag = normalInterpolator.item(i).getAttributes().getNamedItem("DEF");
+            String id = tag.getNodeValue();
+            tag = normalInterpolator.item(i).getAttributes().getNamedItem("keyValue");
+            Path3D path = parseEulerTo3D(tag.getNodeValue().trim());
+
+            expr = xpath.compile("//ROUTE[@fromNode=\"" + id + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            String target = node.getAttributes().getNamedItem("toNode").getNodeValue().trim();
+
+            expr = xpath.compile("//ROUTE[@toNode=\"" + id + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            String source = node.getAttributes().getNamedItem("fromNode").getNodeValue().trim();
+
+            expr = xpath.compile("//TimeSensor[@DEF=\"" + source + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            double cycleInterval = Double.parseDouble(node.getAttributes().getNamedItem("cycleInterval").getNodeValue().trim());
+            boolean loop = Boolean.parseBoolean(node.getAttributes().getNamedItem("loop").getNodeValue().trim());
+/*
+            Animation3D anim = new SplineNormalAnimation3D(path);
+            anim.setDurationDelta(cycleInterval);
+            anim.setTransformable3D(findObjectByName(mRootObject, target));
+            anim.setInterpolator(new LinearInterpolator());
+            if(loop) anim.setRepeatMode(Animation.RepeatMode.INFINITE);
+            animations.add(anim);
+*/
+        }
+
+        NodeList colorInterpolator = scene.getElementsByTagName("ColorInterpolator");
+        for(int i=0; i<colorInterpolator.getLength(); i++) {
+            Node tag;
+            Node node;
+            NodeList nodes;
+            XPathExpression expr;
+
+            tag = colorInterpolator.item(i).getAttributes().getNamedItem("DEF");
+            String id = tag.getNodeValue();
+            tag = colorInterpolator.item(i).getAttributes().getNamedItem("keyValue");
+            ColorPath1D path = parseRGBToColor(tag.getNodeValue().trim());
+
+            expr = xpath.compile("//ROUTE[@fromNode=\"" + id + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            String target = node.getAttributes().getNamedItem("toNode").getNodeValue().trim();
+
+            expr = xpath.compile("//ROUTE[@toNode=\"" + id + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            String source = node.getAttributes().getNamedItem("fromNode").getNodeValue().trim();
+
+            expr = xpath.compile("//TimeSensor[@DEF=\"" + source + "\"]");
+            nodes = (NodeList) expr.evaluate(scene, XPathConstants.NODESET);
+            node = nodes.item(0);
+            double cycleInterval = Double.parseDouble(node.getAttributes().getNamedItem("cycleInterval").getNodeValue().trim());
+            boolean loop = Boolean.parseBoolean(node.getAttributes().getNamedItem("loop").getNodeValue().trim());
+
+            Animation3D anim = new SplineColorAnimation3D(path);
+            anim.setDurationDelta(cycleInterval);
+            anim.setTransformable3D(findObjectByName(mRootObject, target));
+            anim.setInterpolator(new LinearInterpolator());
+            if(loop) anim.setRepeatMode(Animation.RepeatMode.INFINITE);
+            animations.add(anim);
+        }
+
         return animations;
+    }
+
+    public Object3D findObjectByName(Object3D obj, String name) {
+        Object3D found = null;
+        for (int i = 0, j = obj.getNumChildren(); i < j; i++) {
+            Object3D child = obj.getChildAt(i);
+            if (child.getName() != null) {
+                if (child.getName().equals(name)) {
+                    return child;
+                }
+            }
+            found = findObjectByName(child, name);
+            if(found != null) return found;
+        }
+        return found;
     }
 
     Path4D parseAxisAngleTo4D(String keyValue) {
@@ -262,7 +391,7 @@ public class LoaderX3D extends AMeshLoader {
                     Double.parseDouble(values[i+1]),
                     Double.parseDouble(values[i+2])
             );
-            Double angle = Math.toDegrees(Double.parseDouble(values[i+3]));
+            double angle = Math.toDegrees(Double.parseDouble(values[i+3]));
             Quaternion point = new Quaternion(axis,-angle);
             point.normalize();
             path.addPoint(point);
@@ -270,7 +399,35 @@ public class LoaderX3D extends AMeshLoader {
         return path;
     }
 
-    static void parseTransform(Object3D parent, Element transform) {
+    Path3D parseEulerTo3D(String keyValue) {
+        Path3D path = new Path3D();
+        String[] values = keyValue.split("\\s+");
+        for(int i=0; i<values.length; i+=3) {
+            Vector3 point = new Vector3(
+                    Double.parseDouble(values[i+0]),
+                    Double.parseDouble(values[i+1]),
+                    Double.parseDouble(values[i+2])
+            );
+            path.addPoint(point);
+        }
+        return path;
+    }
+
+    ColorPath1D parseRGBToColor(String keyValue) {
+        ColorPath1D path = new ColorPath1D();
+        String[] values = keyValue.split("\\s+");
+        for(int i=0; i<values.length; i+=3) {
+            int point = Color.rgb(
+                    Math.round(Float.parseFloat(values[i+0]) * 255),
+                    Math.round(Float.parseFloat(values[i+1]) * 255),
+                    Math.round(Float.parseFloat(values[i+2]) * 255)
+            );
+            path.addPoint(point);
+        }
+        return path;
+    }
+
+    static void parseTransform(Object3D parent, Element transform) throws XPathExpressionException {
         String value;
         Object3D object = new Object3D();
 
@@ -324,8 +481,23 @@ public class LoaderX3D extends AMeshLoader {
         }
     }
 
-    static void parseShape(Object3D parent, Element shape) {
-        genPrimitive(parent, genMaterial(shape), shape);
+    static void parseShape(Object3D parent, Element shape) throws XPathExpressionException {
+        Node node;
+        NodeList nodes;
+        XPathExpression expr;
+        XPath xpath = xPathfactory.newXPath();
+
+        expr = xpath.compile(".//*[@DEF]");
+        nodes = (NodeList) expr.evaluate(shape, XPathConstants.NODESET);
+        node = nodes.item(0);
+        String name = node.getAttributes().getNamedItem("DEF").getNodeValue().trim();
+
+        Object3D obj = genPrimitive(shape);
+        if(obj != null) {
+            obj.setName(name);
+            obj.setMaterial(genMaterial(shape));
+            parent.addChild(obj);
+        }
     }
 
     static Material genMaterial(Element shape) {
@@ -353,23 +525,20 @@ public class LoaderX3D extends AMeshLoader {
         return material;
     }
 
-    static void genPrimitive(Object3D parent, Material material, Element shape) {
+    static Object3D genPrimitive(Element shape) {
+        Object3D obj = null;
         Node box = shape.getElementsByTagName("Box").item(0);
         if(box != null) {
             Node tag;
             tag = box.getAttributes().getNamedItem("size");
             if(tag==null) {
-                RectangularPrism rect = new RectangularPrism(1,1,1);
-                rect.setMaterial(material);
-                parent.addChild(rect);
+                obj = new RectangularPrism(1,1,1);
             } else {
                 String[] dimensions = tag.getNodeValue().split("\\s+");
                 float width  = Float.parseFloat(dimensions[0]);
                 float height = Float.parseFloat(dimensions[1]);
                 float depth  = Float.parseFloat(dimensions[2]);
-                RectangularPrism obj = new RectangularPrism(width,height,depth);
-                obj.setMaterial(material);
-                parent.addChild(obj);
+                obj = new RectangularPrism(width,height,depth);
             }
         }
 
@@ -380,9 +549,7 @@ public class LoaderX3D extends AMeshLoader {
             float height = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
             tag = cone.getAttributes().getNamedItem("bottomRadius");
             float radiusBottom = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
-            NPrism obj = new NPrism(16,0,radiusBottom,height);
-            obj.setMaterial(material);
-            parent.addChild(obj);
+            obj = new NPrism(16,0,radiusBottom,height);
         }
 
         Node cylinder = shape.getElementsByTagName("Cylinder").item(0);
@@ -392,9 +559,7 @@ public class LoaderX3D extends AMeshLoader {
             float length = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
             tag = cylinder.getAttributes().getNamedItem("radius");
             float radius = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
-            Cylinder obj = new Cylinder(length,radius,1,16);
-            obj.setMaterial(material);
-            parent.addChild(obj);
+            obj = new Cylinder(length,radius,1,16);
         }
 
         Node sphere = shape.getElementsByTagName("Sphere").item(0);
@@ -402,24 +567,18 @@ public class LoaderX3D extends AMeshLoader {
             Node tag;
             tag = sphere.getAttributes().getNamedItem("radius");
             float radius = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
-            Sphere obj = new Sphere(radius,32,16);
-            obj.setMaterial(material);
-            parent.addChild(obj);
+            obj = new Sphere(radius,32,16);
         }
 
         Node plane = shape.getElementsByTagName("Plane").item(0);
         if(plane != null) {
             Node tag;
-            tag = plane.getAttributes().getNamedItem("DEF");
-            String name = tag==null ? null : tag.getNodeValue().trim();
             tag = plane.getAttributes().getNamedItem("size");
             String[] dimensions = tag.getNodeValue().split("\\s+");
             float width  = Float.parseFloat(dimensions[0]);
             float height = Float.parseFloat(dimensions[1]);
-            Plane obj = new Plane(width, height, 1,1);
-            obj.setMaterial(material);
-            parent.addChild(obj);
+            obj = new Plane(width, height, 1,1);
         }
+        return obj;
     }
 }
-
