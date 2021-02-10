@@ -284,7 +284,7 @@ public class LoaderOBJ extends AMeshLoader {
 					currentMaterialName = parts.nextToken();
 					if(currentObjHasFaces) {
 						objIndices.add(currObjIndexData);
-						currObjIndexData = new ObjIndexData(new Object3D(generateObjectName()));
+						currObjIndexData = new ObjIndexData(new Object3D(generateObjectName(currentMaterialName)));
 						RajLog.i("Parsing object: " + currObjIndexData.targetObj.getName());
 						addChildSetParent(currentGroup, currObjIndexData.targetObj);
 						currentObjHasFaces = false;
@@ -416,7 +416,12 @@ public class LoaderOBJ extends AMeshLoader {
 	}
 
 	private static String generateObjectName() {
-		return "Object" + (int) (Math.random() * 10000);
+		return generateObjectName(null);
+	}
+
+	private static String generateObjectName(String prefix) {
+		if(prefix==null) prefix = "Object";
+		return prefix + (int) (Math.random() * 9e3 + 1e3);
 	}
 
 	/**
