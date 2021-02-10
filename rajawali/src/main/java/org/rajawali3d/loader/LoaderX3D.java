@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.animation.LinearInterpolator;
 
+import org.jetbrains.annotations.NotNull;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
@@ -290,7 +291,7 @@ public class LoaderX3D extends AMeshLoader {
             if(loop) anim.setRepeatMode(Animation.RepeatMode.INFINITE);
             animations.add(anim);
         }
-
+/*
         NodeList normalInterpolator = scene.getElementsByTagName("NormalInterpolator");
         for(int i=0; i<positionInterpolator.getLength(); i++) {
             Node tag;
@@ -318,15 +319,15 @@ public class LoaderX3D extends AMeshLoader {
             node = nodes.item(0);
             double cycleInterval = Double.parseDouble(node.getAttributes().getNamedItem("cycleInterval").getNodeValue().trim());
             boolean loop = Boolean.parseBoolean(node.getAttributes().getNamedItem("loop").getNodeValue().trim());
-/*
+
             Animation3D anim = new SplineNormalAnimation3D(path);
             anim.setDurationDelta(cycleInterval);
             anim.setTransformable3D(findObjectByName(mRootObject, target));
             anim.setInterpolator(new LinearInterpolator());
             if(loop) anim.setRepeatMode(Animation.RepeatMode.INFINITE);
             animations.add(anim);
-*/
         }
+*/
 
         NodeList colorInterpolator = scene.getElementsByTagName("ColorInterpolator");
         for(int i=0; i<colorInterpolator.getLength(); i++) {
@@ -367,9 +368,9 @@ public class LoaderX3D extends AMeshLoader {
         return animations;
     }
 
-    public Object3D findObjectByName(Object3D obj, String name) {
-        Object3D found = null;
+    public Object3D findObjectByName(@NotNull Object3D obj, String name) {
         for (int i = 0, j = obj.getNumChildren(); i < j; i++) {
+            Object3D found;
             Object3D child = obj.getChildAt(i);
             if (child.getName() != null) {
                 if (child.getName().equals(name)) {
@@ -379,10 +380,10 @@ public class LoaderX3D extends AMeshLoader {
             found = findObjectByName(child, name);
             if(found != null) return found;
         }
-        return found;
+        return null;
     }
 
-    Path4D parseAxisAngleTo4D(String keyValue) {
+    Path4D parseAxisAngleTo4D(@NotNull String keyValue) {
         Path4D path = new Path4D();
         String[] values = keyValue.split("\\s+");
         for(int i=0; i<values.length; i+=4) {
@@ -399,7 +400,7 @@ public class LoaderX3D extends AMeshLoader {
         return path;
     }
 
-    Path3D parseEulerTo3D(String keyValue) {
+    Path3D parseEulerTo3D(@NotNull String keyValue) {
         Path3D path = new Path3D();
         String[] values = keyValue.split("\\s+");
         for(int i=0; i<values.length; i+=3) {
@@ -413,7 +414,7 @@ public class LoaderX3D extends AMeshLoader {
         return path;
     }
 
-    ColorPath1D parseRGBToColor(String keyValue) {
+    ColorPath1D parseRGBToColor(@NotNull String keyValue) {
         ColorPath1D path = new ColorPath1D();
         String[] values = keyValue.split("\\s+");
         for(int i=0; i<values.length; i+=3) {
@@ -427,7 +428,7 @@ public class LoaderX3D extends AMeshLoader {
         return path;
     }
 
-    static void parseTransform(Object3D parent, Element transform) throws XPathExpressionException {
+    static void parseTransform(Object3D parent, @NotNull Element transform) throws XPathExpressionException {
         String value;
         Object3D object = new Object3D();
 
@@ -490,17 +491,27 @@ public class LoaderX3D extends AMeshLoader {
         expr = xpath.compile(".//*[@DEF]");
         nodes = (NodeList) expr.evaluate(shape, XPathConstants.NODESET);
         node = nodes.item(0);
-        String name = node.getAttributes().getNamedItem("DEF").getNodeValue().trim();
+        String name = (node==null) ? "" : node.getAttributes().getNamedItem("DEF").getNodeValue().trim();
 
-        Object3D obj = genPrimitive(shape);
+        expr = xpath.compile(".//*[@solid]");
+        nodes = (NodeList) expr.evaluate(shape, XPathConstants.NODESET);
+        node = nodes.item(0);
+        boolean solid = false;
+        if(node != null) {
+            String value = node.getAttributes().getNamedItem("solid").getNodeValue();
+            solid = Boolean.parseBoolean(value.trim());
+        }
+
+        Object3D obj = parseGeometry(shape);
         if(obj != null) {
             obj.setName(name);
-            obj.setMaterial(genMaterial(shape));
+            obj.setDoubleSided(solid);
+            obj.setMaterial(parseMaterial(shape));
             parent.addChild(obj);
         }
     }
 
-    static Material genMaterial(Element shape) {
+    static Material parseMaterial(Element shape) {
         Material material = new Material();
         Node diffuseColor = null;
         Node mat = shape.getElementsByTagName("Material").item(0);
@@ -525,24 +536,63 @@ public class LoaderX3D extends AMeshLoader {
         return material;
     }
 
-    static Object3D genPrimitive(Element shape) {
+    static Object3D parseGeometry(Element shape) {
         Object3D obj = null;
-        Node box = shape.getElementsByTagName("Box").item(0);
-        if(box != null) {
-            Node tag;
-            tag = box.getAttributes().getNamedItem("size");
-            if(tag==null) {
-                obj = new RectangularPrism(1,1,1);
-            } else {
-                String[] dimensions = tag.getNodeValue().split("\\s+");
-                float width  = Float.parseFloat(dimensions[0]);
-                float height = Float.parseFloat(dimensions[1]);
-                float depth  = Float.parseFloat(dimensions[2]);
-                obj = new RectangularPrism(width,height,depth);
-            }
+        Node node;
+
+        node = shape.getElementsByTagName("Box").item(0);
+        if(node != null) {
+            obj =  parseBox(node);
         }
 
-        Node cone = shape.getElementsByTagName("Cone").item(0);
+        node = shape.getElementsByTagName("Cone").item(0);
+        if(node != null) {
+            obj =  parseCone(node);
+        }
+
+        node = shape.getElementsByTagName("Cylinder").item(0);
+        if(node != null) {
+            obj =  parseCylinder(node);
+        }
+
+        node = shape.getElementsByTagName("Sphere").item(0);
+        if(node != null) {
+            obj =  parseSphere(node);
+        }
+
+        node = shape.getElementsByTagName("Plane").item(0);
+        if(node != null) {
+            obj =  parsePlane(node);
+        }
+
+        node = shape.getElementsByTagName("TriangleSet").item(0);
+        if(node instanceof Element) {
+            obj =  parseTriangleSet((Element) node);
+        }
+
+        return obj;
+    }
+
+    static Object3D parseBox(Node box) {
+        Object3D obj = null;
+        if (box != null) {
+            Node tag;
+            tag = box.getAttributes().getNamedItem("size");
+            if (tag == null) {
+                obj = new RectangularPrism(1, 1, 1);
+            } else {
+                String[] dimensions = tag.getNodeValue().split("\\s+");
+                float width = Float.parseFloat(dimensions[0]);
+                float height = Float.parseFloat(dimensions[1]);
+                float depth = Float.parseFloat(dimensions[2]);
+                obj = new RectangularPrism(width, height, depth);
+            }
+        }
+        return obj;
+    }
+
+    static Object3D parseCone(Node cone) {
+        Object3D obj = null;
         if(cone != null) {
             Node tag;
             tag = cone.getAttributes().getNamedItem("height");
@@ -551,8 +601,11 @@ public class LoaderX3D extends AMeshLoader {
             float radiusBottom = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
             obj = new NPrism(16,0,radiusBottom,height);
         }
+        return obj;
+    }
 
-        Node cylinder = shape.getElementsByTagName("Cylinder").item(0);
+    static Object3D parseCylinder(Node cylinder) {
+        Object3D obj = null;
         if(cylinder != null) {
             Node tag;
             tag = cylinder.getAttributes().getNamedItem("height");
@@ -561,16 +614,22 @@ public class LoaderX3D extends AMeshLoader {
             float radius = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
             obj = new Cylinder(length,radius,1,16);
         }
+        return obj;
+    }
 
-        Node sphere = shape.getElementsByTagName("Sphere").item(0);
+    static Object3D parseSphere(Node sphere) {
+        Object3D obj = null;
         if(sphere != null) {
             Node tag;
             tag = sphere.getAttributes().getNamedItem("radius");
             float radius = tag==null ? 1 : Float.parseFloat(tag.getNodeValue());
             obj = new Sphere(radius,32,16);
         }
+        return obj;
+    }
 
-        Node plane = shape.getElementsByTagName("Plane").item(0);
+    static Object3D parsePlane(Node plane) {
+        Object3D obj = null;
         if(plane != null) {
             Node tag;
             tag = plane.getAttributes().getNamedItem("size");
@@ -580,5 +639,68 @@ public class LoaderX3D extends AMeshLoader {
             obj = new Plane(width, height, 1,1);
         }
         return obj;
+    }
+
+    static Object3D parseTriangleSet(Element triangleSet) {
+        Object3D obj = null;
+        if(triangleSet != null) {
+            Node tag;
+            String[] values;
+
+            Node coordinate = triangleSet.getElementsByTagName("Coordinate").item(0);
+            tag = coordinate.getAttributes().getNamedItem("point");
+            values = tag.getNodeValue().trim().split("\\s+");
+            float[] vertices = new float[values.length];
+            for(int i=0; i<values.length; i++) vertices[i] = Float.parseFloat(values[i]);
+
+            Node normal = triangleSet.getElementsByTagName("Normal").item(0);
+            tag = normal.getAttributes().getNamedItem("vector");
+            values = tag.getNodeValue().trim().split("\\s+");
+            float[] normals = new float[values.length];
+            for(int i=0; i<values.length; i++) normals[i] = Float.parseFloat(values[i]);
+
+            Node texcoord = triangleSet.getElementsByTagName("TextureCoordinate").item(0);
+            tag = texcoord.getAttributes().getNamedItem("point");
+            values = tag.getNodeValue().trim().split("\\s+");
+            float[] texcoords = new float[values.length];
+            for(int i=0; i<values.length; i++) texcoords[i] = Float.parseFloat(values[i]);
+
+            Node color = triangleSet.getElementsByTagName("Color").item(0);
+            tag = color.getAttributes().getNamedItem("color");
+            values = tag.getNodeValue().trim().split("\\s+");
+            float[] colors = new float[values.length];
+            for(int i=0; i<values.length; i++) colors[i] = Float.parseFloat(values[i]);
+
+            int[] indices = new int[vertices.length/3];
+            for(int i=0; i<vertices.length/3; i++) indices[i] = i;
+
+            obj = new TriangleSet(vertices, normals, texcoords, colors, indices, true);
+        }
+
+        return obj;
+    }
+
+    static class TriangleSet extends Object3D {
+
+        public TriangleSet(        float[] vertices,
+                                   float[] normals ,
+                                   float[] textureCoords ,
+                                   float[] colors ,
+                                   int[] indices,
+                                   boolean createVBOs) {
+            super();
+            init(vertices, normals , textureCoords , colors, indices, createVBOs);
+        }
+
+        protected void init(        float[] vertices,
+                                    float[] normals ,
+                                    float[] textureCoords ,
+                                    float[] colors ,
+                                    int[] indices,
+                                    boolean createVBOs) {
+
+
+            setData(vertices, normals, textureCoords, colors, indices, createVBOs);
+        }
     }
 }
