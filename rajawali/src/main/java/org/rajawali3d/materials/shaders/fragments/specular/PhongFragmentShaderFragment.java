@@ -33,7 +33,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	private RFloat muShininess;
 	private RFloat muSpecularIntensity;
 	
-	private float[] mSpecularColor;
+	private float[] mSpecularColor = {1,1,1};
 	private float mShininess;
 	private float mSpecularIntensity;
 	
@@ -43,16 +43,13 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	
 	private List<ALight> mLights;
 	
-	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess) {
+	public PhongFragmentShaderFragment(List<ALight> lights, float[] specularColor, float shininess) {
 		this(lights, specularColor, shininess, 1, null);
 	}
 	
-	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, float specularIntensity, List<ATexture> textures) {
+	public PhongFragmentShaderFragment(List<ALight> lights, float[] specularColor, float shininess, float specularIntensity, List<ATexture> textures) {
 		super(textures);
-		mSpecularColor = new float[] { 1, 1, 1 };
-		mSpecularColor[0] = (float)Color.red(specularColor) / 255.f;
-		mSpecularColor[1] = (float)Color.green(specularColor) / 255.f;
-		mSpecularColor[2] = (float)Color.blue(specularColor) / 255.f;
+		mSpecularColor = mSpecularColor;
 		mShininess = shininess;
 		mSpecularIntensity = specularIntensity;
 		mLights = lights;
@@ -135,11 +132,9 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 		GLES20.glUniform1f(muSpecularIntensityHandle, mSpecularIntensity);
 	}
 	
-	public void setSpecularColor(int color)
+	public void setSpecularColor(float[] color)
 	{
-		mSpecularColor[0] = (float)Color.red(color) / 255.f;
-		mSpecularColor[1] = (float)Color.green(color) / 255.f;
-		mSpecularColor[2] = (float)Color.blue(color) / 255.f;
+		mSpecularColor = color;
 	}
 	
 	public void setSpecularIntensity(float specularIntensity)
