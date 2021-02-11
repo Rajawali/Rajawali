@@ -12,6 +12,7 @@
  */
 package org.rajawali3d.loader;
 
+import android.os.SystemClock;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -421,7 +422,7 @@ public class LoaderOBJ extends AMeshLoader {
 
 	private static String generateObjectName(String prefix) {
 		if(prefix==null) prefix = "Object";
-		return prefix + (int) (Math.random() * 9e3 + 1e3);
+		return prefix + Long.toString(SystemClock.elapsedRealtime());
 	}
 
 	/**
