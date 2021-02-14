@@ -80,6 +80,9 @@ public class LoaderX3D extends AMeshLoader {
                 if(children.item(i).getNodeName().equals("Shape")) {
                     parseShape(mRootObject, (Element) children.item(i));
                 }
+                if(children.item(i).getNodeName().equals("Group")) {
+                    parseGroup(mRootObject, (Element) children.item(i));
+                }
             }
         } catch (Exception e) {
             throw new ParsingException(e.getMessage());
@@ -142,7 +145,7 @@ public class LoaderX3D extends AMeshLoader {
                 rgb[1] = Float.parseFloat(colorChannels[1]);
                 rgb[2] = Float.parseFloat(colorChannels[2]);
             }
-            tag = directionalLights.item(i).getAttributes().getNamedItem("location");
+            tag = pointLights.item(i).getAttributes().getNamedItem("location");
             Vector3 location = new Vector3();
             if(tag!=null) {
                 String[] axes = tag.getNodeValue().split("\\s+");
@@ -171,7 +174,7 @@ public class LoaderX3D extends AMeshLoader {
                 rgb[1] = Float.parseFloat(colorChannels[1]);
                 rgb[2] = Float.parseFloat(colorChannels[2]);
             }
-            tag = directionalLights.item(i).getAttributes().getNamedItem("location");
+            tag = spotLights.item(i).getAttributes().getNamedItem("location");
             Vector3 location = new Vector3();
             if(tag!=null) {
                 String[] axes = tag.getNodeValue().split("\\s+");
@@ -494,6 +497,9 @@ public class LoaderX3D extends AMeshLoader {
             if(children.item(i).getNodeName().equals("Shape")) {
                 parseShape(object, (Element) children.item(i));
             }
+            if(children.item(i).getNodeName().equals("Group")) {
+                parseGroup(object, (Element) children.item(i));
+            }
         }
     }
 
@@ -524,6 +530,18 @@ public class LoaderX3D extends AMeshLoader {
             obj.setDoubleSided(solid);
             obj.setMaterial(material);
             parent.addChild(obj);
+        }
+    }
+
+    void parseGroup(Object3D parent, @NotNull Element transform) throws XPathExpressionException {
+        NodeList children = transform.getChildNodes();
+        for(int i=0; i<children.getLength(); i++) {
+            if(children.item(i).getNodeName().equals("Transform")) {
+                parseTransform(parent, (Element) children.item(i));
+            }
+            if(children.item(i).getNodeName().equals("Shape")) {
+                parseShape(parent, (Element) children.item(i));
+            }
         }
     }
 
@@ -621,6 +639,11 @@ public class LoaderX3D extends AMeshLoader {
             obj =  parseTriangleSet((Element) node);
         }
 
+        node = shape.getElementsByTagName("IndexedTriangleSet").item(0);
+        if(node instanceof Element) {
+            obj =  parseIndexedTriangleSet((Element) node);
+        }
+
         return obj;
     }
 
@@ -692,6 +715,7 @@ public class LoaderX3D extends AMeshLoader {
         return obj;
     }
 
+
     static Object3D parseTriangleSet(Element triangleSet) {
         Object3D obj = null;
         if(triangleSet != null) {
@@ -713,7 +737,6 @@ public class LoaderX3D extends AMeshLoader {
                 for(int i=0; i<values.length; i++) normals[i] = Float.parseFloat(values[i]);
             }
 
-
             float[] texcoords = null;
             Node texcoord = triangleSet.getElementsByTagName("TextureCoordinate").item(0);
             if(texcoord!=null) {
@@ -732,10 +755,57 @@ public class LoaderX3D extends AMeshLoader {
                 for(int i=0; i<values.length; i++) colors[i] = Float.parseFloat(values[i]);
             }
 
-            int[] indices = new int[vertices.length/3];
-            for(int i=0; i<vertices.length/3; i++) indices[i] = i;
+            obj = new TriangleSet(vertices, normals, texcoords, colors, true);
+        }
 
-            obj = new TriangleSet(vertices, normals, texcoords, colors, indices, true);
+        return obj;
+    }
+
+    static Object3D parseIndexedTriangleSet(Element indexedTriangleSet) {
+        Object3D obj = null;
+        if(indexedTriangleSet != null) {
+            Node tag;
+            String[] values;
+
+            tag = indexedTriangleSet.getAttributes().getNamedItem("index");
+            values = tag.getNodeValue().trim().split("\\s+");
+            int[] indices = new int[values.length];
+            for(int i=0; i<values.length; i++) indices[i] = Integer.parseInt(values[i]);
+
+            Node coordinate = indexedTriangleSet.getElementsByTagName("Coordinate").item(0);
+            tag = coordinate.getAttributes().getNamedItem("point");
+            values = tag.getNodeValue().trim().split("\\s+");
+            float[] vertices = new float[values.length];
+            for(int i=0; i<values.length; i++) vertices[i] = Float.parseFloat(values[i]);
+
+            float[] normals = null;
+            Node normal = indexedTriangleSet.getElementsByTagName("Normal").item(0);
+            if(normal!=null) {
+                tag = normal.getAttributes().getNamedItem("vector");
+                values = tag.getNodeValue().trim().split("\\s+");
+                normals = new float[values.length];
+                for(int i=0; i<values.length; i++) normals[i] = Float.parseFloat(values[i]);
+            }
+
+            float[] texcoords = null;
+            Node texcoord = indexedTriangleSet.getElementsByTagName("TextureCoordinate").item(0);
+            if(texcoord!=null) {
+                tag = texcoord.getAttributes().getNamedItem("point");
+                values = tag.getNodeValue().trim().split("\\s+");
+                texcoords = new float[values.length];
+                for(int i=0; i<values.length; i++) texcoords[i] = Float.parseFloat(values[i]);
+            }
+
+            float[] colors = null;
+            Node color = indexedTriangleSet.getElementsByTagName("Color").item(0);
+            if(color!=null) {
+                tag = color.getAttributes().getNamedItem("color");
+                values = tag.getNodeValue().trim().split("\\s+");
+                colors = new float[values.length];
+                for(int i=0; i<values.length; i++) colors[i] = Float.parseFloat(values[i]);
+            }
+
+            obj = new IndexedTriangleSet(vertices, normals, texcoords, colors, indices, true);
         }
 
         return obj;
@@ -747,7 +817,31 @@ public class LoaderX3D extends AMeshLoader {
                                    float[] normals ,
                                    float[] textureCoords ,
                                    float[] colors ,
-                                   int[] indices,
+                                   boolean createVBOs) {
+            super();
+            init(vertices, normals , textureCoords , colors, createVBOs);
+        }
+
+        protected void init(        float[] vertices,
+                                    float[] normals ,
+                                    float[] textureCoords ,
+                                    float[] colors ,
+                                    boolean createVBOs) {
+
+            int[] indices = new int[vertices.length/3];
+            for(int i=0; i<vertices.length/3; i++) indices[i] = i;
+
+            setData(vertices, normals, textureCoords, colors, indices, createVBOs);
+        }
+    }
+
+    static class IndexedTriangleSet extends Object3D {
+
+        public IndexedTriangleSet( float[] vertices,
+                                   float[] normals ,
+                                   float[] textureCoords ,
+                                   float[] colors ,
+                                   int[]   indices ,
                                    boolean createVBOs) {
             super();
             init(vertices, normals , textureCoords , colors, indices, createVBOs);
@@ -757,9 +851,8 @@ public class LoaderX3D extends AMeshLoader {
                                     float[] normals ,
                                     float[] textureCoords ,
                                     float[] colors ,
-                                    int[] indices,
+                                    int[]   indices ,
                                     boolean createVBOs) {
-
 
             setData(vertices, normals, textureCoords, colors, indices, createVBOs);
         }
