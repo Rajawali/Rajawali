@@ -20,6 +20,7 @@ public class NormalOverrideMaterialPlugin implements IMaterialPlugin, IInterpola
     NormalOverrideVertexShaderFragment mVertexShader;
 
     public enum OverrideShaderVar implements AShaderBase.IGlobalShaderVar {
+        U_NORMAL_OVERRIDE_ACTIVE("uOverrideActive", AShaderBase.DataType.BOOL),
         A_NORMAL_OVERRIDE("aNormalOverride", AShaderBase.DataType.VEC3);
 
         private final String mVarString;
@@ -84,6 +85,10 @@ public class NormalOverrideMaterialPlugin implements IMaterialPlugin, IInterpola
         double mInterpolation = 0;
         IKeyframes<Double, Vector3[]> mKeyframes;
 
+        RBool muActive;
+        boolean mActive = false;
+        int muActiveHandle;
+
         RVec3 maNormalOverride;
         FloatBuffer maNormalOverrideBuffer;
         int maNormalOverrideBufferHandle;
@@ -101,6 +106,9 @@ public class NormalOverrideMaterialPlugin implements IMaterialPlugin, IInterpola
 
         public void initialize(IKeyframes<Double, Vector3[]> keyframes) {
             super.initialize();
+            mActive = false;
+            muActive = (RBool) addUniform(OverrideShaderVar.U_NORMAL_OVERRIDE_ACTIVE);
+
             mInterpolation = 0;
             mKeyframes = keyframes;
 
@@ -110,8 +118,8 @@ public class NormalOverrideMaterialPlugin implements IMaterialPlugin, IInterpola
         }
 
         @Override
-        public void enableInterpolation(boolean value) {
-
+        public void enableInterpolation(boolean active) {
+            mActive = active;
         }
 
         @Override
@@ -127,11 +135,13 @@ public class NormalOverrideMaterialPlugin implements IMaterialPlugin, IInterpola
         @Override
         public void applyParams() {
             super.applyParams();
+            GLES20.glUniform1i(muActiveHandle, (mActive ? 1 : 0));
         }
 
         @Override
         public void setLocations(int programHandle) {
             super.setLocations(programHandle);
+            muActiveHandle = getUniformLocation(programHandle, OverrideShaderVar.U_NORMAL_OVERRIDE_ACTIVE);
 
             int[] buff = new int[1];
             GLES20.glGenBuffers(1, buff, 0);
@@ -173,7 +183,9 @@ public class NormalOverrideMaterialPlugin implements IMaterialPlugin, IInterpola
         @Override
         public void main() {
             RVec3 normal = (RVec3)getGlobal(DefaultShaderVar.G_NORMAL);
-            normal.assign(maNormalOverride);
+            startif(new Condition(muActive, Operator.EQUALS, true)); {
+                normal.assign(maNormalOverride);
+            } endif();
         }
     }
 }
