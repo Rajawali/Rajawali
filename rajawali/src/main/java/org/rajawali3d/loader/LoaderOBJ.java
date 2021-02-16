@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The most important thing is that the model should be triangulated. Rajawali doesn�t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically.
@@ -96,6 +97,7 @@ public class LoaderOBJ extends AMeshLoader {
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
 
     private boolean mNeedToRenameMtl = true;
+    static AtomicInteger mUniqueInstanceId = new AtomicInteger(1000);
 
     public LoaderOBJ(Renderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
@@ -422,7 +424,7 @@ public class LoaderOBJ extends AMeshLoader {
 
 	private static String generateObjectName(String prefix) {
 		if(prefix==null) prefix = "Object";
-		return prefix + Long.toString(SystemClock.elapsedRealtime());
+		return prefix + mUniqueInstanceId.incrementAndGet();
 	}
 
 	/**
