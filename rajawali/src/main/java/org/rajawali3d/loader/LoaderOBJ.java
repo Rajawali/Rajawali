@@ -12,6 +12,7 @@
  */
 package org.rajawali3d.loader;
 
+import android.os.SystemClock;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The most important thing is that the model should be triangulated. Rajawali doesn�t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically.
@@ -95,6 +97,7 @@ public class LoaderOBJ extends AMeshLoader {
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
 
     private boolean mNeedToRenameMtl = true;
+    static AtomicInteger mUniqueInstanceId = new AtomicInteger(1000);
 
     public LoaderOBJ(Renderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
@@ -284,7 +287,7 @@ public class LoaderOBJ extends AMeshLoader {
 					currentMaterialName = parts.nextToken();
 					if(currentObjHasFaces) {
 						objIndices.add(currObjIndexData);
-						currObjIndexData = new ObjIndexData(new Object3D(generateObjectName()));
+						currObjIndexData = new ObjIndexData(new Object3D(generateObjectName(currentMaterialName)));
 						RajLog.i("Parsing object: " + currObjIndexData.targetObj.getName());
 						addChildSetParent(currentGroup, currObjIndexData.targetObj);
 						currentObjHasFaces = false;
@@ -416,7 +419,12 @@ public class LoaderOBJ extends AMeshLoader {
 	}
 
 	private static String generateObjectName() {
-		return "Object" + (int) (Math.random() * 10000);
+		return generateObjectName(null);
+	}
+
+	private static String generateObjectName(String prefix) {
+		if(prefix==null) prefix = "Object";
+		return prefix + mUniqueInstanceId.incrementAndGet();
 	}
 
 	/**
