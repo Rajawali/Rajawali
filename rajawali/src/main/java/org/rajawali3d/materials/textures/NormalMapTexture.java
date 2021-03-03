@@ -14,6 +14,7 @@ package org.rajawali3d.materials.textures;
 
 import android.graphics.Bitmap;
 
+import java.io.InputStream;
 
 public class NormalMapTexture extends ASingleTexture {
 	public NormalMapTexture(NormalMapTexture other)
@@ -26,10 +27,14 @@ public class NormalMapTexture extends ASingleTexture {
 		super(TextureType.NORMAL, textureName);
 	}
 	
+	public NormalMapTexture(String textureName, InputStream stream)
+	{
+		super(TextureType.NORMAL, textureName, stream);
+	}
+	
 	public NormalMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.NORMAL, textureName);
-		setResourceId(resourceId);
+		super(TextureType.NORMAL, textureName, resourceId);
 	}
 	
 	public NormalMapTexture(String textureName, Bitmap bitmap)
