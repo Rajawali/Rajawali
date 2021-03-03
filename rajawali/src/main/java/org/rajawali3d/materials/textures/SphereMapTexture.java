@@ -14,6 +14,8 @@ package org.rajawali3d.materials.textures;
 
 import android.graphics.Bitmap;
 
+import java.io.InputStream;
+
 public class SphereMapTexture extends ASingleTexture {
 	private boolean mIsSkyTexture;
 	private boolean mIsEnvironmentTexture;
@@ -28,10 +30,14 @@ public class SphereMapTexture extends ASingleTexture {
 		super(TextureType.SPHERE_MAP, textureName);
 	}
 
+	public SphereMapTexture(String textureName, InputStream stream)
+	{
+		super(TextureType.SPHERE_MAP, textureName, stream);
+	}
+
 	public SphereMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.SPHERE_MAP, textureName);
-		setResourceId(resourceId);
+		super(TextureType.SPHERE_MAP, textureName, resourceId);
 	}
 
 	public SphereMapTexture(String textureName, Bitmap bitmap)

@@ -14,6 +14,7 @@ package org.rajawali3d.materials.textures;
 
 import android.graphics.Bitmap;
 
+import java.io.InputStream;
 
 public class SpecularMapTexture extends ASingleTexture {
 	public SpecularMapTexture(SpecularMapTexture other)
@@ -26,10 +27,14 @@ public class SpecularMapTexture extends ASingleTexture {
 		super(TextureType.SPECULAR, textureName);
 	}
 	
+	public SpecularMapTexture(String textureName, InputStream stream)
+	{
+		super(TextureType.SPECULAR, textureName, stream);
+	}
+	
 	public SpecularMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.SPECULAR, textureName);
-		setResourceId(resourceId);
+		super(TextureType.SPECULAR, textureName, resourceId);
 	}
 	
 	public SpecularMapTexture(String textureName, Bitmap bitmap)

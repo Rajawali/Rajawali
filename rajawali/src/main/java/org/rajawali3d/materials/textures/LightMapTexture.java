@@ -12,6 +12,8 @@ package org.rajawali3d.materials.textures;
 
 import android.graphics.Bitmap;
 
+import java.io.InputStream;
+
 public class LightMapTexture extends ASingleTexture {
 	public LightMapTexture(LightMapTexture other)
 	{
@@ -23,10 +25,14 @@ public class LightMapTexture extends ASingleTexture {
 		super(TextureType.LIGHT, textureName);
 	}
 	
+	public LightMapTexture(String textureName, InputStream stream)
+	{
+		super(TextureType.LIGHT, textureName, stream);
+	}
+	
 	public LightMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.LIGHT, textureName);
-		setResourceId(resourceId);
+		super(TextureType.LIGHT, textureName, resourceId);
 	}
 	
 	public LightMapTexture(String textureName, Bitmap bitmap)

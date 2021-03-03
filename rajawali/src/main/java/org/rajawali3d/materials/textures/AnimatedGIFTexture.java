@@ -20,6 +20,7 @@ import android.graphics.Canvas;
 import android.graphics.Movie;
 import android.os.SystemClock;
 
+import java.io.InputStream;
 
 /**
  * Creates a texture from an animated GIF.
@@ -52,7 +53,15 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		super(TextureType.DIFFUSE, name);
 		mTextureSize = textureSize;
 		mResourceId = resourceId;
-		loadGIF();
+		Context context = TextureManager.getInstance().getContext();
+		InputStream stream = context.getResources().openRawResource(mResourceId);
+		loadGIF(stream);
+	}
+
+	public AnimatedGIFTexture(String name, InputStream stream, int textureSize) {
+		super(TextureType.DIFFUSE, name);
+		mTextureSize = textureSize;
+		loadGIF(stream);
 	}
 	
 	public AnimatedGIFTexture(AnimatedGIFTexture other) {
@@ -65,9 +74,8 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		return new AnimatedGIFTexture(this);
 	}
 	
-	private void loadGIF() {
-		Context context = TextureManager.getInstance().getContext();
-		mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
+	private void loadGIF(InputStream stream) {
+		mMovie = Movie.decodeStream(stream);
 		mWidth = mMovie.width();
 		mHeight = mMovie.height();
 		
@@ -103,7 +111,9 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	{
 		if(mLoadNewGIF)
 		{
-			loadGIF();
+			Context context = TextureManager.getInstance().getContext();
+			InputStream stream = context.getResources().openRawResource(mResourceId);
+			loadGIF(stream);
 			mLoadNewGIF = false;
 		}
 		super.replace();
