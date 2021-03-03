@@ -14,6 +14,8 @@ package org.rajawali3d.materials.textures;
 
 import android.graphics.Bitmap;
 
+import java.io.InputStream;
+
 
 public class Texture extends ASingleTexture {
 	public Texture(Texture other)
@@ -28,8 +30,12 @@ public class Texture extends ASingleTexture {
 	
 	public Texture(String textureName, int resourceId)
 	{
-		super(TextureType.DIFFUSE, textureName);
-		setResourceId(resourceId);
+		super(TextureType.DIFFUSE, textureName, resourceId);
+	}
+	
+	public Texture(String textureName, InputStream stream)
+	{
+		super(TextureType.DIFFUSE, textureName, stream);
 	}
 	
 	public Texture(String textureName, Bitmap bitmap)

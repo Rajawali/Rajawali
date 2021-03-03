@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
@@ -47,6 +48,18 @@ public abstract class ASingleTexture extends ATexture
 	{
 		this(textureType, TextureManager.getInstance().getContext().getResources().getResourceName(resourceId));
 		setResourceId(resourceId);
+	}
+
+	public ASingleTexture(TextureType textureType, String textureName, int resourceId)
+	{
+		this(textureType, textureName);
+		setResourceId(resourceId);
+	}
+
+	public ASingleTexture(TextureType textureType, String textureName, InputStream stream)
+	{
+		this(textureType, textureName);
+		setBitmap(stream);
 	}
 
 	public ASingleTexture(TextureType textureType, String textureName, Bitmap bitmap)
@@ -82,6 +95,10 @@ public abstract class ASingleTexture extends ATexture
 		super.setFrom(other);
 		setBitmap(other.getBitmap());
 		setByteBuffer(other.getByteBuffer());
+	}
+
+	public void setBitmap(InputStream stream) {
+		setBitmap(BitmapFactory.decodeStream(stream));
 	}
 
 	public void setResourceId(int resourceId) {
