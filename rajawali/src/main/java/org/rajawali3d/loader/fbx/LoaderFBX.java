@@ -486,7 +486,10 @@ public class LoaderFBX extends AMeshLoader {
 					method.setSpecularColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
 				}
 				if(material.properties.shininess != null)
+				{
 					method.setShininess(material.properties.shininess);
+				}
+                                mat.setSpecularMethod(method);
 			}
 		}
 
