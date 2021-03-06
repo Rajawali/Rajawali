@@ -628,6 +628,7 @@ public class LoaderOBJ extends AMeshLoader {
 				SpecularMethod.Phong method = new SpecularMethod.Phong();
 				method.setSpecularColor(matDef.specularColor);
 				method.setShininess(matDef.specularCoefficient);
+				mat.setSpecularMethod(method);
 			}
 
 			if(hasTexture) {
