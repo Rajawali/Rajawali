@@ -60,20 +60,4 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 	public Object3D getParsedObject() {
 		return mRootObject;
 	}
-
-	protected class MaterialDef {
-
-		public String name;
-		public int ambientColor;
-		public int diffuseColor;
-		public int specularColor;
-		public float specularCoefficient;
-		public float alpha = 1f;
-		public String ambientTexture;
-		public String diffuseTexture;
-		public String specularColorTexture;
-		public String specularHighlightTexture;
-		public String alphaTexture;
-		public String bumpTexture;
-	}
 }
