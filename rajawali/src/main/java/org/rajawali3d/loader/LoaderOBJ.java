@@ -32,12 +32,7 @@ import org.rajawali3d.util.RajLog;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -298,7 +293,7 @@ public class LoaderOBJ extends AMeshLoader {
 			}
 
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new ParsingException(e);
 		}
 
@@ -567,7 +562,7 @@ public class LoaderOBJ extends AMeshLoader {
 				}
 				if(matDef != null) mMaterials.add(matDef);
 				buffer.close();
-			} catch(IOException e) {
+			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
