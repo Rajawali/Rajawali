@@ -34,6 +34,7 @@ import org.rajawali3d.materials.shaders.fragments.texture.DiffuseTextureFragment
 import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.LightMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.texture.OcclusionMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.ATexture.TextureException;
@@ -533,6 +534,7 @@ public class Material {
         List<ATexture> diffuseTextures = null;
         List<ATexture> lightMapTextures = null;
         List<ATexture> normalMapTextures = null;
+        List<ATexture> occlusionMapTextures = null;
         List<ATexture> envMapTextures = null;
         List<ATexture> skyTextures = null;
         List<ATexture> specMapTextures = null;
@@ -560,6 +562,10 @@ public class Material {
                 case NORMAL:
                     if (normalMapTextures == null) normalMapTextures = new ArrayList<>();
                     normalMapTextures.add(texture);
+                    break;
+                case OCCLUSION:
+                    if (occlusionMapTextures == null) occlusionMapTextures = new ArrayList<>();
+                    occlusionMapTextures.add(texture);
                     break;
                 case CUBE_MAP:
                     hasCubeMaps = true;
@@ -626,6 +632,11 @@ public class Material {
 
         if (normalMapTextures != null && normalMapTextures.size() > 0) {
             NormalMapFragmentShaderFragment fragment = new NormalMapFragmentShaderFragment(normalMapTextures);
+            mFragmentShader.addShaderFragment(fragment);
+        }
+
+        if (occlusionMapTextures != null && occlusionMapTextures.size() > 0) {
+            OcclusionMapFragmentShaderFragment fragment = new OcclusionMapFragmentShaderFragment(occlusionMapTextures);
             mFragmentShader.addShaderFragment(fragment);
         }
 
