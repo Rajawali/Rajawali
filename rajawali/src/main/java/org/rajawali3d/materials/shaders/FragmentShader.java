@@ -15,6 +15,7 @@ package org.rajawali3d.materials.shaders;
 import android.opengl.GLES20;
 
 import org.rajawali3d.lights.ALight;
+import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
 
 import java.util.List;
 
@@ -26,9 +27,11 @@ public class FragmentShader extends AShader {
 	@SuppressWarnings("unused")
 	private RVec3 mvCubeTextureCoord;
 	private RVec3 mvNormal;
+	private RVec3 mvAmbientColor;
 	private RVec4 mvColor;
 
 	private RVec4 mgColor;
+	private RVec3 mgAmbientColor;
 	private RVec3 mgNormal;
 	private RVec2 mgTextureCoord;
 	private RFloat mgShadowValue;
@@ -78,12 +81,14 @@ public class FragmentShader extends AShader {
 		if(mHasCubeMaps)
 			mvCubeTextureCoord = (RVec3) addVarying(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
 		mvNormal = (RVec3) addVarying(DefaultShaderVar.V_NORMAL);
+		mvAmbientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
 		mvColor = (RVec4) addVarying(DefaultShaderVar.V_COLOR);
 		addVarying(DefaultShaderVar.V_EYE_DIR);
 
 		// -- globals
 
 		mgColor = (RVec4) addGlobal(DefaultShaderVar.G_COLOR);
+		mgAmbientColor = (RVec3) addGlobal(LightsShaderVar.G_AMBIENT_COLOR);
 		mgNormal = (RVec3) addGlobal(DefaultShaderVar.G_NORMAL);
 		mgTextureCoord = (RVec2) addGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 		mgShadowValue = (RFloat) addGlobal(DefaultShaderVar.G_SHADOW_VALUE);
@@ -94,6 +99,7 @@ public class FragmentShader extends AShader {
 	public void main() {
 		mgNormal.assign(normalize(mvNormal));
 		mgTextureCoord.assign(mvTextureCoord);
+		mgAmbientColor.assign(mvAmbientColor);
 		mgColor.assign(muColorInfluence.multiply(mvColor));
 		mgShadowValue.assign(0.0f);
 		mgSpecularValue.assign(1.0f);

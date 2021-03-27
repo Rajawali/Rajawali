@@ -24,6 +24,7 @@ import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.materials.textures.ATexture.TextureException;
 import org.rajawali3d.materials.textures.Etc1Texture;
 import org.rajawali3d.materials.textures.NormalMapTexture;
+import org.rajawali3d.materials.textures.OcclusionMapTexture;
 import org.rajawali3d.materials.textures.SpecularMapTexture;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.materials.textures.TextureManager;
@@ -584,6 +585,7 @@ public class LoaderOBJ extends AMeshLoader {
 			}
 
 			boolean hasTexture = matDef != null && matDef.diffuseTexture != null;
+			boolean hasOcclusion = matDef != null && matDef.ambientTexture != null;
 			boolean hasBump = matDef != null && matDef.bumpTexture != null;
 			boolean hasSpecularTexture = matDef != null && matDef.specularColorTexture != null;
 			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000 && matDef.specularCoefficient > 0;
@@ -614,6 +616,10 @@ public class LoaderOBJ extends AMeshLoader {
 					mat.addTexture(new Texture(textureName, findBitmap(matDef.diffuseTexture)));
 				}
 				mat.setColorInfluence(0);
+			}
+			if(hasOcclusion) {
+				String textureName = getFileNameWithoutExtension(matDef.ambientTexture);
+				mat.addTexture(new OcclusionMapTexture(textureName, findBitmap(matDef.ambientTexture)));
 			}
 			if(hasBump) {
 				String textureName = getFileNameWithoutExtension(matDef.bumpTexture);
