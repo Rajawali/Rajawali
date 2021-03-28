@@ -145,7 +145,7 @@ public abstract class ATexture {
     public ATexture(TextureType textureType, @NonNull String textureName) {
         this();
         mTextureType = textureType;
-        mTextureName = textureName.replaceAll("[^a-zA-Z0-9_]","");
+        mTextureName = textureName.replaceAll("[^\\w]","");
         mMipmap = true;
         mShouldRecycle = false;
         mWrapType = WrapType.REPEAT;
