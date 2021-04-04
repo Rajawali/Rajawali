@@ -10,12 +10,12 @@ import org.rajawali3d.materials.plugins.SignedDistancePlugin;
 
 import static org.rajawali3d.math.MathUtil.clamp;
 
-public class OutlineAnimation3D extends Animation3D {
+public class OutlineThicknessAnimation3D extends Animation3D {
     final double mDiffInterpolatedValue;
     final double mFromInterpolatedValue;
     final double mToInterpolatedValue;
 
-    public OutlineAnimation3D(@FloatRange(from = 0.0d, to = 1.0d) double from,
+    public OutlineThicknessAnimation3D(@FloatRange(from = 0.0d, to = 1.0d) double from,
                               @FloatRange(from = 0.0d, to = 1.0d) double to) {
         super();
         mFromInterpolatedValue = clamp(from, 0, 1);
