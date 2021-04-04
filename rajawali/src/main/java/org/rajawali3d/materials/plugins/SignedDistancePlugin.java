@@ -20,8 +20,10 @@ public class SignedDistancePlugin implements IMaterialPlugin {
 
     public enum SignedDistanceShaderVar implements AShaderBase.IGlobalShaderVar {
         U_DISTANCE_FIELD("uDistanceField", AShaderBase.DataType.SAMPLER2D),
-        U_GLYPH_THRESHOLD("uThreshold", AShaderBase.DataType.FLOAT),
         U_FEATHERING("uFeathering", AShaderBase.DataType.FLOAT),
+        U_GLYPH_OFFSET("uGlyphOffset", AShaderBase.DataType.VEC2),
+        U_GLYPH_REPEAT("uGlyphRepeat", AShaderBase.DataType.VEC2),
+        U_GLYPH_THRESHOLD("uThreshold", AShaderBase.DataType.FLOAT),
         U_GLYPH_COLOR("uGlyphColor", AShaderBase.DataType.VEC4),
         U_OUTLINE_THICKNESS("uOutlineThickness", AShaderBase.DataType.FLOAT),
         U_OUTLINE_COLOR("uOutlineColor", AShaderBase.DataType.VEC4);
@@ -133,6 +135,12 @@ public class SignedDistancePlugin implements IMaterialPlugin {
         private RFloat muFeathering;
         private int muFeatheringHandle;
 
+        private RVec2 muGlyphOffset;
+        private int muGlyphOffsetHandle;
+
+        private RVec2 muGlyphRepeat;
+        private int muGlyphRepeatHandle;
+
         private float mThreshold;
         private RFloat muThreshold;
         private int muThresholdHandle;
@@ -187,6 +195,8 @@ public class SignedDistancePlugin implements IMaterialPlugin {
             super.initialize();
             muDistanceTexture = (RSampler2D) addUniform(SignedDistanceShaderVar.U_DISTANCE_FIELD.mVarString, DataType.SAMPLER2D);
             muFeathering = (RFloat) addUniform(SignedDistanceShaderVar.U_FEATHERING.mVarString, DataType.FLOAT);
+            muGlyphOffset = (RVec2) addUniform(SignedDistanceShaderVar.U_GLYPH_OFFSET.mVarString, DataType.VEC2);
+            muGlyphRepeat = (RVec2) addUniform(SignedDistanceShaderVar.U_GLYPH_REPEAT.mVarString, DataType.VEC2);
             muThreshold = (RFloat) addUniform(SignedDistanceShaderVar.U_GLYPH_THRESHOLD.mVarString, DataType.FLOAT);
             muGlyphColor = (RVec4) addUniform(SignedDistanceShaderVar.U_GLYPH_COLOR.mVarString, DataType.VEC4);
             muOutlineThickness = (RFloat) addUniform(SignedDistanceShaderVar.U_OUTLINE_THICKNESS.mVarString, DataType.FLOAT);
@@ -198,6 +208,8 @@ public class SignedDistancePlugin implements IMaterialPlugin {
             super.setLocations(programHandle);
             muDistanceTextureHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_DISTANCE_FIELD);
             muFeatheringHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_FEATHERING);
+            muGlyphOffsetHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_GLYPH_OFFSET);
+            muGlyphRepeatHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_GLYPH_REPEAT);
             muThresholdHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_GLYPH_THRESHOLD);
             muGlyphColorHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_GLYPH_COLOR);
             muThicknessHandle = getUniformLocation(programHandle, SignedDistanceShaderVar.U_OUTLINE_THICKNESS);
@@ -208,6 +220,10 @@ public class SignedDistancePlugin implements IMaterialPlugin {
         public void applyParams() {
             super.applyParams();
             GLES20.glUniform1f(muFeatheringHandle, mFeathering);
+            if(mDistanceTexture.offsetEnabled())
+                GLES20.glUniform2fv(muGlyphOffsetHandle, 1, mDistanceTexture.getOffset(), 0);
+            if(mDistanceTexture.getWrapType() == ATexture.WrapType.REPEAT)
+                GLES20.glUniform2fv(muGlyphRepeatHandle, 1, mDistanceTexture.getRepeat(), 0);
             GLES20.glUniform1f(muThresholdHandle, mThreshold);
             GLES20.glUniform4fv(muGlyphColorHandle, 1, mGlyphRGBA, 0);
             GLES20.glUniform1f(muThicknessHandle, mThickness);
@@ -244,11 +260,18 @@ public class SignedDistancePlugin implements IMaterialPlugin {
             RVec4 gColor = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
             RVec2 vTextureCoord = (RVec2) getGlobal(DefaultShaderVar.V_TEXTURE_COORD);
 
+            RVec2 glyphCoord = new RVec2("glyphCoord");
             RVec4 overlay = new RVec4("overlay");
             RVec4 distance = new RVec4("distance");
             RFloat alpha = new RFloat("alpha");
 
-            distance.assign(texture2D(muDistanceTexture, vTextureCoord));
+            glyphCoord.assign(vTextureCoord);
+            if(mDistanceTexture.offsetEnabled())
+                glyphCoord.assignAdd(muGlyphOffset);
+            if(mDistanceTexture.getWrapType() == ATexture.WrapType.REPEAT)
+                glyphCoord.assignMultiply(muGlyphRepeat);
+
+            distance.assign(texture2D(muDistanceTexture, glyphCoord));
             alpha.assign(smoothstep(
                     muThreshold.subtract(muFeathering),
                     muThreshold.add(muFeathering),
