@@ -1027,14 +1027,14 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, float value)
 	{
-		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", DataType.VEC3);
+		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", var1.getDataType());
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, ShaderVar var3)
 	{
-		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", DataType.VEC3);
+		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", var1.getDataType());
 		s.mInitialized = true;
 		return s;
 	}
@@ -1129,6 +1129,20 @@ public abstract class AShader extends AShaderBase {
 		var.setName("reflect(" + var1.getName() + ", " + var2.getName() + ")");
 		var.mInitialized = true;
 		return var;
+	}
+
+	public ShaderVar smoothstep(ShaderVar var1, ShaderVar var2, float value)
+	{
+		ShaderVar s = new ShaderVar("smoothstep(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", var1.getDataType());
+		s.mInitialized = true;
+		return s;
+	}
+
+	public ShaderVar smoothstep(ShaderVar var1, ShaderVar var2, ShaderVar var3)
+	{
+		ShaderVar s = new ShaderVar("smoothstep(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", var1.getDataType());
+		s.mInitialized = true;
+		return s;
 	}
 
 	public void discard()
