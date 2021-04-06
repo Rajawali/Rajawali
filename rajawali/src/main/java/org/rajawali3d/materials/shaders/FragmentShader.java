@@ -81,7 +81,7 @@ public class FragmentShader extends AShader {
 		if(mHasCubeMaps)
 			mvCubeTextureCoord = (RVec3) addVarying(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
 		mvNormal = (RVec3) addVarying(DefaultShaderVar.V_NORMAL);
-		mvAmbientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
+		mvAmbientColor = (RVec3) addVarying(LightsShaderVar.V_AMBIENT_COLOR);
 		mvColor = (RVec4) addVarying(DefaultShaderVar.V_COLOR);
 		addVarying(DefaultShaderVar.V_EYE_DIR);
 
