@@ -70,7 +70,7 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 				cmColor.assign(textureCube(muCubeTextures[cubeMapCount++], reflected));
 			}
 			
-			cmColor.assignMultiply(muInfluence[i]);
+			cmColor.assignMultiply(muInfluences[i]);
 			color.assignAdd(cmColor);
 		}
 	}

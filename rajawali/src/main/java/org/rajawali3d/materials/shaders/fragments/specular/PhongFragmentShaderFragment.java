@@ -95,7 +95,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 			{
 				RVec4 specColor = new RVec4("specColor" + i);
 				specColor.assign(texture2D(muTextures[i], textureCoord));
-				specColor.assignMultiply(muInfluence[i]);
+				specColor.assignMultiply(muInfluences[i]);
 				specMapColor.assignAdd(specColor);
 			}
 			color.rgb().assignAdd(specular.multiply(muSpecularColor).multiply(specMapColor.rgb()));
