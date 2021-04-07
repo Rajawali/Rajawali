@@ -52,7 +52,8 @@ public abstract class ATexture {
      */
     public enum WrapType {
         CLAMP,
-        REPEAT
+        REPEAT,
+        MIRRORED,
     }
 
     /**
