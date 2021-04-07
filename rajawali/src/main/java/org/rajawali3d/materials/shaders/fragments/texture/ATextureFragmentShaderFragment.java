@@ -101,7 +101,6 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			ATexture texture = mTextures.get(i);
 			muTextureHandles[i] = getUniformLocation(programHandle, texture.getTextureName());
 			muInfluenceHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
-			if(texture.getWrapType() == WrapType.REPEAT)
 			if(texture.transformEnabled())
 				muTransformHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_TRANSFORM, i);
 		}
