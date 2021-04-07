@@ -1,4 +1,4 @@
-/**
+	/**
  * Copyright 2013 Dennis Ippel
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -12,9 +12,11 @@
  */
 package org.rajawali3d.materials.textures;
 
+import androidx.annotation.NonNull;
+
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
-import androidx.annotation.NonNull;
+import android.renderscript.Matrix3f;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.Renderer;
@@ -132,10 +134,12 @@ public abstract class ATexture {
      * fully qualified name of the {@link Renderer} instance.
      */
     protected String mOwnerIdentity;
-    protected float mInfluence = 1.0f;
-    protected float[] mRepeat = new float[]{1, 1};
-    protected boolean mEnableOffset;
-    protected float[] mOffset = new float[]{0, 0};
+    protected float mInfluence = 1;
+    protected boolean mEnableTransforms;
+    protected float mRotation = 0;
+    protected float[] mScaling = new float[]{1, 1};
+    protected float[] mTranslation = new float[]{0, 0};
+    protected Matrix3f mTransform = new Matrix3f();
 
     /**
      * Creates a new ATexture instance with the specified texture type
@@ -396,6 +400,7 @@ public abstract class ATexture {
 
     public void setInfluence(float influence) {
         mInfluence = influence;
+        updateTransform();
     }
 
     public float getInfluence() {
@@ -403,61 +408,90 @@ public abstract class ATexture {
     }
 
     public void setRepeatU(float value) {
-        mRepeat[0] = value;
+        mScaling[0] = value;
+        updateTransform();
     }
 
     public float getRepeatU() {
-        return mRepeat[0];
+        return mScaling[0];
     }
 
     public void setRepeatV(float value) {
-        mRepeat[1] = value;
+        mScaling[1] = value;
+        updateTransform();
     }
 
     public float getRepeatV() {
-        return mRepeat[1];
+        return mScaling[1];
     }
 
     public void setRepeat(float u, float v) {
-        mRepeat[0] = u;
-        mRepeat[1] = v;
+        mScaling[0] = u;
+        mScaling[1] = v;
+        updateTransform();
     }
 
     public float[] getRepeat() {
-        return mRepeat;
+        return mScaling;
     }
 
-    public void enableOffset(boolean value) {
-        mEnableOffset = value;
+    public void enableTransforms(boolean value) {
+        mEnableTransforms = value;
     }
 
-    public boolean offsetEnabled() {
-        return mEnableOffset;
+    public boolean transformEnabled() {
+        return mEnableTransforms;
     }
 
     public void setOffsetU(float value) {
-        mOffset[0] = value;
+        mTranslation[0] = value;
+        updateTransform();
     }
 
     public float getOffsetU() {
-        return mOffset[0];
+        return mTranslation[0];
     }
 
     public float[] getOffset() {
-        return mOffset;
+        return mTranslation;
     }
 
     public void setOffsetV(float value) {
-        mOffset[1] = value;
+        mTranslation[1] = value;
+        updateTransform();
     }
 
     public float getOffsetV() {
-        return mOffset[1];
+        return mTranslation[1];
     }
 
     public void setOffset(float u, float v) {
-        mOffset[0] = u;
-        mOffset[1] = v;
+        mTranslation[0] = u;
+        mTranslation[1] = v;
+        updateTransform();
+    }
+
+    public void setRotation(float value) {
+        mRotation = value;
+        updateTransform();
+    }
+
+    public float getRotation() {
+        return mRotation;
+    }
+
+    void updateTransform() {
+        mTransform.loadIdentity();
+        mTransform.translate(mTranslation[0], mTranslation[1]);
+        mTransform.scale(mScaling[0], mScaling[1]);
+
+        mTransform.translate(1/2f,1/2f);
+        mTransform.rotate(mRotation);
+        mTransform.translate(-1/2f,-1/2f);
+    }
+
+    public float[] getTransform() {
+        return mTransform.getArray();
     }
 
     public void setCompressedTexture(ACompressedTexture compressedTexture) {

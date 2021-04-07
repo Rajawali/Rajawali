@@ -51,16 +51,16 @@ public class OcclusionMapFragmentShaderFragment extends ATextureFragmentShaderFr
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
-			if(texture.offsetEnabled())
-				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
-			if(texture.getWrapType() == WrapType.REPEAT)
-				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
+			if(texture.transformEnabled()) {
+				RMat3 transform = (RMat3) getGlobal(DefaultShaderVar.U_TRANSFORM, i);
+				textureCoord.assign(transform.multiply(textureCoord));
+			}
 			
 			if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
 				occlusion.assign(texture2D(muVideoTextures[videoTextureMap.indexOf(i)], textureCoord));
 			else
 				occlusion.assign(texture2D(muTextures[textureMap.indexOf(i)], textureCoord));
-			occlusion.assignMultiply(muInfluence[i]);
+			occlusion.assignMultiply(muInfluences[i]);
 			ambientColor.assignMultiply(occlusion.rgb());
 		}
 	}

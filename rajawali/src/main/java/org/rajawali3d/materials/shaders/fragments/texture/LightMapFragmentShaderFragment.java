@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.ATexture.TextureType;
-import org.rajawali3d.materials.textures.ATexture.WrapType;
 
 public class LightMapFragmentShaderFragment extends ATextureFragmentShaderFragment {
 	public final static String SHADER_ID = "LIGHT_MAP_FRAGMENT";
@@ -50,16 +49,18 @@ public class LightMapFragmentShaderFragment extends ATextureFragmentShaderFragme
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
-			if(texture.offsetEnabled())
-				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
-			if(texture.getWrapType() == WrapType.REPEAT)
-				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
-			
+			if(texture.transformEnabled()) {
+				RVec3 result = new RVec3("result");
+				RMat3 transform = (RMat3) getGlobal(DefaultShaderVar.U_TRANSFORM, i);
+				result.assign(transform.multiply(castVec3(textureCoord, 1)));
+				textureCoord.assign(result.xy());
+			}
+
 			if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
 				glowColor.assign(texture2D(muVideoTextures[videoTextureMap.indexOf(i)], textureCoord));
 			else
 				glowColor.assign(texture2D(muTextures[textureMap.indexOf(i)], textureCoord));
-			glowColor.assignMultiply(muInfluence[i]);
+			glowColor.assignMultiply(muInfluences[i]);
 			color.rgb().assignAdd(glowColor.rgb());
 		}
 	}

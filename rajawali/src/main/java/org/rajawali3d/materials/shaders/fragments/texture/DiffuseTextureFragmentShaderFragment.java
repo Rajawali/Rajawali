@@ -53,18 +53,20 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
-			if(texture.offsetEnabled())
-				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
-			if(texture.getWrapType() == WrapType.REPEAT)
-				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
-			
+			if(texture.transformEnabled()) {
+				RMat3 transform = (RMat3) getGlobal(DefaultShaderVar.U_TRANSFORM, i);
+				RVec3 result = new RVec3("result");
+				result.assign(transform.multiply(castVec3(textureCoord, 1)));
+				textureCoord.assign(result.xy());
+			}
+
 			if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
 				texColor.assign(texture2D(muVideoTextures[videoTextureMap.indexOf(i)], textureCoord));
 			else if(texture.getTextureType() == TextureType.CUBE_MAP)
 				texColor.assign(textureCube(muCubeTextures[textureMap.indexOf(i)], getGlobal(DefaultShaderVar.V_CUBE_TEXTURE_COORD)));
 			else
 				texColor.assign(texture2D(muTextures[textureMap.indexOf(i)], textureCoord));
-			texColor.assignMultiply(muInfluence[i]);
+			texColor.assignMultiply(muInfluences[i]);
 			color.assignAdd(texColor);
 		}
 	}
