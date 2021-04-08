@@ -1025,6 +1025,13 @@ public abstract class AShader extends AShaderBase {
 		return s;
 	}
 
+	public ShaderVar clamp(ShaderVar var1, ShaderVar var2, ShaderVar var3)
+	{
+		ShaderVar s = new ShaderVar("clamp(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", var1.getDataType());
+		s.mInitialized = true;
+		return s;
+	}
+
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, float value)
 	{
 		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", var1.getDataType());
@@ -1340,6 +1347,18 @@ public abstract class AShader extends AShaderBase {
 	public ShaderVar castVec3(ShaderVar var)
 	{
 		return castVec3(var.getVarName());
+	}
+
+	public ShaderVar castVec3(ShaderVar var, float value)
+	{
+		return castVec3(var.getVarName(), value);
+	}
+
+	public ShaderVar castVec3(String var, float value)
+	{
+		ShaderVar v = new ShaderVar("vec3(" + var + ", " + value + ")", DataType.VEC3);
+		v.mInitialized = true;
+		return v;
 	}
 
 	public ShaderVar castVec4(float value)

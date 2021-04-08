@@ -12,8 +12,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 
 public class DecalMaterialPlugin implements IMaterialPlugin {
     private final static String U_DECAL_TEXTURE = "uDecalTexture";
-    private final static String U_DECAL_OFFSET = "uDecalOffset";
-    private final static String U_DECAL_REPEAT = "uDecalRepeat";
+    private final static String U_DECAL_TRANSFORM = "uDecalTransform";
 
     private DecalFragmentShaderFragment mFragmentShader;
 
@@ -52,12 +51,10 @@ public class DecalMaterialPlugin implements IMaterialPlugin {
         public final static String SHADER_ID = "DECAL_FRAGMENT_SHADER_FRAGMENT";
 
         private RSampler2D muDecalTexture;
-        private RVec2 muDecalOffset;
-        private RVec2 muDecalRepeat;
+        private RMat3 muDecalTransform;
 
         private int muDecalTextureHandle;
-        private int muDecalOffsetHandle;
-        private int muDecalRepeatHandle;
+        private int muDecalTransformHandle;
         private ATexture mDecalTexture;
 
         public DecalFragmentShaderFragment() {
@@ -86,25 +83,21 @@ public class DecalMaterialPlugin implements IMaterialPlugin {
         public void initialize() {
             super.initialize();
             muDecalTexture = (RSampler2D) addUniform(U_DECAL_TEXTURE, DataType.SAMPLER2D);
-            muDecalOffset = (RVec2) addUniform(U_DECAL_OFFSET, DataType.VEC2);
-            muDecalRepeat = (RVec2) addUniform(U_DECAL_REPEAT, DataType.VEC2);
+            muDecalTransform = (RMat3) addUniform(U_DECAL_TRANSFORM, DataType.MAT3);
         }
 
         @Override
         public void setLocations(int programHandle) {
             super.setLocations(programHandle);
             muDecalTextureHandle = getUniformLocation(programHandle, U_DECAL_TEXTURE);
-            muDecalOffsetHandle = getUniformLocation(programHandle, U_DECAL_OFFSET);
-            muDecalRepeatHandle = getUniformLocation(programHandle, U_DECAL_REPEAT);
+            muDecalTransformHandle = getUniformLocation(programHandle, U_DECAL_TRANSFORM);
         }
 
         @Override
         public void applyParams() {
             super.applyParams();
-            if(mDecalTexture.offsetEnabled())
-                GLES20.glUniform2fv(muDecalOffsetHandle, 1, mDecalTexture.getOffset(), 0);
-            if(mDecalTexture.getWrapType() == ATexture.WrapType.REPEAT)
-                GLES20.glUniform2fv(muDecalRepeatHandle, 1, mDecalTexture.getRepeat(), 0);
+            if(mDecalTexture.transformEnabled())
+                GLES20.glUniformMatrix3fv(muDecalTransformHandle, 1, false, mDecalTexture.getTransform(), 0);
         }
 
         @Override
@@ -124,13 +117,17 @@ public class DecalMaterialPlugin implements IMaterialPlugin {
 
         @Override
         public void main() {
-            RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
+            RVec2 vTextureCoord = (RVec2) getGlobal(DefaultShaderVar.V_TEXTURE_COORD);
+            RVec2 decalCoord = new RVec2("decalCoord");
             RVec4 decalCol = new RVec4("decalCol");
-            if(mDecalTexture.offsetEnabled())
-                textureCoord.assignAdd(muDecalOffset);
-            if(mDecalTexture.getWrapType() == ATexture.WrapType.REPEAT)
-                textureCoord.assignMultiply(muDecalRepeat);
-            decalCol.assign(texture2D(muDecalTexture, textureCoord));
+            RVec3 decalResult = new RVec3("decalResult");
+            decalCoord.assign(vTextureCoord);
+            if(mDecalTexture.transformEnabled()) {
+                RMat3 transform = (RMat3) getGlobal(DefaultShaderVar.U_TRANSFORM, 0);
+                decalResult.assign(transform.multiply(castVec3(vTextureCoord, 1)));
+                decalCoord.assign(decalResult.xy());
+            }
+            decalCol.assign(texture2D(muDecalTexture, decalCoord));
 
             RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
             color.assign(mix(color, decalCol, decalCol.a()));

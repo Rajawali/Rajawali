@@ -50,7 +50,7 @@ public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFrag
 				skyColor.assign(textureCube(muCubeTextures[cubeMapCount++], texCoord));
 			}
 			
-			skyColor.assignMultiply(muInfluence[i]);
+			skyColor.assignMultiply(muInfluences[i]);
 			color.assignAdd(skyColor);
 		}
 	}
