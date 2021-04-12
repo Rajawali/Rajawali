@@ -78,7 +78,7 @@ public class Material {
      * the vertex of fragment shader.
      */
     public enum PluginInsertLocation {
-        PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
+        PRE_TEXTURE, PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
     }
 
     private final boolean mCapabilitiesCheckDeferred;
@@ -624,6 +624,8 @@ public class Material {
             if (mVertexShader.needsBuild()) mVertexShader.initialize();
             if (mFragmentShader.needsBuild()) mFragmentShader.initialize();
         }
+
+        checkForPlugins(PluginInsertLocation.PRE_TEXTURE);
 
         if (diffuseTextures != null && diffuseTextures.size() > 0) {
             DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
