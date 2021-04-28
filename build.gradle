@@ -25,7 +25,7 @@ ext {
     targetSdk = 30
     compileSdk = 30
     wear = "2.8.1"
-    wearService = "17.0.0"
+    wearService = "17.1.0"
 
     extJUnitVersion = "1.1.2"
     espresso_core = "3.3.0"
