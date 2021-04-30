@@ -65,7 +65,7 @@ dependencies {
 
     wearApp project(':wear-example')
 
-    androidTestImplementation 'com.github.AppDevNext:Moka:0.4'
+    androidTestImplementation 'com.github.AppDevNext:Moka:0.5'
     androidTestImplementation "androidx.test:runner:1.3.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_core"
