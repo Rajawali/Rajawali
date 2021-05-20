@@ -85,9 +85,11 @@ public class BoundingSphere implements IBoundingVolume {
 	public void calculateBounds(Geometry3D geometry) {
 		double radius = 0, maxRadius = 0;
 		Vector3 vertex = new Vector3();
-		FloatBuffer vertices = geometry.getVertices();
-		vertices.rewind();
 
+		FloatBuffer vertices = geometry.getVertices();
+		if(vertices == null) return;
+
+		vertices.rewind();
 		while(vertices.hasRemaining()) {
 			vertex.x = vertices.get();
 			vertex.y = vertices.get();
