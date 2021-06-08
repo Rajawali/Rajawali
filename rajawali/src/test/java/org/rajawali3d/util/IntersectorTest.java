@@ -189,13 +189,20 @@ public class IntersectorTest {
 
     @Test
     public void testIntersectRaySphereMiss() {
-        Vector3 rayStart = new Vector3(-1,1,1);
-        Vector3 rayEnd = new Vector3(1,1,1);
+        Vector3 rayStart = new Vector3();
+        Vector3 rayEnd = new Vector3();
         Vector3 sphereCentre = new Vector3();
         double sphereRadius = 1.0;
         Vector3 hitPoint = new Vector3();
         Boolean result;
 
+        rayStart.setAll(-1,1,1);
+        rayEnd.setAll(1,1,1);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertFalse(result);
+
+        rayStart.setAll(-1/3d,-1/3d,-1/3d);
+        rayEnd.setAll(1/3d,1/3d,1/3d);
         result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
         assertFalse(result);
     }
