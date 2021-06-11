@@ -68,6 +68,20 @@ public class IntersectorTest {
         assertEquals("hitPoint.x", -1/Math.sqrt(3), hitPoint.x, 1e-14);
         assertEquals("hitPoint.y", -1/Math.sqrt(3), hitPoint.y, 1e-14);
         assertEquals("hitPoint.z", -1/Math.sqrt(3), hitPoint.z, 1e-14);
+
+        rayEnd.setAll(1e2, 1e2, 1e2);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", 1/Math.sqrt(3), hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 1/Math.sqrt(3), hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", 1/Math.sqrt(3), hitPoint.z, 1e-14);
+
+        rayEnd.setAll(-1e2, -1e2, -1e2);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", -1/Math.sqrt(3), hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", -1/Math.sqrt(3), hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", -1/Math.sqrt(3), hitPoint.z, 1e-14);
     }
 
     @Test
@@ -154,6 +168,30 @@ public class IntersectorTest {
         assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
         assertEquals("hitPoint.y", 1/Math.sqrt(2), hitPoint.y, 1e-14);
         assertEquals("hitPoint.z", 1/Math.sqrt(2), hitPoint.z, 1e-14);
+
+        rayStart.setAll(-2,-2,0);
+        rayEnd.setAll(2,2,0);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", -1/Math.sqrt(2), hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", -1/Math.sqrt(2), hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", 0, hitPoint.z, 1e-14);
+
+        rayStart.setAll(-2,0,-2);
+        rayEnd.setAll(2,0,2);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", -1/Math.sqrt(2), hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 0, hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", -1/Math.sqrt(2), hitPoint.z, 1e-14);
+
+        rayStart.setAll(0,-2,-2);
+        rayEnd.setAll(0,2,2);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", -1/Math.sqrt(2), hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", -1/Math.sqrt(2), hitPoint.z, 1e-14);
     }
 
     @Test
@@ -185,6 +223,27 @@ public class IntersectorTest {
         assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
         assertEquals("hitPoint.y", 0, hitPoint.y, 1e-14);
         assertEquals("hitPoint.z", 0, hitPoint.z, 1e-14);
+
+        sphereCentre.setAll(-1,0,0);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 0, hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", 0, hitPoint.z, 1e-14);
+
+        sphereCentre.setAll(0,-1,0);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 0, hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", 0, hitPoint.z, 1e-14);
+
+        sphereCentre.setAll(0,0,-1);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 0, hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", 0, hitPoint.z, 1e-14);
     }
 
     @Test
@@ -203,6 +262,16 @@ public class IntersectorTest {
 
         rayStart.setAll(-1/3d,-1/3d,-1/3d);
         rayEnd.setAll(1/3d,1/3d,1/3d);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertFalse(result);
+
+        rayStart.setAll(-1,1,-1);
+        rayEnd.setAll(1,1,-1);
+        result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
+        assertFalse(result);
+
+        rayStart.setAll(1/3d,1/3d,1/3d);
+        rayEnd.setAll(-1/3d,-1/3d,-1/3d);
         result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
         assertFalse(result);
     }
