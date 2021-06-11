@@ -58,16 +58,16 @@ public class IntersectorTest {
         rayEnd.setAll(1, 1, 1);
         result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
         assertTrue(result);
-        assertEquals("hitPoint.x", Math.sqrt(1/3d), hitPoint.x, 1e-14);
-        assertEquals("hitPoint.y", Math.sqrt(1/3d), hitPoint.y, 1e-14);
-        assertEquals("hitPoint.z", Math.sqrt(1/3d), hitPoint.z, 1e-14);
+        assertEquals("hitPoint.x", 1/Math.sqrt(3), hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 1/Math.sqrt(3), hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", 1/Math.sqrt(3), hitPoint.z, 1e-14);
 
         rayEnd.setAll(-1, -1, -1);
         result = Intersector.intersectRaySphere(rayStart, rayEnd, sphereCentre, sphereRadius, hitPoint);
         assertTrue(result);
-        assertEquals("hitPoint.x", -Math.sqrt(1/3d), hitPoint.x, 1e-14);
-        assertEquals("hitPoint.y", -Math.sqrt(1/3d), hitPoint.y, 1e-14);
-        assertEquals("hitPoint.z", -Math.sqrt(1/3d), hitPoint.z, 1e-14);
+        assertEquals("hitPoint.x", -1/Math.sqrt(3), hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", -1/Math.sqrt(3), hitPoint.y, 1e-14);
+        assertEquals("hitPoint.z", -1/Math.sqrt(3), hitPoint.z, 1e-14);
     }
 
     @Test
