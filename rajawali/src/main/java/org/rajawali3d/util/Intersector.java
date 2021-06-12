@@ -128,16 +128,19 @@ public final class Intersector {
             Vector2 mu = new Vector2();
             switch(RaySphereIntersection(rayStart, rayEnd, sphereCenter, sphereRadius, mu)) {
                 case BOTH:
-                    hitPoint.setAll(rayStart);
-                    hitPoint.add(Vector3.subtractAndCreate(rayEnd,rayStart).multiply(Math.min(1-mu.getX(),1-mu.getY())));
+                    hitPoint.subtractAndSet(rayEnd,rayStart);
+                    hitPoint.multiply(Math.min(mu.getX(),mu.getY()));
+                    hitPoint.add(rayStart);
                     return true;
                 case ENTRANCE_ONLY:
-                    hitPoint.setAll(rayStart);
-                    hitPoint.add(Vector3.subtractAndCreate(rayEnd,rayStart).multiply(mu.getX()));
+                    hitPoint.subtractAndSet(rayEnd,rayStart);
+                    hitPoint.multiply(1-mu.getX());
+                    hitPoint.add(rayStart);
                     return true;
                 case EXIT_ONLY:
-                    hitPoint.setAll(rayStart);
-                    hitPoint.add(Vector3.subtractAndCreate(rayEnd,rayStart).multiply(mu.getY()));
+                    hitPoint.subtractAndSet(rayEnd,rayStart);
+                    hitPoint.multiply(1-mu.getY());
+                    hitPoint.add(rayStart);
                     return true;
             };
             return false;
@@ -156,7 +159,7 @@ public final class Intersector {
 
             double mu1 = (-b + Math.sqrt(bb4ac)) / (2 * a);
             double mu2 = (-b - Math.sqrt(bb4ac)) / (2 * a);
-            mu.setAll(mu1,mu2);
+            mu.setAll(1-mu1,1-mu2);
 
             Variants val = Variants.BOTH;
             if(mu1<0 || mu1>1) val = Variants.EXIT_ONLY;
