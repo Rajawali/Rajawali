@@ -13,6 +13,7 @@
 package org.rajawali3d.util;
 
 import org.rajawali3d.math.Plane;
+import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
 
 /** Class offering various static methods for intersection testing between different geometric objects.
@@ -95,6 +96,13 @@ public final class Intersector {
 			return false;
 	}
 	
+        enum Variants {
+            MISSED,
+            ENTRANCE_ONLY,
+            EXIT_ONLY,
+            BOTH
+        }
+
 	/**
 	 * Intersects a ray defined by the start and end point and a sphere, returning the intersection point in intersection.
 	 * @param rayStart Startpoint of the ray
@@ -117,46 +125,45 @@ public final class Intersector {
 		 * Refer to http://paulbourke.net/geometry/circlesphere/ for mathematics
 		 * behind ray-sphere intersection.
 		 */
-		double a = Vector3.dot(dir, dir);
-		double b = 2.0f * Vector3.dot(dir, Vector3.subtractAndCreate(rayStart, sphereCenter));
-		double c = Vector3.dot(sphereCenter, sphereCenter) + Vector3.dot(rayStart, rayStart) - 2.0f * Vector3.dot(sphereCenter, rayStart) - radius2;
-		
-		// Test for intersection.
-		double result = b * b - 4.0f * a * c;
-		
-		if (result < 0) return false;
-		
-		// Starting with this section, the code was referenced from libGDX.
-		double distSqrt = Math.sqrt(result);
-		double q;
-		
-		if (b < 0)
-			q = (-b - distSqrt) / 2.0f;
-		else
-			q = (-b + distSqrt) / 2.0f;
-		
-		
-		double t0 = q / 1;
-		double t1 = c / q;
-		
-		// If t0 is larger than t1, swap them around.
-		if (t0 > t1) {
-			double temp = t0;
-			t0 = t1;
-			t1 = temp;
-		}
-		
-		// If t1 is less than zero, the object is in the ray's negative direction
-		// and consequently ray misses the sphere.
-		if (t1 < 0) return false;
-		
-		// If t0 is less than zero, intersection point is at t1.
-		if (t0 < 0) {
-			hitPoint.setAll(rayStart.add(Vector3.scaleAndCreate(dir, t1*len)));
-			return true;
-		} else {
-			hitPoint.setAll(rayStart.add(Vector3.scaleAndCreate(dir, t0*len)));
-			return true;
-		}
+            Vector2 mu = new Vector2();
+            switch(RaySphereIntersection(rayStart, rayEnd, sphereCenter, sphereRadius, mu)) {
+                case BOTH:
+                    hitPoint.setAll(rayStart);
+                    hitPoint.add(Vector3.subtractAndCreate(rayEnd,rayStart).multiply(Math.min(mu.getX(),mu.getY())));
+                    return true;
+                case ENTRANCE_ONLY:
+                    hitPoint.setAll(rayStart);
+                    hitPoint.add(Vector3.subtractAndCreate(rayEnd,rayStart).multiply(mu.getX()));
+                    return true;
+                case EXIT_ONLY:
+                    hitPoint.setAll(rayStart);
+                    hitPoint.add(Vector3.subtractAndCreate(rayEnd,rayStart).multiply(mu.getY()));
+                    return true;
+            };
+            return false;
 	}
+
+        private static Variants RaySphereIntersection(Vector3 p1,Vector3 p2,Vector3 sc,double r,Vector2 mu) {
+            Vector3 dp = Vector3.subtractAndCreate(p2, p1);
+            double a = Vector3.length2(dp);
+            double b = 2 * Vector3.dot(dp, Vector3.subtractAndCreate(p1,sc));
+            double c = Vector3.length2(sc) + Vector3.length2(p1) - 2 * Vector3.dot(sc,p1) - r * r;
+
+            double bb4ac = b * b - 4 * a * c;
+            if (Math.abs(a) < Math.nextUp(0) || bb4ac < 0) {
+                return Variants.MISSED;
+            }
+
+            double mu1 = (-b + Math.sqrt(bb4ac)) / (2 * a);
+            double mu2 = (-b - Math.sqrt(bb4ac)) / (2 * a);
+            mu.setAll(mu1,mu2);
+
+            Variants val = Variants.BOTH;
+            if(mu1<0 || mu1>1) val = Variants.EXIT_ONLY;
+            if(mu2<0 || mu1>2) val = Variants.ENTRANCE_ONLY;
+            if((mu1<0 || mu1>1) && (mu2<0 || mu2>1)) val = Variants.MISSED;
+
+            if(val==Variants.BOTH) mu.setAll(1-mu1,1-mu2);
+            return val;
+        }
 }
