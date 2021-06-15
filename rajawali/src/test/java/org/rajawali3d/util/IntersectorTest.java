@@ -3,6 +3,7 @@ package org.rajawali3d.util;
 import org.junit.Test;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.math.vector.Vector3.Axis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,22 +15,46 @@ import static org.junit.Assert.assertTrue;
 public class IntersectorTest {
 
     @Test
-    public void testIntersectRayPlane() {
-        Vector3 rayStart = new Vector3(0, 0, 0);
-        Vector3 rayEnd = new Vector3(1, 1, 1);
-        Plane plane = new Plane();
+    public void testIntersectRayPlaneHit() {
+        Vector3 rayStart = new Vector3();
+        Vector3 rayEnd = new Vector3();
+        Plane plane = new Plane(Vector3.X, Vector3.Y, Vector3.Z);
         Vector3 hitPoint = new Vector3();
         Boolean result;
 
+        rayStart.setAll(1,1,1);
+        rayEnd.setAll(-1,-1,-1);
         result = Intersector.intersectRayPlane(rayStart, rayEnd, plane, hitPoint);
         assertTrue(result);
-        assertEquals("hitPoint.x", 0, hitPoint.x, 1e-14);
-        assertEquals("hitPoint.y", 0, hitPoint.x, 1e-14);
-        assertEquals("hitPoint.z", 0, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.x", 1/3d, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.y", 1/3d, hitPoint.x, 1e-14);
+        assertEquals("hitPoint.z", 1/3d, hitPoint.x, 1e-14);
+
+        rayStart.setAll(1e3,1e3,1e3);
+        rayEnd.setAll(-1e3,-1e3,-1e3);
+        result = Intersector.intersectRayPlane(rayStart, rayEnd, plane, hitPoint);
+        assertTrue(result);
+        assertEquals("hitPoint.x", 1/3d, hitPoint.x, 1e-12);
+        assertEquals("hitPoint.y", 1/3d, hitPoint.x, 1e-12);
+        assertEquals("hitPoint.z", 1/3d, hitPoint.x, 1e-12);
     }
 
     @Test
-    public void testIntersectRayTriangle() {
+    public void testIntersectRayPlaneMiss() {
+        Vector3 rayStart = new Vector3();
+        Vector3 rayEnd = new Vector3();
+        Plane plane = new Plane(Vector3.X, Vector3.Y, Vector3.Z);
+        Vector3 hitPoint = new Vector3();
+        Boolean result;
+
+        rayStart.setAll(1,1,1);
+        rayEnd.setAll(2,2,2);
+        result = Intersector.intersectRayPlane(rayStart, rayEnd, plane, hitPoint);
+        assertFalse(result);
+    }
+
+    @Test
+    public void testIntersectRayTriangleHit() {
         Vector3 rayStart = new Vector3(0, 0, 0);
         Vector3 rayEnd = new Vector3(1, 1, 1);
         Vector3 t1 = new Vector3(1, 0, 0);
@@ -44,6 +69,22 @@ public class IntersectorTest {
         assertEquals("hitPoint.x", 1.0 / 3.0, hitPoint.x, 1e-14);
         assertEquals("hitPoint.y", 1.0 / 3.0, hitPoint.x, 1e-14);
         assertEquals("hitPoint.z", 1.0 / 3.0, hitPoint.x, 1e-14);
+    }
+
+    @Test
+    public void testIntersectRayTriangleMiss() {
+        Vector3 rayStart = new Vector3();
+        Vector3 rayEnd = new Vector3();
+        Vector3 t1 = new Vector3(0,0,-1);
+        Vector3 t2 = new Vector3(-1,0,1);
+        Vector3 t3 = new Vector3(1,0,1);
+        Vector3 hitPoint = new Vector3();
+        Boolean result;
+
+        rayStart.setAll(1,1,1);
+        rayEnd.setAll(2,2,2);
+        result = Intersector.intersectRayTriangle(rayStart, rayEnd, t1, t2, t3, hitPoint);
+        assertFalse(result);
     }
 
     @Test
