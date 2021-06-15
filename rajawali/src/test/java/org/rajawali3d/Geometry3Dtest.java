@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -42,6 +44,21 @@ public class Geometry3Dtest {
     @Test
     public void testGetNumVertices() {
         assertEquals(0, geometry.getNumVertices());
+    }
+
+    @Test
+    public void testBoundingBox() {
+        assertFalse(geometry.hasBoundingBox());
+        assertNotNull(geometry.getBoundingBox());
+        assertTrue(geometry.hasBoundingBox());
+    }
+
+
+    @Test
+    public void testBoundingSphere() {
+        assertFalse(geometry.hasBoundingSphere());
+        assertNotNull(geometry.getBoundingSphere());
+        assertTrue(geometry.hasBoundingSphere());
     }
 
 }
