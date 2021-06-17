@@ -16,6 +16,8 @@
 
 package org.rajawali3d.math;
 
+import java.util.Arrays;
+
 /**
  * NOTE: This class taken from Android Open Source Project source code
  * and modified to support double precision matrices. 
@@ -143,6 +145,7 @@ public class Matrix {
     		throw new IllegalArgumentException(message);
     	}
     	
+/*
     	double sum = 0;
     	for (int i = 0; i < 4; ++i) { //Row
     		sum = 0;
@@ -151,6 +154,16 @@ public class Matrix {
     		}
     		resultVec[i+resultVecOffset] = sum;
     	}
+*/
+       // matrix-vector multiplication (y = A * x)
+        int m = 4;
+        int n = 4;
+        double[] y = resultVec;
+        double[] a = Arrays.copyOfRange(lhsMat, lhsMatOffset, 16);
+        double[] x = Arrays.copyOfRange(rhsVec, rhsVecOffset, 16);
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                y[i*n+j+resultVecOffset] += a[i*n+j] * x[j];
     }
 
     /**
