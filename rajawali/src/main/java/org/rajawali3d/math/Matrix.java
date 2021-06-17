@@ -145,16 +145,6 @@ public class Matrix {
     		throw new IllegalArgumentException(message);
     	}
     	
-/*
-    	double sum = 0;
-    	for (int i = 0; i < 4; ++i) { //Row
-    		sum = 0;
-    		for (int k = 0; k < 4; ++k) {
-    			sum += lhsMat[i+4*k+lhsMatOffset] * rhsVec[k+rhsVecOffset];
-    		}
-    		resultVec[i+resultVecOffset] = sum;
-    	}
-*/
        // matrix-vector multiplication (y = A * x)
         int m = 4;
         int n = 4;
