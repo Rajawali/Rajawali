@@ -11,7 +11,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
         classpath 'digital.wup:android-maven-publish:3.6.3'
-        classpath "org.jacoco:org.jacoco.core:0.8.6"
+        classpath "org.jacoco:org.jacoco.core:0.8.7"
     }
 }
 
