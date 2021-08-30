@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 buildscript {
     ext.dokka_version = '0.9.18'
     ext.kotlin_version = '1.4.32'
@@ -14,6 +16,8 @@ buildscript {
         classpath "org.jacoco:org.jacoco.core:0.8.7"
     }
 }
+
+println "Gradle uses Java ${Jvm.current()}"
 
 ext {
     minSdk = 15
