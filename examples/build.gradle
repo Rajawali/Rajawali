@@ -38,12 +38,6 @@ android {
         pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
     }
 
-    dexOptions {
-        // Skip pre-dexing when running on CI
-        preDexLibraries = !isCi
-        javaMaxHeapSize maxDexHeap
-    }
-
     configurations.all {
         resolutionStrategy {
             // Please removed it, as soon as the project compiles without it
