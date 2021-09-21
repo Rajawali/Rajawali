@@ -19,9 +19,8 @@ In your top level **build.gradle (Project: RajawaliBasicProject)** file, we need
 
 allprojects {
     repositories {
-        // This is only necessary if you want to use snapshots
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
+        google()
+        mavenCentral()
     }
 }
 ```
@@ -31,7 +30,7 @@ Now we need to add a line to **build.gradle (Module: app)**.
 ```gradle
 dependencies {
     // either stable
-    implementation "org.rajawali3d:rajawali:1.1.970"
+    implementation "org.rajawali3d:rajawali:1.2.1970"
     // or a snaphot
     implementation 'org.rajawali3d:rajawali:1.3.79-SNAPSHOT@aar'
 }
