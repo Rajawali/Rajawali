@@ -15,11 +15,6 @@ android {
         buildConfigField 'String', 'VERSION_NAME', "\"$version\""
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
     buildTypes {
         debug {
             testCoverageEnabled true
