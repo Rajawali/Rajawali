@@ -8,18 +8,11 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion rootProject.targetSdk
-        versionCode getGitCommitCount()
-        versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // VERSION_NAME no longer available as of 4.1
         // https://issuetracker.google.com/issues/158695880
         buildConfigField 'String', 'VERSION_NAME', "\"$version\""
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
