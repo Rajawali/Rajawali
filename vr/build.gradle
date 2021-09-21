@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion rootProject.targetSdk
-        versionCode getGitCommitCount()
-        versionName version
     }
 
     // https://stackoverflow.com/a/56453718/1079990
