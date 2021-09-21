@@ -29,11 +29,6 @@ android {
         abortOnError false
     }
 
-    dexOptions {
-        // Skip pre-dexing when running on CI
-        preDexLibraries = !isCi
-        javaMaxHeapSize maxDexHeap
-    }
 }
 
 dependencies {
