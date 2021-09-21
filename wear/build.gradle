@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion rootProject.targetSdk
-        versionCode getGitCommitCount()
-        versionName version
     }
 
     compileOptions {
