@@ -21,8 +21,8 @@ println "Gradle uses Java ${Jvm.current()}"
 
 ext {
     minSdk = 15
-    targetSdk = 30
-    compileSdk = 30
+    targetSdk = 31
+    compileSdk = 31
     wear = "2.8.1"
     wearService = "17.1.0"
 
