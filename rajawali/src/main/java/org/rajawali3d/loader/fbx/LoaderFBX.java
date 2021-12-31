@@ -131,6 +131,9 @@ public class LoaderFBX extends AMeshLoader {
 		String line;
 		try {
 			while((line = buffer.readLine()) != null) {
+				if (line.startsWith("Kaydara FBX Binary  ")) {
+					throw new ParsingException("Kaydara FBX Binary file format not supported.");
+				}
 				String repl = line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY);
 				if(repl.length() == 0 || repl.charAt(0) == COMMENT)
 					continue;
@@ -483,7 +486,10 @@ public class LoaderFBX extends AMeshLoader {
 					method.setSpecularColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
 				}
 				if(material.properties.shininess != null)
+				{
 					method.setShininess(material.properties.shininess);
+				}
+                                mat.setSpecularMethod(method);
 			}
 		}
 

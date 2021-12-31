@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
@@ -47,6 +48,18 @@ public abstract class ASingleTexture extends ATexture
 	{
 		this(textureType, TextureManager.getInstance().getContext().getResources().getResourceName(resourceId));
 		setResourceId(resourceId);
+	}
+
+	public ASingleTexture(TextureType textureType, String textureName, int resourceId)
+	{
+		this(textureType, textureName);
+		setResourceId(resourceId);
+	}
+
+	public ASingleTexture(TextureType textureType, String textureName, InputStream stream)
+	{
+		this(textureType, textureName);
+		setBitmap(stream);
 	}
 
 	public ASingleTexture(TextureType textureType, String textureName, Bitmap bitmap)
@@ -82,6 +95,10 @@ public abstract class ASingleTexture extends ATexture
 		super.setFrom(other);
 		setBitmap(other.getBitmap());
 		setByteBuffer(other.getByteBuffer());
+	}
+
+	public void setBitmap(InputStream stream) {
+		setBitmap(BitmapFactory.decodeStream(stream));
 	}
 
 	public void setResourceId(int resourceId) {
@@ -166,10 +183,16 @@ public abstract class ASingleTexture extends ATexture
 			else
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-			if (mWrapType == WrapType.REPEAT) {
+			switch (mWrapType) {
+			case MIRRORED:
+				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_MIRRORED_REPEAT);
+				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_MIRRORED_REPEAT);
+				break;
+			case REPEAT:
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-			} else {
+				break;
+			default:
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 			}

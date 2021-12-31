@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: rajawali/rajawali:1.1
+    - image: hannesa2/android-ndk:api30-java11-NDK21
   environment:
     TERM: dumb
 
@@ -17,9 +17,6 @@ jobs:
             echo "org.gradle.parallel=false" >> gradle.properties
             echo "org.gradle.daemon=false" >> gradle.properties
             echo "org.gradle.jvmargs=-Xmx3g -XX:MaxPermSize=2048m -Dfile.encoding=UTF-8" >> gradle.properties
-
-            # This should not be necessary but it seems to keep going back to a 5.x version 
-            echo "distributionUrl=https\://services.gradle.org/distributions/gradle-6.7.1-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
 
             # Only deploy master and tags, only tags are pushed as releases to OSS. Forks never attempt deploy
             if [ -z "$CIRCLE_PR_REPONAME" ] ; then

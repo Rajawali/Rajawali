@@ -13,7 +13,10 @@
 package org.rajawali3d.loader;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
+
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
@@ -148,6 +151,29 @@ public abstract class ALoader implements ILoader {
 	}
 
 	/**
+	 * Open a BufferedReader for an alternate resource or file with a buffer size of 8192 bytes.
+	 *
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	protected BufferedReader getBufferedReader(String name) throws FileNotFoundException {
+		BufferedReader buffer = null;
+
+		if(mFile == null) {
+			String resourceType = mResources.getResourceTypeName(mResourceId);
+			String resourcePackage = mResources.getResourcePackageName(mResourceId);
+			int identifier = mResources.getIdentifier(name, resourceType, resourcePackage);
+			InputStream fileIn = mResources.openRawResource(identifier);
+			buffer = new BufferedReader(new InputStreamReader(fileIn));
+		} else {
+			File materialFile = new File(mFile.getParent() + File.separatorChar + name);
+			buffer = new BufferedReader(new FileReader(materialFile));
+		}
+
+		return buffer;
+	}
+
+	/**
 	 * Open a DataInputStream for the current resource or file using Little Endian format with a buffer size of 8192
 	 * bytes.
 	 *
@@ -213,4 +239,43 @@ public abstract class ALoader implements ILoader {
 		return fName.toLowerCase(Locale.ENGLISH).replaceAll("\\s", "_");
 	}
 
+	protected Bitmap findBitmap(String name) {
+		Bitmap bitmap;
+		if(mFile == null) {
+			String resourcePackage = mResources.getResourcePackageName(mResourceId);
+			int identifier = mResources.getIdentifier(getFileNameWithoutExtension(name), "drawable", resourcePackage);
+			bitmap = BitmapFactory.decodeResource(mResources, identifier);
+		} else {
+			String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(name);
+			bitmap = BitmapFactory.decodeFile(filePath);
+		}
+		return bitmap;
+	}
+
+	protected InputStream findCompressedStream(String name) throws FileNotFoundException {
+		InputStream stream;
+		if(mFile == null) {
+			final String fileNameWithoutExtension = getFileNameWithoutExtension(name);
+			String resourcePackage = mResources.getResourcePackageName(mResourceId);
+			int etc1Id = mResources.getIdentifier(fileNameWithoutExtension, "raw", resourcePackage);
+			stream = mResources.openRawResource(etc1Id);
+		} else {
+			String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(name);
+			stream = new FileInputStream(filePath);
+		}
+		return stream;
+	}
+
+	protected boolean isCompressedStream(String name) {
+		String resourcePackage = mResources.getResourcePackageName(mResourceId);
+		int id = mResources.getIdentifier(getFileNameWithoutExtension(name), "drawable", resourcePackage);
+		if(id != 0) return false;
+
+		int etc1Id = mResources.getIdentifier(getFileNameWithoutExtension(name), "raw", resourcePackage);
+		if(etc1Id != 0) return true;
+
+		if(getOnlyFileName(name).endsWith(".pkm")) return true;
+
+		return false;
+	}
 }
