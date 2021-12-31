@@ -27,7 +27,7 @@ ext {
     wearService = "17.1.0"
 
     extJUnitVersion = "1.1.2"
-    espresso_core = "3.3.0"
+    espresso_core = "3.4.0"
 
     isCi = System.env.CI == "true"
     maxDexHeap = "2g"
