@@ -21,18 +21,58 @@ public class MatrixTest {
     };
 
     @Test
-    public void testMultiplyMM() {
+    public void testMultiplyMMidentity() {
         double result[] = new double[16];
         Matrix.multiplyMM(result,0,identity,0,identity,0);
         assertTrue(Arrays.equals(identity, result));
     }
 
     @Test
+    public void testMultiplyMM() {
+	double[] left = new double[]{
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+		13, 14, 15, 16
+	};
+	double[] right = new double[]{
+		16, 15, 14, 13,
+		12, 11, 10, 9,
+		8, 7, 6, 5,
+		4, 3, 2, 1
+	};
+	double[] expected = new double[]{
+		386, 444, 502, 560,
+		274, 316, 358, 400,
+		162, 188, 214, 240,
+		50, 60, 70, 80,
+	};
+	double[] result = new double[16];
+	Matrix.multiplyMM(result, 0, left, 0, right, 0);
+        assertTrue(Arrays.equals(expected, result));
+    }
+
+    @Test
+    public void multiplyMVidentity() throws Exception {
+	double[] result = new double[4];
+	double[] vector = new double[]{1, 2, 3, 4};
+	Matrix.multiplyMV(result, 0, identity, 0, vector, 0);
+        assertTrue(Arrays.equals(vector, result));
+    }
+
+    @Test
     public void testMultiplyMV() {
-        double vector[] = { 1,1,1,1 };
-        double result[] = new double[16];
-        Matrix.multiplyMV(result,0,identity,0,vector,0);
-        assertTrue(Arrays.equals(identity, result));
+	double[] matrix = new double[]{
+		2, 0, 0, 0,
+		0, 4, 0, 0,
+		0, 0, 6, 0,
+		1, 2, 3, 1
+	};
+	double[] vector = new double[]{5, 7, 9, 1};
+	double[] expected = new double[]{11, 30, 57, 1};
+	double[] result = new double[4];
+	Matrix.multiplyMV(result, 0, matrix, 0, vector, 0);
+        assertTrue(Arrays.equals(expected, result));
     }
 
     @Test
