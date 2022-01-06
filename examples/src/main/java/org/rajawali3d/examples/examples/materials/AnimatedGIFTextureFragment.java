@@ -32,7 +32,6 @@ public class AnimatedGIFTextureFragment extends AExampleFragment {
 			final Material material = new Material();
 			final Plane plane = new Plane(1, 1, 1, 1);
 			plane.setMaterial(material);
-			plane.setRotY(180);
 			getCurrentScene().addChild(plane);
 
 			try {
