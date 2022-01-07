@@ -84,7 +84,7 @@ public class CoalesceAnimation3D extends Animation3D {
                     // Calculate the next point
                     config.spiral.calculatePoint(config.object.getPosition(), theta);
                     // Add the coalesce point to translate our spiral
-                    config.object.getPosition().add(config.coalesceAroundPoint);
+                    config.object.setPosition(config.object.getPosition().add(config.coalesceAroundPoint));
                 }
             }
         }

@@ -2,6 +2,8 @@ package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+
+import android.graphics.Color;
 import android.view.animation.LinearInterpolator;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.CoalesceAnimation3D;
@@ -47,13 +49,13 @@ public class CoalesceAnimationFragment extends AExampleFragment {
             material.enableLighting(true);
             material.setDiffuseMethod(new DiffuseMethod.Lambert());
             rootObject.setMaterial(material);
-            rootObject.setColor(0xff00ff00);
+            rootObject.setColor(Color.GREEN);
             orbit1.setMaterial(material);
-            orbit1.setColor(0xffffff00);
+            orbit1.setColor(Color.YELLOW);
             orbit2.setMaterial(material);
-            orbit2.setColor(0xff00ffff);
+            orbit2.setColor(Color.CYAN);
             orbit3.setMaterial(material);
-            orbit3.setColor(0xff0000ff);
+            orbit3.setColor(Color.BLUE);
 
             // Add the objects to the scene
             getCurrentScene().addChild(rootObject);
