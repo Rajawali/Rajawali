@@ -30,7 +30,9 @@
     <!-- Touch Ripples Fragment -->
     <string name="touch_ripples_fragment_button_touch_me">Touch Me</string>
     <!-- UIElements Fragment -->
-    <string name="ui_elements_fragment_text_view_halo_dunia">Halo Dunia!</string>
+    <string name="ui_elements_fragment_text_view_halo_dunia">This text is in a TextView.\nThe rajawali outline is in an ImageView\nThe checkbox controls the animation.</string>
+    <string name="ui_elements_animate">Animate Light</string>
+    <string name="ui_elements_outline">Rajawali</string>
     <!-- Uniform Distribution Fragment -->
     <string name="uniform_distribution_fragment_text_view_info">How to distribute points uniformly along a curve. Useful for constant speed animations. White: original curve. Red: reparametrized curve.</string>
     <!-- Skeletal Animation Blending Fragment -->
@@ -83,5 +85,6 @@
     <string name="example_post_processing_fxaa">FXAA Anti Aliasing</string>
     <string name="fxaa_fragment_button_disable_fxaa">Disable FXAA</string>
     <string name="fxaa_fragment_button_enable_fxaa">Enable FXAA</string>
+
 
 </resources>
