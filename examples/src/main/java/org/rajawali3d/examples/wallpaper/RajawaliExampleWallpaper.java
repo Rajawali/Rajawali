@@ -25,10 +25,8 @@ public class RajawaliExampleWallpaper extends Wallpaper {
     @Override
     public Engine onCreateEngine() {
         RajLog.v("Creating wallpaper engine.");
-        final int renderer = Integer.parseInt(Preferences.getInstance(this).getWallpaperRendererPreference());
-            RajLog.i("Creating wallpaper engine: " + renderer);
-            // TODO: I'm sure there is a better way to do this
-            switch (renderer) {
+        final Preferences preferences = Preferences.getInstance(this);
+            switch (preferences.getWallpaperRendererPreference()) {
                 case 0:
                     mRenderer = new BasicRenderer(this, null);
                     break;
@@ -59,6 +57,7 @@ public class RajawaliExampleWallpaper extends Wallpaper {
                 default:
                     mRenderer = new WallpaperRenderer(this);
             }
+        RajLog.i("Creating wallpaper engine: " + mRenderer.getClass().getSimpleName());
         return new WallpaperEngine(getBaseContext(), mRenderer,
                                    ISurface.ANTI_ALIASING_CONFIG.NONE);
     }

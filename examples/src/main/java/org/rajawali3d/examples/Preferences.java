@@ -6,6 +6,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 
+import org.rajawali3d.util.RajLog;
+
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
@@ -17,7 +19,7 @@ public class Preferences implements OnSharedPreferenceChangeListener {
 
     private final SharedPreferences preferences;
 
-    private String wallpaperRendererPreference;
+    private int wallpaperRendererPreference;
 
     public static Preferences getInstance(@NonNull Context context) {
         if (instance == null) {
@@ -38,7 +40,12 @@ public class Preferences implements OnSharedPreferenceChangeListener {
     }
 
     private void updatePreferences() {
-        wallpaperRendererPreference = preferences.getString(WALLPAPER_RENDERER_KEY, "");
+        try {
+            wallpaperRendererPreference = Integer.parseInt(preferences.getString(WALLPAPER_RENDERER_KEY, "0"));
+        } catch (Exception e) {
+            RajLog.e("updatePreferences() failed: " + e.getMessage());
+            wallpaperRendererPreference = 0;
+        }
     }
 
     @Override
@@ -48,7 +55,7 @@ public class Preferences implements OnSharedPreferenceChangeListener {
     }
 
     @NonNull
-    public String getWallpaperRendererPreference() {
+    public int getWallpaperRendererPreference() {
         return wallpaperRendererPreference;
     }
 }
