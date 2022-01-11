@@ -96,7 +96,7 @@ public class PostProcessingManager {
         mWriteBuffer = mRenderTarget1;
         mReadBuffer = mRenderTarget2;
 
-        mCopyPass = new EffectPass(new CopyPass());
+        mCopyPass = new CopyPass();
         mCopyPass.setSize(mWidth, mHeight);
         mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
         mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());

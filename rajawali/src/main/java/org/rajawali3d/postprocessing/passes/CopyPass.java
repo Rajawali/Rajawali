@@ -12,64 +12,62 @@
  */
 package org.rajawali3d.postprocessing.passes;
 
-import android.opengl.GLES20;
-import org.rajawali3d.R;
-import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
-import org.rajawali3d.util.RawShaderLoader;
 
+public class CopyPass extends EffectPass {
 
-public class CopyPass extends Material {
-	public CopyPass()
-	{
+	public CopyPass() {
 		super();
-		mCustomVertexShader = new MinimalVertexShader();
-		mCustomFragmentShader = new CopyFragmentShader();
+		mVertexShader = new CopyVertexShader();
+		mVertexShader.initialize();
+		mVertexShader.buildShader();
+
+		mFragmentShader = new CopyFragmentShader();
+		mFragmentShader.initialize();
+		mFragmentShader.buildShader();
+		createMaterial(mVertexShader, mFragmentShader);
 	}
-	
-	public void setOpacity(float opacity)
+
+	private static class CopyVertexShader extends VertexShader
 	{
-		((CopyFragmentShader)mCustomFragmentShader).setOpacity(opacity);
-	}
-	
-	private class MinimalVertexShader extends VertexShader
-	{
-		public MinimalVertexShader() {
-			super();
-			mNeedsBuild = false;
-			mShaderString = RawShaderLoader.fetch(R.raw.minimal_vertex_shader);
-		}
-	}
-	
-	private class CopyFragmentShader extends FragmentShader
-	{
-		private int muOpacityHandle;
-		private float mOpacity;
-		
-		public CopyFragmentShader() {
-			super();
-			mNeedsBuild = false;
-			mShaderString = RawShaderLoader.fetch(R.raw.copy_fragment_shader);
-		}
-		
+		private RVec4 aPosition;
+		private RVec2 aTextureCoord;
+		private RVec2 vTextureCoord;
+		private RMat4 uMVPMatrix;
+
 		@Override
-		public void setLocations(final int programHandle)
-		{
-			super.setLocations(programHandle);
-			muOpacityHandle = getUniformLocation(programHandle, "uOpacity");
+		public void initialize() {
+			super.initialize();
+			aPosition = (RVec4) addAttribute(DefaultShaderVar.A_POSITION);
+			aTextureCoord = (RVec2) addAttribute(DefaultShaderVar.A_TEXTURE_COORD);
+			vTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
+			uMVPMatrix = (RMat4) addUniform(DefaultShaderVar.U_MVP_MATRIX);
 		}
-		
+
 		@Override
-		public void applyParams()
-		{
-			super.applyParams();
-			GLES20.glUniform1f(muOpacityHandle, mOpacity);
+		public void main() {
+			vTextureCoord.assign(aTextureCoord);
+			GL_POSITION.assign(uMVPMatrix.multiply(aPosition));
 		}
-		
-		public void setOpacity(float opacity)
-		{
-			mOpacity = opacity;
+	}
+
+	class CopyFragmentShader extends FragmentShader {
+		private RFloat uOpacity;
+		private RSampler2D uTexture;
+		private RVec2 vTextureCoord;
+
+		@Override
+		public void initialize() {
+			super.initialize();
+			uOpacity = (RFloat) addUniform(PARAM_OPACITY, DataType.FLOAT);
+			uTexture = (RSampler2D) addUniform(PARAM_TEXTURE, DataType.SAMPLER2D);
+			vTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
+		}
+
+		@Override
+		public void main() {
+			GL_FRAG_COLOR.assign(uOpacity.multiply(texture2D(uTexture, vTextureCoord)));
 		}
 	}
 }
