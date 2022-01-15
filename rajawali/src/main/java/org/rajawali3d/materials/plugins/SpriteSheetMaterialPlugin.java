@@ -2,14 +2,36 @@ package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.AShaderBase;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
-
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	private SpriteSheetVertexShaderFragment mVertexShader;
 	
+	public enum SpriteSheetShaderVar implements AShaderBase.IGlobalShaderVar {
+		U_TILE_SIZE("uTileSize", AShaderBase.DataType.VEC2),
+		U_TILE_OFFSET("uTileOffset", AShaderBase.DataType.VEC2);
+
+		private final String mVarString;
+		private final AShaderBase.DataType mDataType;
+
+		SpriteSheetShaderVar(String varString, AShaderBase.DataType dataType) {
+			mVarString = varString;
+			mDataType = dataType;
+		}
+
+		public String getVarString() {
+			return mVarString;
+		}
+
+		public AShaderBase.DataType getDataType() {
+			return mDataType;
+		}
+	}
+
+
 	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
 	{
 		mVertexShader = new SpriteSheetVertexShaderFragment();
@@ -47,22 +69,22 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	{
 		public final static String SHADER_ID = "SPRITE_SHEET_VERTEX_SHADER_FRAGMENT";
 		
-		private static final String U_CURRENT_FRAME = "uCurrentFrame";
-		private static final String U_NUM_TILES = "uNumTiles";
-
-		private RFloat muCurrentFrame;
-		private RVec2 muNumTiles;
+		private RVec2 muTileSize;
+		private RVec2 muTileOffset;
 		
-		private int muCurrentFrameHandle;
-		private int muNumTilesHandle;
+		private int muTileSizeHandle;
+		private int muTileOffsetHandle;
 		
-		private float mCurrentFrame;
-		private float[] mNumTiles = new float[2];
+		private float[] mTileSize   = { 1, 1 };
+		private float[] mTileOffset = { 0, 0 };
 		
-		private long mStartTime;
+		private int mNumCols = 1;
+		private int mNumRows = 1;
+		private int mCurrentFrame = 0;
+		private long mStartTime = 0;
 		private boolean mIsPlaying = false;
 		private float mFPS = 30;
-		private int mNumFrames;
+		private int mNumFrames = 1;
 		
 		public SpriteSheetVertexShaderFragment()
 		{
@@ -74,46 +96,50 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		public void initialize()
 		{
 			super.initialize();
-
-			muCurrentFrame = (RFloat) addUniform(U_CURRENT_FRAME, DataType.FLOAT);
-			muNumTiles = (RVec2) addUniform(U_NUM_TILES, DataType.VEC2);
+			muTileSize = (RVec2) addUniform(SpriteSheetShaderVar.U_TILE_SIZE);
+			muTileOffset = (RVec2) addUniform(SpriteSheetShaderVar.U_TILE_OFFSET);
 		}
 		
 		@Override
 		public void setLocations(int programHandle) {
-			muCurrentFrameHandle = getUniformLocation(programHandle, U_CURRENT_FRAME);
-			muNumTilesHandle = getUniformLocation(programHandle, U_NUM_TILES);
+			muTileSizeHandle = getUniformLocation(programHandle, SpriteSheetShaderVar.U_TILE_SIZE);
+			muTileOffsetHandle = getUniformLocation(programHandle, SpriteSheetShaderVar.U_TILE_OFFSET);
 		}
 		
 		@Override
 		public void applyParams() {
 			super.applyParams();
 			
-			if(mIsPlaying)
-				mCurrentFrame = (int)Math.floor((SystemClock.elapsedRealtime() - mStartTime) * (mFPS / 1000.f)) % mNumFrames;
-			
-			GLES20.glUniform1f(muCurrentFrameHandle, mCurrentFrame);
-			GLES20.glUniform2fv(muNumTilesHandle, 1, mNumTiles, 0);
+			if(mIsPlaying) {
+				long t = SystemClock.elapsedRealtime() - mStartTime;
+				mCurrentFrame = (int)Math.floor(t * (mFPS / 1000.f));
+				mCurrentFrame %= mNumFrames;
+
+				int col = mCurrentFrame % mNumCols;
+				int row = mCurrentFrame / mNumRows;
+				mTileOffset[0] = col * mTileSize[0];
+				mTileOffset[1] = row * mTileSize[1];
+				GLES20.glUniform2fv(muTileSizeHandle, 1, mTileSize, 0);
+				GLES20.glUniform2fv(muTileOffsetHandle, 1, mTileOffset, 0);
+			}
 		}
 		
 		@Override
 		public void main() {
 			RVec2 gTextureCoord = (RVec2) getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
-			
-			RFloat tileSizeX = new RFloat("tileSizeX");
-			tileSizeX.assign(1.f / mNumTiles[0]);
-			RFloat tileSizeY = new RFloat("tileSizeY");
-			tileSizeY.assign(1.f / mNumTiles[1]);
-			
-			RFloat texSOffset = new RFloat("texSOffset", gTextureCoord.s().multiply(tileSizeX));
-			RFloat texTOffset = new RFloat("texTOffset", gTextureCoord.t().multiply(tileSizeY));
-			gTextureCoord.s().assign(mod(muCurrentFrame, muNumTiles.x()).multiply(tileSizeX).add(texSOffset));
-			gTextureCoord.t().assign(tileSizeY.multiply(floor(muCurrentFrame.divide(muNumTiles.y()))).add(texTOffset));			
+			gTextureCoord.assignMultiply(muTileSize);
+			gTextureCoord.assignAdd(muTileOffset);
 		}
 		
-		public void setNumTiles(float numTilesX, float numTilesY) {
-			mNumTiles[0] = numTilesX;
-			mNumTiles[1] = numTilesY;
+		public void setNumTiles(int numCols, int numRows) {
+			if(numCols > 0) {
+				mNumCols = numCols;
+				mTileSize[0] = 1/(float)numCols;
+			}
+			if(numRows > 0) {
+				mNumRows = numRows;
+				mTileSize[1] = 1/(float)numRows;
+			}
 		}
 		
 		public void setFPS(float fps)
