@@ -42,23 +42,21 @@ public class SpriteSheetAnimation extends Animation {
 
     @Override
     protected void applyTransformation() {
+        double t = mForward ?
+                Math.abs(mStart + mInterpolatedTime * mEnd) :
+                Math.abs(mStart - mInterpolatedTime * (mStart-mEnd));
+
         mTransform.loadIdentity();
-        mTransform.translate(selectCol()/(float)mCols,selectRow()/(float)mRows);
-        mTransform.scale(1/(float)mCols,1/(float)mRows);
+        mTransform.translate(selectCol(t)/mCols,selectRow(t)/mRows);
+        mTransform.scale(1f/mCols,1f/mRows);
         mTexture.applyTransform(mTransform);
     }
 
-    private long selectCol() {
-        double t = mForward ?
-                Math.abs(mStart + mInterpolatedTime * mEnd) :
-                Math.abs(mStart - mInterpolatedTime * (mStart-mEnd));
+    private float selectCol(double t) {
         return Math.round(t) % mCols;
     }
 
-    private long selectRow() {
-        double t = mForward ?
-                Math.abs(mStart + mInterpolatedTime * mEnd) :
-                Math.abs(mStart - mInterpolatedTime * (mStart-mEnd));
+    private float selectRow(double t) {
         return Math.round(t) / mCols;
     }
 }
