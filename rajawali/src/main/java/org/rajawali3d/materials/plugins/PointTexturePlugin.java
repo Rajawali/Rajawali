@@ -11,9 +11,29 @@ import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.materials.textures.TextureManager;
 
 public class PointTexturePlugin implements IMaterialPlugin {
-    private final static String U_POINT_TEXTURE = "uPointTexture";
     private final PointVertexShaderFragment mVertexShader;
     private final PointFragmentShaderFragment mFragmentShader;
+
+    public enum PointTextureShaderVar implements AShaderBase.IGlobalShaderVar {
+        U_POINT_TEXTURE("uPointTexture", AShaderBase.DataType.SAMPLER2D),
+        U_POINT_TRANSFORM("uPointTransform", AShaderBase.DataType.MAT3);
+
+        private final String mVarString;
+        private final AShaderBase.DataType mDataType;
+
+        PointTextureShaderVar(String varString, AShaderBase.DataType dataType) {
+            mVarString = varString;
+            mDataType = dataType;
+        }
+
+        public String getVarString() {
+            return mVarString;
+        }
+
+        public AShaderBase.DataType getDataType() {
+            return mDataType;
+        }
+    }
 
     public PointTexturePlugin(Texture PointTexture, float aperture) {
         TextureManager.getInstance().addTexture(PointTexture);
@@ -88,6 +108,9 @@ public class PointTexturePlugin implements IMaterialPlugin {
         private int muPointTextureHandle;
         private final ATexture mPointTexture;
 
+        private RMat3 muPointTransform;
+        private int muPointTransformHandle;
+
         public PointFragmentShaderFragment(ATexture PointTexture) {
             super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
             mPointTexture = PointTexture;
@@ -100,13 +123,15 @@ public class PointTexturePlugin implements IMaterialPlugin {
             int[] genTextureNames = new int[1];
             GLES20.glGenTextures(1, genTextureNames, 0);
             mPointTexture.setTextureId(genTextureNames[0]);
-            muPointTexture = (RSampler2D) addUniform(U_POINT_TEXTURE, DataType.SAMPLER2D);
+            muPointTexture = (RSampler2D) addUniform(PointTextureShaderVar.U_POINT_TEXTURE);
+            muPointTransform = (RMat3) addUniform(PointTextureShaderVar.U_POINT_TRANSFORM);
         }
 
         @Override
         public void setLocations(int programHandle) {
             super.setLocations(programHandle);
-            muPointTextureHandle = getUniformLocation(programHandle, U_POINT_TEXTURE);
+            muPointTextureHandle = getUniformLocation(programHandle, PointTextureShaderVar.U_POINT_TEXTURE);
+            muPointTransformHandle = getUniformLocation(programHandle, PointTextureShaderVar.U_POINT_TRANSFORM);
         }
 
         @Override
@@ -117,6 +142,13 @@ public class PointTexturePlugin implements IMaterialPlugin {
         @Override
         public String getShaderId() {
             return SHADER_ID;
+        }
+
+        @Override
+        public void applyParams() {
+            super.applyParams();
+            if(mPointTexture.transformEnabled())
+                GLES20.glUniformMatrix3fv(muPointTransformHandle, 1, false, mPointTexture.getTransform(), 0);
         }
 
         @Override
@@ -137,7 +169,13 @@ public class PointTexturePlugin implements IMaterialPlugin {
         @Override
         public void main() {
             RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
-            color.assign(texture2D(muPointTexture, GL_POINT_COORD));
+            RVec2 pointCoord = new RVec2("pointCoord", GL_POINT_COORD);
+            if(mPointTexture.transformEnabled()) {
+                RVec3 pointResult = new RVec3("pointResult");
+                pointResult.assign(muPointTransform.multiply(castVec3(GL_POINT_COORD, 1)));
+                pointCoord.assign(pointResult.xy());
+            }
+            color.assign(texture2D(muPointTexture, pointCoord));
         }
     }
 }
