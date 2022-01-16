@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
 import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.AShaderBase;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
