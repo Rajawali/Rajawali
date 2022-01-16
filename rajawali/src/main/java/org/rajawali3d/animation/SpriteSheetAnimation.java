@@ -11,7 +11,7 @@ import org.rajawali3d.materials.textures.ATexture;
 
 public class SpriteSheetAnimation extends Animation {
     private final ATexture mTexture;
-    private Matrix3f mTransform = new Matrix3f();
+    private final Matrix3f mTransform = new Matrix3f();
     private int mCols = 1;
     private int mRows = 1;
     private int mStart = 0;
@@ -43,7 +43,7 @@ public class SpriteSheetAnimation extends Animation {
     @Override
     protected void applyTransformation() {
         double t = mForward ?
-                Math.abs(mStart + mInterpolatedTime * mEnd) :
+                Math.abs(mStart + mInterpolatedTime * (mEnd-mStart)) :
                 Math.abs(mStart - mInterpolatedTime * (mStart-mEnd));
 
         mTransform.loadIdentity();
