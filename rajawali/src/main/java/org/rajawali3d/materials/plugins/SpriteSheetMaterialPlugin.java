@@ -54,7 +54,10 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	public IShaderFragment getFragmentShaderFragment() {
 		return null;
 	}
-	
+
+	public void play() { mVertexShader.play(); }
+	public void pause() { mVertexShader.pause(); }
+
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override
@@ -72,7 +75,9 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		
 		private final float[] mTileSize   = { 1, 1 };
 		private final float[] mTileOffset = { 0, 0 };
-		
+
+		private boolean mIsPlaying = false;
+		private long mStartTime = 0;
 		private int mNumCols = 1;
 		private int mNumRows = 1;
 		private float mFPS = 15;
@@ -105,9 +110,9 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public void applyParams() {
 			super.applyParams();
-			if(mStartFrame==mEndFrame) return;
+			if(mStartFrame==mEndFrame) mIsPlaying = false;
+			if(!mIsPlaying) return;
 
-			long mStartTime = 0;
 			long t = SystemClock.elapsedRealtime() - mStartTime;
 			int mCurrentFrame = (int) Math.floor(t * mFPS / 1e3f);
 			if(mEndFrame>mStartFrame) {
@@ -141,6 +146,15 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 			mStartFrame = MathUtil.clamp(startFrame, 0, mNumCols*mNumRows-1);
 			mEndFrame = MathUtil.clamp(endFrame, 0, mNumCols*mNumRows-1);
 			if(fps>0) mFPS = fps;
+		}
+
+		public void play() {
+			mStartTime = SystemClock.elapsedRealtime();
+			mIsPlaying = true;
+		}
+
+		public void pause() {
+			mIsPlaying = false;
 		}
 
 		public String getShaderId() {
