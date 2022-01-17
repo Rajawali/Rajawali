@@ -4,11 +4,13 @@ import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.AShaderBase;
 import org.rajawali3d.materials.shaders.IShaderFragment;
+import org.rajawali3d.math.MathUtil;
+
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
-	private SpriteSheetVertexShaderFragment mVertexShader;
+	private final SpriteSheetVertexShaderFragment mVertexShader;
 	
 	public enum SpriteSheetShaderVar implements AShaderBase.IGlobalShaderVar {
 		U_TILE_SIZE("uTileSize", AShaderBase.DataType.VEC2),
@@ -31,13 +33,14 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		}
 	}
 
+	// plays backwards when startFrame > endFrame
+	public void setRange(int startFrame, int endFrame, float fps) {
+		mVertexShader.setRange(startFrame,endFrame,fps);
+	}
 
-	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
+	public SpriteSheetMaterialPlugin(int numCols, int numRows)
 	{
-		mVertexShader = new SpriteSheetVertexShaderFragment();
-		mVertexShader.setNumTiles(numTilesX, numTilesY);
-		mVertexShader.setFPS(fps);
-		mVertexShader.setNumFrames(numFrames);
+		mVertexShader = new SpriteSheetVertexShaderFragment(numCols, numRows);
 	}
 	
 	public PluginInsertLocation getInsertLocation() {
@@ -52,20 +55,12 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		return null;
 	}
 	
-	public void play() {
-		mVertexShader.play();
-	}
-	
-	public void pause() {
-		mVertexShader.pause();
-	}
-	
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override
 	public void unbindTextures() {}
 
-	private final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
+	private static final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "SPRITE_SHEET_VERTEX_SHADER_FRAGMENT";
 		
@@ -75,23 +70,24 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		private int muTileSizeHandle;
 		private int muTileOffsetHandle;
 		
-		private float[] mTileSize   = { 1, 1 };
-		private float[] mTileOffset = { 0, 0 };
+		private final float[] mTileSize   = { 1, 1 };
+		private final float[] mTileOffset = { 0, 0 };
 		
 		private int mNumCols = 1;
 		private int mNumRows = 1;
-		private int mCurrentFrame = 0;
-		private long mStartTime = 0;
-		private boolean mIsPlaying = false;
-		private float mFPS = 30;
-		private int mNumFrames = 1;
+		private float mFPS = 15;
+		private int mStartFrame = 0;
+		private int mEndFrame;
 		
-		public SpriteSheetVertexShaderFragment()
+		public SpriteSheetVertexShaderFragment(int numCols, int numRows)
 		{
 			super(ShaderType.VERTEX_SHADER_FRAGMENT);
+			if(numCols>0) mNumCols = numCols;
+			if(numRows>0) mNumRows = numRows;
+			mEndFrame = mNumCols * mNumRows;
 			initialize();
 		}
-		
+
 		@Override
 		public void initialize()
 		{
@@ -109,57 +105,44 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public void applyParams() {
 			super.applyParams();
-			
-			if(mIsPlaying) {
-				long t = SystemClock.elapsedRealtime() - mStartTime;
-				mCurrentFrame = (int)Math.floor(t * (mFPS / 1000.f));
-				mCurrentFrame %= mNumFrames;
+			if(mStartFrame==mEndFrame) return;
 
-				int col = mCurrentFrame % mNumCols;
-				int row = mCurrentFrame / mNumRows;
-				mTileOffset[0] = col * mTileSize[0];
-				mTileOffset[1] = row * mTileSize[1];
-				GLES20.glUniform2fv(muTileSizeHandle, 1, mTileSize, 0);
-				GLES20.glUniform2fv(muTileOffsetHandle, 1, mTileOffset, 0);
+			long mStartTime = 0;
+			long t = SystemClock.elapsedRealtime() - mStartTime;
+			int mCurrentFrame = (int) Math.floor(t * mFPS / 1e3f);
+			if(mEndFrame>mStartFrame) {
+				mCurrentFrame %= (mEndFrame - mStartFrame);
+				mCurrentFrame += mStartFrame;
+			} else { // running backwards
+				mCurrentFrame %= (mStartFrame - mEndFrame);
+				mCurrentFrame = (mStartFrame - mCurrentFrame);
 			}
+
+			int col = mCurrentFrame % mNumCols;
+			int row = mCurrentFrame / mNumRows;
+			mTileOffset[0] = col;
+			mTileOffset[1] = row;
+			GLES20.glUniform2fv(muTileSizeHandle, 1, mTileSize, 0);
+
+			mTileSize[0] = 1f/mNumCols;
+			mTileSize[1] = 1f/mNumRows;
+			GLES20.glUniform2fv(muTileOffsetHandle, 1, mTileOffset, 0);
 		}
 		
 		@Override
 		public void main() {
 			RVec2 gTextureCoord = (RVec2) getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
-			gTextureCoord.assignMultiply(muTileSize);
 			gTextureCoord.assignAdd(muTileOffset);
-		}
-		
-		public void setNumTiles(int numCols, int numRows) {
-			if(numCols > 0) {
-				mNumCols = numCols;
-				mTileSize[0] = 1/(float)numCols;
-			}
-			if(numRows > 0) {
-				mNumRows = numRows;
-				mTileSize[1] = 1/(float)numRows;
-			}
-		}
-		
-		public void setFPS(float fps)
-		{
-			mFPS = fps;
-		}
-		
-		public void setNumFrames(int numFrames) {
-			mNumFrames = numFrames;
+			gTextureCoord.assignMultiply(muTileSize);
 		}
 
-		public void play() {
-			mStartTime = SystemClock.elapsedRealtime();
-			mIsPlaying = true;
+		// plays backwards when startFrame > endFrame
+		public void setRange(int startFrame, int endFrame, float fps) {
+			mStartFrame = MathUtil.clamp(startFrame, 0, mNumCols*mNumRows-1);
+			mEndFrame = MathUtil.clamp(endFrame, 0, mNumCols*mNumRows-1);
+			if(fps>0) mFPS = fps;
 		}
-		
-		public void pause() {
-			mIsPlaying = false;
-		}
-		
+
 		public String getShaderId() {
 			return SHADER_ID;
 		}
