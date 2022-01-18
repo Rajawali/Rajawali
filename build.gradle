@@ -2,14 +2,14 @@ import org.gradle.internal.jvm.Jvm
 
 buildscript {
     ext.dokka_version = '0.9.18'
-    ext.kotlin_version = '1.5.31'
+    ext.kotlin_version = '1.6.10'
     repositories {
         google()
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath 'com.android.tools.build:gradle:7.0.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
         classpath 'digital.wup:android-maven-publish:3.6.3'
@@ -21,13 +21,13 @@ println "Gradle uses Java ${Jvm.current()}"
 
 ext {
     minSdk = 15
-    targetSdk = 30
-    compileSdk = 30
+    targetSdk = 31
+    compileSdk = 31
     wear = "2.8.1"
     wearService = "17.1.0"
 
     extJUnitVersion = "1.1.2"
-    espresso_core = "3.3.0"
+    espresso_core = "3.4.0"
 
     isCi = System.env.CI == "true"
     maxDexHeap = "2g"
