@@ -69,9 +69,9 @@ public class AlphaMaskMaterialPlugin implements IMaterialPlugin {
         private RFloat muAlphaThreshold;
         private int muAlphaThresholdHandle;
 
-        public AlphaMaskShaderFragment(float mAlphaThreshold) {
+        public AlphaMaskShaderFragment(float threshold) {
             super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
-            this.mAlphaThreshold = mAlphaThreshold;
+            mAlphaThreshold = MathUtil.clamp(threshold, 0, 1);
             initialize();
         }
 
