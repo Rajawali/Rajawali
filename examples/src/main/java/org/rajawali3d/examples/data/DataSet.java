@@ -3,6 +3,7 @@ package org.rajawali3d.examples.data;
 import androidx.annotation.NonNull;
 
 import org.rajawali3d.examples.R;
+import org.rajawali3d.examples.examples.animation.AnimatedSpritesFragment;
 import org.rajawali3d.examples.examples.animation.AnimationFragment;
 import org.rajawali3d.examples.examples.animation.BezierFragment;
 import org.rajawali3d.examples.examples.animation.CatmullRomFragment;
@@ -166,7 +167,7 @@ public final class DataSet {
                 new Example(R.string.example_animation_coalesce, CoalesceAnimationFragment.class),
                 new Example(R.string.example_animation_md2, MD2Fragment.class),
                 new Example(R.string.example_animation_catmul_rom, CatmullRomFragment.class),
-//                        new Example(R.string.example_animation_sprites, AnimatedSpritesFragment.class),
+                new Example(R.string.example_animation_sprites, AnimatedSpritesFragment.class),
                 new Example(R.string.example_animation_skeletal_md5, SkeletalAnimationMD5Fragment.class),
                 new Example(R.string.example_animation_skeletal_awd, SkeletalAnimationAWDFragment.class),
                 new Example(R.string.example_animation_skeletal_blending, SkeletalAnimationBlendingFragment.class),
