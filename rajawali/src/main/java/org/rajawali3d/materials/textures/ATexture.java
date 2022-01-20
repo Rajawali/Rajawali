@@ -491,6 +491,10 @@ public abstract class ATexture {
         mTransform.translate(-1/2f,-1/2f);
     }
 
+    public void applyTransform(Matrix3f src) {
+        mTransform.load(src);
+    }
+
     public float[] getTransform() {
         return mTransform.getArray();
     }
