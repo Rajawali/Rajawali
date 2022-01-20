@@ -9,6 +9,9 @@ import org.rajawali3d.math.MathUtil;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
+
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	private final SpriteSheetVertexShaderFragment mVertexShader;
 	
@@ -33,9 +36,8 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		}
 	}
 
-	// plays backwards when startFrame > endFrame
-	public void setRange(int startFrame, int endFrame, float fps) {
-		mVertexShader.setRange(startFrame,endFrame,fps);
+	public void selectFrame(@FloatRange(from=0) double frame) {
+		mVertexShader.selectFrame(Math.floor(frame));
 	}
 
 	public SpriteSheetMaterialPlugin(int numCols, int numRows)
@@ -55,9 +57,6 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		return null;
 	}
 
-	public void play() { mVertexShader.play(); }
-	public void pause() { mVertexShader.pause(); }
-
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override
@@ -76,20 +75,15 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		private final float[] mTileSize   = { 1, 1 };
 		private final float[] mTileOffset = { 0, 0 };
 
-		private boolean mIsPlaying = false;
-		private long mStartTime = 0;
+		private int mCurrentFrame = 0;
 		private int mNumCols = 1;
 		private int mNumRows = 1;
-		private float mFPS = 15;
-		private int mStartFrame = 0;
-		private int mEndFrame;
 		
-		public SpriteSheetVertexShaderFragment(int numCols, int numRows)
+		public SpriteSheetVertexShaderFragment(@IntRange(from=0) int numCols, @IntRange(from=0) int numRows)
 		{
 			super(ShaderType.VERTEX_SHADER_FRAGMENT);
 			if(numCols>0) mNumCols = numCols;
 			if(numRows>0) mNumRows = numRows;
-			mEndFrame = mNumCols * mNumRows;
 			initialize();
 		}
 
@@ -110,18 +104,6 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public void applyParams() {
 			super.applyParams();
-			if(mStartFrame==mEndFrame) mIsPlaying = false;
-			if(!mIsPlaying) return;
-
-			long t = SystemClock.elapsedRealtime() - mStartTime;
-			int mCurrentFrame = (int) Math.floor(t * mFPS / 1e3f);
-			if(mEndFrame>mStartFrame) {
-				mCurrentFrame %= (mEndFrame - mStartFrame);
-				mCurrentFrame += mStartFrame;
-			} else { // running backwards
-				mCurrentFrame %= (mStartFrame - mEndFrame);
-				mCurrentFrame = (mStartFrame - mCurrentFrame);
-			}
 
 			int col = mCurrentFrame % mNumCols;
 			int row = mCurrentFrame / mNumRows;
@@ -141,20 +123,8 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 			gTextureCoord.assignMultiply(muTileSize);
 		}
 
-		// plays backwards when startFrame > endFrame
-		public void setRange(int startFrame, int endFrame, float fps) {
-			mStartFrame = MathUtil.clamp(startFrame, 0, mNumCols*mNumRows-1);
-			mEndFrame = MathUtil.clamp(endFrame, 0, mNumCols*mNumRows-1);
-			if(fps>0) mFPS = fps;
-		}
-
-		public void play() {
-			mStartTime = SystemClock.elapsedRealtime();
-			mIsPlaying = true;
-		}
-
-		public void pause() {
-			mIsPlaying = false;
+		public void selectFrame(@FloatRange(from=0) double frame) {
+			mCurrentFrame = MathUtil.clamp((int)frame,0,mNumCols*mNumRows-1);
 		}
 
 		public String getShaderId() {

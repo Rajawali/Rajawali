@@ -12,6 +12,8 @@
  */
 package org.rajawali3d.math;
 
+import androidx.annotation.FloatRange;
+
 public class MathUtil {
 	public static final int PRECISION = 0x020000;	
 	public static final double PI = Math.PI;
@@ -80,6 +82,14 @@ public class MathUtil {
 	
 	public static short clamp(short value, short min, short max) {
 		return value < min ? min : value > max ? max : value;
+	}
+	
+	public static float mix(float x, float y, @FloatRange(from=0, to=1)float a) {
+		return (x * (1 - a) + y * a);
+	}
+	
+	public static double mix(double x, double y, @FloatRange(from=0,to=1)double a) {
+		return (x * (1 - a) + y * a);
 	}
 	
 	public static int getClosestPowerOfTwo(int x)
