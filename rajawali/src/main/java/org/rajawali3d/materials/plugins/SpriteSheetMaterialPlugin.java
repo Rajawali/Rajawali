@@ -2,20 +2,47 @@ package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.AShaderBase;
 import org.rajawali3d.materials.shaders.IShaderFragment;
+import org.rajawali3d.math.MathUtil;
+
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
-	private SpriteSheetVertexShaderFragment mVertexShader;
+	private final SpriteSheetVertexShaderFragment mVertexShader;
 	
-	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
+	public enum SpriteSheetShaderVar implements AShaderBase.IGlobalShaderVar {
+		U_TILE_SIZE("uTileSize", AShaderBase.DataType.VEC2),
+		U_TILE_OFFSET("uTileOffset", AShaderBase.DataType.VEC2);
+
+		private final String mVarString;
+		private final AShaderBase.DataType mDataType;
+
+		SpriteSheetShaderVar(String varString, AShaderBase.DataType dataType) {
+			mVarString = varString;
+			mDataType = dataType;
+		}
+
+		public String getVarString() {
+			return mVarString;
+		}
+
+		public AShaderBase.DataType getDataType() {
+			return mDataType;
+		}
+	}
+
+	public void selectFrame(@FloatRange(from=0) double frame) {
+		mVertexShader.selectFrame(Math.floor(frame));
+	}
+
+	public SpriteSheetMaterialPlugin(int numCols, int numRows)
 	{
-		mVertexShader = new SpriteSheetVertexShaderFragment();
-		mVertexShader.setNumTiles(numTilesX, numTilesY);
-		mVertexShader.setFPS(fps);
-		mVertexShader.setNumFrames(numFrames);
+		mVertexShader = new SpriteSheetVertexShaderFragment(numCols, numRows);
 	}
 	
 	public PluginInsertLocation getInsertLocation() {
@@ -29,111 +56,77 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	public IShaderFragment getFragmentShaderFragment() {
 		return null;
 	}
-	
-	public void play() {
-		mVertexShader.play();
-	}
-	
-	public void pause() {
-		mVertexShader.pause();
-	}
-	
+
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override
 	public void unbindTextures() {}
 
-	private final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
+	private static final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "SPRITE_SHEET_VERTEX_SHADER_FRAGMENT";
 		
-		private static final String U_CURRENT_FRAME = "uCurrentFrame";
-		private static final String U_NUM_TILES = "uNumTiles";
+		private RVec2 muTileSize;
+		private RVec2 muTileOffset;
+		
+		private int muTileSizeHandle;
+		private int muTileOffsetHandle;
+		
+		private final float[] mTileSize   = { 1, 1 };
+		private final float[] mTileOffset = { 0, 0 };
 
-		private RFloat muCurrentFrame;
-		private RVec2 muNumTiles;
+		private int mCurrentFrame = 0;
+		private int mNumCols = 1;
+		private int mNumRows = 1;
 		
-		private int muCurrentFrameHandle;
-		private int muNumTilesHandle;
-		
-		private float mCurrentFrame;
-		private float[] mNumTiles = new float[2];
-		
-		private long mStartTime;
-		private boolean mIsPlaying = false;
-		private float mFPS = 30;
-		private int mNumFrames;
-		
-		public SpriteSheetVertexShaderFragment()
+		public SpriteSheetVertexShaderFragment(@IntRange(from=0) int numCols, @IntRange(from=0) int numRows)
 		{
 			super(ShaderType.VERTEX_SHADER_FRAGMENT);
+			if(numCols>0) mNumCols = numCols;
+			if(numRows>0) mNumRows = numRows;
 			initialize();
 		}
-		
+
 		@Override
 		public void initialize()
 		{
 			super.initialize();
-
-			muCurrentFrame = (RFloat) addUniform(U_CURRENT_FRAME, DataType.FLOAT);
-			muNumTiles = (RVec2) addUniform(U_NUM_TILES, DataType.VEC2);
+			muTileSize = (RVec2) addUniform(SpriteSheetShaderVar.U_TILE_SIZE);
+			muTileOffset = (RVec2) addUniform(SpriteSheetShaderVar.U_TILE_OFFSET);
 		}
 		
 		@Override
 		public void setLocations(int programHandle) {
-			muCurrentFrameHandle = getUniformLocation(programHandle, U_CURRENT_FRAME);
-			muNumTilesHandle = getUniformLocation(programHandle, U_NUM_TILES);
+			muTileSizeHandle = getUniformLocation(programHandle, SpriteSheetShaderVar.U_TILE_SIZE);
+			muTileOffsetHandle = getUniformLocation(programHandle, SpriteSheetShaderVar.U_TILE_OFFSET);
 		}
 		
 		@Override
 		public void applyParams() {
 			super.applyParams();
-			
-			if(mIsPlaying)
-				mCurrentFrame = (int)Math.floor((SystemClock.elapsedRealtime() - mStartTime) * (mFPS / 1000.f)) % mNumFrames;
-			
-			GLES20.glUniform1f(muCurrentFrameHandle, mCurrentFrame);
-			GLES20.glUniform2fv(muNumTilesHandle, 1, mNumTiles, 0);
+
+			int col = mCurrentFrame % mNumCols;
+			int row = mCurrentFrame / mNumRows;
+			mTileOffset[0] = col;
+			mTileOffset[1] = row;
+			GLES20.glUniform2fv(muTileSizeHandle, 1, mTileSize, 0);
+
+			mTileSize[0] = 1f/mNumCols;
+			mTileSize[1] = 1f/mNumRows;
+			GLES20.glUniform2fv(muTileOffsetHandle, 1, mTileOffset, 0);
 		}
 		
 		@Override
 		public void main() {
 			RVec2 gTextureCoord = (RVec2) getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
-			
-			RFloat tileSizeX = new RFloat("tileSizeX");
-			tileSizeX.assign(1.f / mNumTiles[0]);
-			RFloat tileSizeY = new RFloat("tileSizeY");
-			tileSizeY.assign(1.f / mNumTiles[1]);
-			
-			RFloat texSOffset = new RFloat("texSOffset", gTextureCoord.s().multiply(tileSizeX));
-			RFloat texTOffset = new RFloat("texTOffset", gTextureCoord.t().multiply(tileSizeY));
-			gTextureCoord.s().assign(mod(muCurrentFrame, muNumTiles.x()).multiply(tileSizeX).add(texSOffset));
-			gTextureCoord.t().assign(tileSizeY.multiply(floor(muCurrentFrame.divide(muNumTiles.y()))).add(texTOffset));			
-		}
-		
-		public void setNumTiles(float numTilesX, float numTilesY) {
-			mNumTiles[0] = numTilesX;
-			mNumTiles[1] = numTilesY;
-		}
-		
-		public void setFPS(float fps)
-		{
-			mFPS = fps;
-		}
-		
-		public void setNumFrames(int numFrames) {
-			mNumFrames = numFrames;
+			gTextureCoord.assignAdd(muTileOffset);
+			gTextureCoord.assignMultiply(muTileSize);
 		}
 
-		public void play() {
-			mStartTime = SystemClock.elapsedRealtime();
-			mIsPlaying = true;
+		public void selectFrame(@FloatRange(from=0) double frame) {
+			mCurrentFrame = MathUtil.clamp((int)frame,0,mNumCols*mNumRows-1);
 		}
-		
-		public void pause() {
-			mIsPlaying = false;
-		}
-		
+
 		public String getShaderId() {
 			return SHADER_ID;
 		}
