@@ -43,7 +43,6 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		V_LIGHT_ATTENUATION("vLightAttenuation", DataType.FLOAT),
 		V_EYE("vEye", DataType.VEC4),
 		V_AMBIENT_COLOR("vAmbientColor", DataType.VEC3),
-		G_AMBIENT_COLOR("gAmbientColor", DataType.VEC3),
 		G_LIGHT_DISTANCE("gLightDistance", DataType.FLOAT),
 		G_LIGHT_DIRECTION("gLightDirection", DataType.VEC3);
 

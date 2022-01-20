@@ -15,7 +15,6 @@ package org.rajawali3d.materials.shaders;
 import android.opengl.GLES20;
 
 import org.rajawali3d.lights.ALight;
-import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
 
 import java.util.List;
 
@@ -31,8 +30,7 @@ public class FragmentShader extends AShader {
 	private RVec4 mvColor;
 
 	private RVec4 mgColor;
-	private RVec3 mgAmbientColor;
-	private RVec3 mgNormal;
+	private RVec3  mgNormal;
 	private RVec2 mgTextureCoord;
 	private RFloat mgShadowValue;
 	private RFloat mgSpecularValue;
@@ -79,27 +77,26 @@ public class FragmentShader extends AShader {
 
 		mvTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
 		if(mHasCubeMaps)
-			mvCubeTextureCoord = (RVec3) addVarying(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
-		mvNormal = (RVec3) addVarying(DefaultShaderVar.V_NORMAL);
-		mvAmbientColor = (RVec3) addVarying(LightsShaderVar.V_AMBIENT_COLOR);
+            mvCubeTextureCoord = (RVec3) addVarying(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
+        mvNormal = (RVec3) addVarying(DefaultShaderVar.V_NORMAL);
 		mvColor = (RVec4) addVarying(DefaultShaderVar.V_COLOR);
 		addVarying(DefaultShaderVar.V_EYE_DIR);
 
 		// -- globals
 
-		mgColor = (RVec4) addGlobal(DefaultShaderVar.G_COLOR);
-		mgAmbientColor = (RVec3) addGlobal(LightsShaderVar.G_AMBIENT_COLOR);
+        mgColor = (RVec4) addGlobal(DefaultShaderVar.G_COLOR);
+
 		mgNormal = (RVec3) addGlobal(DefaultShaderVar.G_NORMAL);
 		mgTextureCoord = (RVec2) addGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 		mgShadowValue = (RFloat) addGlobal(DefaultShaderVar.G_SHADOW_VALUE);
 		mgSpecularValue = (RFloat) addGlobal(DefaultShaderVar.G_SPECULAR_VALUE);
 	}
 
-	@Override
-	public void main() {
-		mgNormal.assign(normalize(mvNormal));
-		mgTextureCoord.assign(mvTextureCoord);
-		mgAmbientColor.assign(mvAmbientColor);
+    @Override
+    public void main() {
+        mgNormal.assign(normalize(mvNormal));
+        mgTextureCoord.assign(mvTextureCoord);
+
 		mgColor.assign(muColorInfluence.multiply(mvColor));
 		mgShadowValue.assign(0.0f);
 		mgSpecularValue.assign(1.0f);

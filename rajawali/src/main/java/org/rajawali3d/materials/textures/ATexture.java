@@ -41,8 +41,7 @@ public abstract class ATexture {
         SPHERE_MAP,
         VIDEO_TEXTURE,
         COMPRESSED,
-        LIGHT,
-	OCCLUSION
+        LIGHT
     }
 
     /**
