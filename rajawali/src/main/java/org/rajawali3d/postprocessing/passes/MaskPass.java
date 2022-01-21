@@ -76,11 +76,12 @@ public class MaskPass extends APass {
 		GLES20.glEnable(GLES20.GL_STENCIL_TEST);
 		GLES20.glStencilOp(GLES20.GL_REPLACE, GLES20.GL_REPLACE, GLES20.GL_REPLACE);
 		GLES20.glStencilFunc(GLES20.GL_ALWAYS, writeValue, 0xffffffff);
+		GLES20.glStencilMask (0xFF);
 		GLES20.glClearStencil(clearValue);
+		GLES20.glClear(GLES20.GL_STENCIL_BUFFER_BIT);
 
 		// Draw into the stencil buffer.
-		mScene.render(elapsedTime, deltaTime, readBuffer);
-		mScene.render(elapsedTime, deltaTime, writeBuffer);
+		mScene.render(elapsedTime,deltaTime,null);
 
 		// Re-enable color and depth.
 		GLES20.glColorMask(true, true, true, true);
