@@ -12,24 +12,70 @@ package org.rajawali3d.postprocessing.passes;
 
 import android.opengl.GLES20;
 
+import org.rajawali3d.materials.shaders.AShaderBase;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
 import org.rajawali3d.postprocessing.passes.EffectPass;
 
 public class RadialBlurPass extends EffectPass {
-
     public RadialBlurPass() {
-        mVertexShader = new VertexShader();
+        super();
+
+        mVertexShader = new RadialBlurVertexShader();
         mVertexShader.initialize();
         mVertexShader.buildShader();
+        //Log.d(getClass().getSimpleName(), "=== vertex shader ===\n" + mVertexShader.getShaderString());
+
         mFragmentShader = new RadialBlurFragmentShader();
         mFragmentShader.initialize();
         mFragmentShader.buildShader();
+        //Log.d(getClass().getSimpleName(), "=== fragment shader ===\n" + mFragmentShader.getShaderString());
         createMaterial(mVertexShader, mFragmentShader);
     }
 
-    public void setShaderParams() {
-        super.setShaderParams();
+    public enum RadialShaderVar implements AShaderBase.IGlobalShaderVar {
+        U_EXTENT("uRadialExtent", AShaderBase.DataType.FLOAT),
+        U_INCREMENT("uRadialIncrement", AShaderBase.DataType.FLOAT),
+        U_STRENGTH("uRadialStrength", AShaderBase.DataType.FLOAT);
+
+        private final String mVarString;
+        private final AShaderBase.DataType mDataType;
+
+        RadialShaderVar(String varString, AShaderBase.DataType dataType) {
+            mVarString = varString;
+            mDataType = dataType;
+        }
+
+        public String getVarString() {
+            return mVarString;
+        }
+
+        public AShaderBase.DataType getDataType() {
+            return mDataType;
+        }
+    }
+
+    private static class RadialBlurVertexShader extends VertexShader
+    {
+        private RVec4 aPosition;
+        private RVec2 aTextureCoord;
+        private RVec2 vTextureCoord;
+        private RMat4 uMVPMatrix;
+
+        @Override
+        public void initialize() {
+            super.initialize();
+            aPosition = (RVec4) addAttribute(DefaultShaderVar.A_POSITION);
+            aTextureCoord = (RVec2) addAttribute(DefaultShaderVar.A_TEXTURE_COORD);
+            vTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
+            uMVPMatrix = (RMat4) addUniform(DefaultShaderVar.U_MVP_MATRIX);
+        }
+
+        @Override
+        public void main() {
+            vTextureCoord.assign(aTextureCoord);
+            GL_POSITION.assign(uMVPMatrix.multiply(aPosition));
+        }
     }
 
     private class RadialBlurFragmentShader extends FragmentShader {
@@ -48,9 +94,7 @@ public class RadialBlurPass extends EffectPass {
         private float muStrength;
 
         RadialBlurFragmentShader() {
-            muExtent = 0.3f;
-            muIncrement = 0.03f;
-            muStrength = 2.2f;
+            this(0.3f,0.03f,2.2f);
         }
 
         RadialBlurFragmentShader(float extent, float increment, float strength) {
@@ -78,17 +122,17 @@ public class RadialBlurPass extends EffectPass {
             super.initialize();
             uTexture = (RSampler2D) addUniform(PARAM_TEXTURE, DataType.SAMPLER2D);
             vTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
-            uExtent = (RFloat) addUniform("uExtent", DataType.FLOAT);
-            uIncrement = (RFloat) addUniform("uIncrement", DataType.FLOAT);
-            uStrength = (RFloat) addUniform("uStrength", DataType.FLOAT);
+            uExtent = (RFloat) addUniform(RadialShaderVar.U_EXTENT);
+            uIncrement = (RFloat) addUniform(RadialShaderVar.U_INCREMENT);
+            uStrength = (RFloat) addUniform(RadialShaderVar.U_STRENGTH);
         }
 
         @Override
         public void setLocations(int programHandle) {
             super.setLocations(programHandle);
-            muExtentHandle = getUniformLocation(programHandle, "uExtent");
-            muIncrementHandle = getUniformLocation(programHandle, "uIncrement");
-            muStrengthHandle = getUniformLocation(programHandle, "uStrength");
+            muExtentHandle = getUniformLocation(programHandle, RadialShaderVar.U_EXTENT);
+            muIncrementHandle = getUniformLocation(programHandle, RadialShaderVar.U_INCREMENT);
+            muStrengthHandle = getUniformLocation(programHandle, RadialShaderVar.U_STRENGTH);
         }
 
         @Override
@@ -100,32 +144,24 @@ public class RadialBlurPass extends EffectPass {
         }
 
         public void main() {
-            RVec2 dir = new RVec2("dir");
-            dir.assign("0.5 - vTextureCoord");
+            RVec2 dir = new RVec2("dir", castVec2("0.5 - vTextureCoord"));
+            RFloat dist = new RFloat("dist", length(dir));
+            RVec4 color = new RVec4("color", texture2D(uTexture,vTextureCoord));
+            RVec4 sum = new RVec4("sum", color);
+            RFloat count = new RFloat("count", castFloat(0));
 
-            RFloat dist = new RFloat("dist");
-            dist.assign(sqrt(dir.x().multiply(dir.x()).add(dir.y().multiply(dir.y()))));
+            RFloat i = new RFloat("i", castFloat("-uRadialExtent"));
+            mShaderSB.append("while(i < uRadialExtent) {\n");
+                      RVec2 offset = new RVec2("offset", castVec2("dir/dist * i * i"));
+                      sum.assignAdd(texture2D(uTexture, vTextureCoord.add(offset)));
+                      count.assignAdd(1);
+                      i.assignAdd(uIncrement);
+            mShaderSB.append("}\n");
 
-            RVec4 color = new RVec4("color");
-            color.assign(texture2D(uTexture,vTextureCoord));
-
-            RVec4 sum = new RVec4("sum");
-            sum.assign(color);
-
-            RFloat count = new RFloat("count");
-            count.assign(0);
-
-            mShaderSB.append(
-                    "for (float i = -uExtent; i < uExtent; i+=uIncrement) {\n" +
-                            "    sum += texture2D( uTexture, vTextureCoord + dir/dist * i * i );\n" +
-                            "    count += 1.0;\n" +
-                            "}\n"
-            );
-
-            RFloat t = new RFloat("t");
-            t.assign(clamp(dist.multiply(uStrength),0,1));
-
-            GL_FRAG_COLOR.assign("mix( color, sum/count, t )");
+            sum.assignDivide(count);
+            RFloat a = new RFloat("a", clamp(dist.multiply(uStrength),0,1));
+            GL_FRAG_COLOR.assign(mix( color, sum, a ));
         }
     }
 }
+

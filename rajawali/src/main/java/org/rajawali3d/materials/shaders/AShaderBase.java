@@ -1246,6 +1246,36 @@ public abstract class AShaderBase {
 			mShaderSB.append(mName).append(" *= ").append(value).append(";\n");
 		}
 
+		/**
+		 * Assigns and Divides a value to a shader variable. Equivalent to GLSL's '/=' operator.
+		 *
+		 * @param value
+		 */
+		public void assignDivide(ShaderVar value)
+		{
+			assignDivide(value.getName());
+		}
+
+		/**
+		 * Assigns and Divides a value to a shader variable. Equivalent to GLSL's '/=' operator.
+		 *
+		 * @param value
+		 */
+		public void assignDivide(float value)
+		{
+			assignDivide(Float.toString(value));
+		}
+
+		/**
+		 * Assigns and Divides a value to a shader variable. Equivalent to GLSL's '/=' operator.
+		 *
+		 * @param value
+		 */
+		public void assignDivide(String value)
+		{
+			mShaderSB.append(mName).append(" /= ").append(value).append(";\n");
+		}
+
 		protected void writeAssign(String value)
 		{
 			if(!mIsGlobal && !mInitialized)
