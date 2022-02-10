@@ -150,6 +150,9 @@ public class LoaderOBJ extends AMeshLoader {
 				// Skip comments and empty lines.
 				if(line.length() == 0 || line.charAt(0) == '#')
 					continue;
+				if(line.endsWith("\\")) {
+					line = line.substring(0, line.length()-1) + buffer.readLine();
+				}
 				StringTokenizer parts = new StringTokenizer(line, " ");
 				int numTokens = parts.countTokens();
 
