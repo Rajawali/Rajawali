@@ -11,7 +11,7 @@ jobs:
     runs-on: macOS-latest # it has NDK installed
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.2.0
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install JDK
