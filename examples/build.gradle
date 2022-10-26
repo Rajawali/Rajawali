@@ -24,14 +24,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    packagingOptions {
+        jniLibs {
+            pickFirsts += ['lib/armeabi-v7a/libvraudio_engine.so', 'lib/armeabi-v7a/libvrtoolkit.so']
+        }
+    }
 
-    lintOptions {
+    lint {
         abortOnError false
     }
-    packagingOptions {
-        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
-        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
-    }
+    namespace 'org.rajawali3d.examples'
 }
 
 dependencies {

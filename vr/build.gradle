@@ -9,12 +9,13 @@ android {
         minSdkVersion 16
         targetSdkVersion rootProject.targetSdk
     }
+    packagingOptions {
+        jniLibs {
+            pickFirsts += ['lib/armeabi-v7a/libvraudio_engine.so', 'lib/armeabi-v7a/libvrtoolkit.so']
+        }
+    }
 
     // https://stackoverflow.com/a/56453718/1079990
-    packagingOptions {
-        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
-        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
-    }
 
     buildTypes {
         release {
@@ -22,10 +23,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    lintOptions {
+    lint {
         abortOnError false
     }
+    namespace 'org.rajawali3d.vr'
+
 
 }
 

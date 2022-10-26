@@ -26,9 +26,6 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     testOptions {
         animationsDisabled true
@@ -37,6 +34,10 @@ android {
             includeAndroidResources = true
         }
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'org.rajawali3d'
 }
 
 dependencies {

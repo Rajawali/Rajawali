@@ -18,10 +18,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-
-    lintOptions {
+    lint {
         abortOnError false
     }
+    namespace 'org.rajawali3d.examples'
+
 }
 
 dependencies {
