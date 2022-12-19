@@ -23,13 +23,9 @@ ext {
     targetSdk = 33
     compileSdk = 33
     wear = "2.9.0"
-    wearService = "17.1.0"
-
-    extJUnitVersion = "1.1.2"
-    espresso_core = "3.4.0"
+    wearService = "18.0.0"
 
     isCi = System.env.CI == "true"
-    maxDexHeap = "2g"
 }
 
 println("Building project ${getTag()}")
