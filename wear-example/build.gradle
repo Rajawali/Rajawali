@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 
-
 android {
     compileSdkVersion rootProject.compileSdk
 
@@ -9,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion rootProject.targetSdk
         versionCode getGitCommitCount()
-        versionName version
+        versionName getTag()
     }
     
     buildTypes {
