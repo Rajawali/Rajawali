@@ -1331,7 +1331,6 @@ public abstract class AShaderBase {
 		/**
 		 * Get an element from an array. Equivalent to GLSL's '[]' indexing operator.
 		 * 
-		 * @param index
 		 * @return
 		 */
 		public ShaderVar elementAt(ShaderVar var)
@@ -1343,7 +1342,6 @@ public abstract class AShaderBase {
 		 * Get an element from an array. Equivalent to GLSL's '[]' indexing operator.
 		 * 
 		 * @param index
-		 * @return
 		 */
 		public ShaderVar elementAt(String index)
 		{
@@ -1356,7 +1354,6 @@ public abstract class AShaderBase {
 		/**
 		 * Negates the value of a shader variable. Similar to prefixing '-' in GLSL.
 		 * 
-		 * @return
 		 */
 		public ShaderVar negate()
 		{

@@ -30,7 +30,7 @@ import javax.microedition.khronos.opengles.GL10
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class TextureView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : android.view.TextureView(context, attrs, defStyleAttr), ISurface {
 
     init {
@@ -100,7 +100,7 @@ open class TextureView @JvmOverloads constructor(
         get() = glThread?.renderMode ?: throw IllegalStateException("GLThread not initialized")
         private set(renderMode) {
             glThread?.apply { this.renderMode = renderMode }
-                    ?: throw IllegalStateException("GLThread not initialized")
+                ?: throw IllegalStateException("GLThread not initialized")
         }
 
     private fun applyAttributes(context: Context, attrs: AttributeSet?) {
@@ -113,7 +113,7 @@ open class TextureView @JvmOverloads constructor(
                 R.styleable.TextureView_renderMode -> mRenderMode = array.getInt(attr, ISurface.RENDERMODE_WHEN_DIRTY)
                 R.styleable.TextureView_antiAliasingType ->
                     antiAliasingConfig = ISurface.ANTI_ALIASING_CONFIG
-                            .fromInteger(array.getInteger(attr, ISurface.ANTI_ALIASING_CONFIG.NONE.ordinal))
+                        .fromInteger(array.getInteger(attr, ISurface.ANTI_ALIASING_CONFIG.NONE.ordinal))
                 R.styleable.TextureView_bitsRed -> bitsRed = array.getInteger(attr, 5)
                 R.styleable.TextureView_bitsGreen -> bitsGreen = array.getInteger(attr, 6)
                 R.styleable.TextureView_bitsBlue -> bitsBlue = array.getInteger(attr, 5)
@@ -128,8 +128,12 @@ open class TextureView @JvmOverloads constructor(
         val glesMajorVersion = Capabilities.getGLESMajorVersion()
         setEGLContextClientVersion(glesMajorVersion)
 
-        setEGLConfigChooser(RajawaliEGLConfigChooser(glesMajorVersion, antiAliasingConfig, multiSampleCount,
-                bitsRed, bitsGreen, bitsBlue, bitsAlpha, bitsDepth))
+        setEGLConfigChooser(
+            RajawaliEGLConfigChooser(
+                glesMajorVersion, antiAliasingConfig, multiSampleCount,
+                bitsRed, bitsGreen, bitsBlue, bitsAlpha, bitsDepth
+            )
+        )
     }
 
     private fun checkRenderThreadState() {
@@ -257,7 +261,7 @@ open class TextureView @JvmOverloads constructor(
         val delegate = TextureView.RendererDelegate(renderer, this)
         // Create the GL thread
         glThread = GLThread(thisWeakRef, context)
-                .apply { start() }
+            .apply { start() }
         // Render mode cant be set until the GL thread exists
         renderModeInternal = mRenderMode
         // Register the delegate for callbacks
@@ -341,13 +345,15 @@ open class TextureView @JvmOverloads constructor(
      */
     @Suppress("unused")
     open fun setEGLConfigChooser(
-            redSize: Int,
-            greenSize: Int,
-            blueSize: Int,
-            alphaSize: Int,
-            depthSize: Int,
-            stencilSize: Int) {
-        setEGLConfigChooser(ComponentSizeChooser(
+        redSize: Int,
+        greenSize: Int,
+        blueSize: Int,
+        alphaSize: Int,
+        depthSize: Int,
+        stencilSize: Int
+    ) {
+        setEGLConfigChooser(
+            ComponentSizeChooser(
                 redSize = redSize,
                 greenSize = greenSize,
                 blueSize = blueSize,
@@ -355,7 +361,8 @@ open class TextureView @JvmOverloads constructor(
                 depthSize = depthSize,
                 stencilSize = stencilSize,
                 textureView = this
-        ))
+            )
+        )
     }
 
     /**
@@ -430,8 +437,8 @@ open class TextureView @JvmOverloads constructor(
     }
 
     protected class RendererDelegate(
-            internal val renderer: ISurfaceRenderer,
-            internal val rajawaliTextureView: TextureView
+        internal val renderer: ISurfaceRenderer,
+        internal val rajawaliTextureView: TextureView
     ) : SurfaceTextureListener {
 
         init {
@@ -445,10 +452,10 @@ open class TextureView @JvmOverloads constructor(
         }
 
         override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) =
-                rajawaliTextureView.surfaceCreated(width, height)
+            rajawaliTextureView.surfaceCreated(width, height)
 
         override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) =
-                rajawaliTextureView.surfaceChanged(width, height)
+            rajawaliTextureView.surfaceChanged(width, height)
 
         override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
             surface.release()
@@ -460,20 +467,20 @@ open class TextureView @JvmOverloads constructor(
     }
 
     private class DefaultContextFactory(
-            private val textureView: TextureView
+        private val textureView: TextureView
     ) : GLSurfaceView.EGLContextFactory {
 
         override fun createContext(egl: EGL10, display: EGLDisplay, config: EGLConfig): EGLContext {
             return intArrayOf(
-                    EGL_CONTEXT_CLIENT_VERSION,
-                    textureView.eglContextClientVersion,
-                    EGL10.EGL_NONE
+                EGL_CONTEXT_CLIENT_VERSION,
+                textureView.eglContextClientVersion,
+                EGL10.EGL_NONE
             ).let { attributeList ->
                 egl.eglCreateContext(
-                        display,
-                        config,
-                        EGL10.EGL_NO_CONTEXT,
-                        if (textureView.eglContextClientVersion != 0) attributeList else null
+                    display,
+                    config,
+                    EGL10.EGL_NO_CONTEXT,
+                    if (textureView.eglContextClientVersion != 0) attributeList else null
                 )
             }
         }
@@ -496,10 +503,10 @@ open class TextureView @JvmOverloads constructor(
     private class DefaultWindowSurfaceFactory : GLSurfaceView.EGLWindowSurfaceFactory {
 
         override fun createWindowSurface(
-                egl: EGL10,
-                display: EGLDisplay,
-                config: EGLConfig,
-                nativeWindow: Any
+            egl: EGL10,
+            display: EGLDisplay,
+            config: EGLConfig,
+            nativeWindow: Any
         ): EGLSurface? {
             var result: EGLSurface? = null
             try {
@@ -517,15 +524,17 @@ open class TextureView @JvmOverloads constructor(
             return result
         }
 
-        override fun destroySurface(egl: EGL10, display: EGLDisplay,
-                                    surface: EGLSurface) {
+        override fun destroySurface(
+            egl: EGL10, display: EGLDisplay,
+            surface: EGLSurface
+        ) {
             egl.eglDestroySurface(display, surface)
         }
     }
 
     abstract class BaseConfigChooser(
-            protected val textureView: TextureView,
-            requestedConfigSpec: IntArray
+        protected val textureView: TextureView,
+        requestedConfigSpec: IntArray
     ) : IRajawaliEglConfigChooser {
 
         private var configSpec: IntArray = filterConfigSpec(requestedConfigSpec)
@@ -547,7 +556,7 @@ open class TextureView @JvmOverloads constructor(
                 throw IllegalArgumentException("eglChooseConfig#2 failed")
             }
             return chooseConfig(egl, display, configs.requireNoNulls())
-                    ?: throw IllegalArgumentException("No config chosen")
+                ?: throw IllegalArgumentException("No config chosen")
         }
 
         internal abstract fun chooseConfig(egl: EGL10, display: EGLDisplay, configs: Array<EGLConfig>): EGLConfig?
@@ -577,24 +586,24 @@ open class TextureView @JvmOverloads constructor(
      * and at least the specified depth and stencil sizes.
      */
     open class ComponentSizeChooser(// Subclasses can adjust these values:
-            protected var redSize: Int,
-            protected var greenSize: Int,
-            protected var blueSize: Int,
-            protected var alphaSize: Int,
-            protected var depthSize: Int,
-            protected var stencilSize: Int,
-            textureView: TextureView
+        protected var redSize: Int,
+        protected var greenSize: Int,
+        protected var blueSize: Int,
+        protected var alphaSize: Int,
+        protected var depthSize: Int,
+        protected var stencilSize: Int,
+        textureView: TextureView
     ) : BaseConfigChooser(
-            textureView,
-            intArrayOf(
-                    EGL10.EGL_RED_SIZE, redSize,
-                    EGL10.EGL_GREEN_SIZE, greenSize,
-                    EGL10.EGL_BLUE_SIZE, blueSize,
-                    EGL10.EGL_ALPHA_SIZE, alphaSize,
-                    EGL10.EGL_DEPTH_SIZE, depthSize,
-                    EGL10.EGL_STENCIL_SIZE, stencilSize,
-                    EGL10.EGL_NONE
-            )
+        textureView,
+        intArrayOf(
+            EGL10.EGL_RED_SIZE, redSize,
+            EGL10.EGL_GREEN_SIZE, greenSize,
+            EGL10.EGL_BLUE_SIZE, blueSize,
+            EGL10.EGL_ALPHA_SIZE, alphaSize,
+            EGL10.EGL_DEPTH_SIZE, depthSize,
+            EGL10.EGL_STENCIL_SIZE, stencilSize,
+            EGL10.EGL_NONE
+        )
     ) {
         override fun chooseConfigWithReason(egl: EGL10, display: EGLDisplay): ResultConfigChooser {
             return ResultConfigChooser(chooseConfig(egl, display), null)
@@ -620,14 +629,14 @@ open class TextureView @JvmOverloads constructor(
         }
 
         private fun findConfigAttrib(
-                egl: EGL10,
-                display: EGLDisplay,
-                config: EGLConfig,
-                attribute: Int,
-                defaultValue: Int
+            egl: EGL10,
+            display: EGLDisplay,
+            config: EGLConfig,
+            attribute: Int,
+            defaultValue: Int
         ): Int =
-                if (egl.eglGetConfigAttrib(display, config, attribute, valueArray)) valueArray[0]
-                else defaultValue
+            if (egl.eglGetConfigAttrib(display, config, attribute, valueArray)) valueArray[0]
+            else defaultValue
     }
 
     /**
@@ -732,10 +741,10 @@ open class TextureView @JvmOverloads constructor(
              * Create an EGL surface we can render into.
              */
             eglSurface = rajawaliTextureViewWeakRef.get()
-                    ?.let { textureView ->
-                        textureView.eglWindowSurfaceFactory
-                                ?.createWindowSurface(egl, eglDisplay, mEglConfig, textureView.surfaceTexture)
-                    }
+                ?.let { textureView ->
+                    textureView.eglWindowSurfaceFactory
+                        ?.createWindowSurface(egl, eglDisplay, mEglConfig, textureView.surfaceTexture)
+                }
 
             if (eglSurface == null || eglSurface === EGL10.EGL_NO_SURFACE) {
                 if (egl?.eglGetError() == EGL10.EGL_BAD_NATIVE_WINDOW) {
@@ -789,9 +798,11 @@ open class TextureView @JvmOverloads constructor(
 
         private fun destroySurfaceImp() {
             if (eglSurface != null && eglSurface !== EGL10.EGL_NO_SURFACE) {
-                egl?.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
-                        EGL10.EGL_NO_SURFACE,
-                        EGL10.EGL_NO_CONTEXT)
+                egl?.eglMakeCurrent(
+                    eglDisplay, EGL10.EGL_NO_SURFACE,
+                    EGL10.EGL_NO_SURFACE,
+                    EGL10.EGL_NO_CONTEXT
+                )
                 rajawaliTextureViewWeakRef.get()?.let {
                     it.eglWindowSurfaceFactory?.destroySurface(egl, eglDisplay, eglSurface)
                 }
@@ -805,10 +816,10 @@ open class TextureView @JvmOverloads constructor(
             }
             eglContext?.let {
                 rajawaliTextureViewWeakRef.get()
-                        ?.let { textureView ->
-                            textureView.eglContextFactory
-                                    ?.destroyContext(egl, eglDisplay, eglContext)
-                        }
+                    ?.let { textureView ->
+                        textureView.eglContextFactory
+                            ?.destroyContext(egl, eglDisplay, eglContext)
+                    }
                 eglContext = null
             }
             eglContext?.let {
@@ -872,12 +883,13 @@ open class TextureView @JvmOverloads constructor(
      * glThreadManager object. This avoids multiple-lock ordering issues.
      */
     internal class GLThread(
-            /**
-             * Set once at thread construction time, nulled out when the parent view is garbage
-             * called. This weak reference allows the TextureView to be garbage collected while
-             * the RajawaliGLThread is still alive.
-             */
-            private val rajawaliTextureViewWeakRef: WeakReference<TextureView>, val context: Context) : Thread() {
+        /**
+         * Set once at thread construction time, nulled out when the parent view is garbage
+         * called. This weak reference allows the TextureView to be garbage collected while
+         * the RajawaliGLThread is still alive.
+         */
+        private val rajawaliTextureViewWeakRef: WeakReference<TextureView>, val context: Context
+    ) : Thread() {
 
         // Once the thread is started, all accesses to the following member
         // variables are protected by the glThreadManager monitor
@@ -1147,18 +1159,20 @@ open class TextureView @JvmOverloads constructor(
 
                             // By design, this is the only place in a RajawaliGLThread thread where we wait().
                             if (LOG_THREADS) {
-                                Log.i("RajawaliGLThread", "waiting tid=" + id
-                                        + " haveEglContext: " + haveEglContext
-                                        + " haveEglSurface: " + haveEglSurface
-                                        + " finishedCreatingEglSurface: " + finishedCreatingEglSurface
-                                        + " paused: " + paused
-                                        + " hasSurface: " + hasSurface
-                                        + " surfaceIsBad: " + surfaceIsBad
-                                        + " waitingForSurface: " + waitingForSurface
-                                        + " width: " + width
-                                        + " height: " + height
-                                        + " requestRender: " + requestRender
-                                        + " renderMode1: " + renderMode1)
+                                Log.i(
+                                    "RajawaliGLThread", "waiting tid=" + id
+                                            + " haveEglContext: " + haveEglContext
+                                            + " haveEglSurface: " + haveEglSurface
+                                            + " finishedCreatingEglSurface: " + finishedCreatingEglSurface
+                                            + " paused: " + paused
+                                            + " hasSurface: " + hasSurface
+                                            + " surfaceIsBad: " + surfaceIsBad
+                                            + " waitingForSurface: " + waitingForSurface
+                                            + " width: " + width
+                                            + " height: " + height
+                                            + " requestRender: " + requestRender
+                                            + " renderMode1: " + renderMode1
+                                )
                             }
                             glThreadManager.wait()
                         }
@@ -1285,8 +1299,9 @@ open class TextureView @JvmOverloads constructor(
                 finishedCreatingEglSurface = false
                 glThreadManager.notifyAll()
                 while (waitingForSurface
-                        && !finishedCreatingEglSurface
-                        && !exited) {
+                    && !finishedCreatingEglSurface
+                    && !exited
+                ) {
                     try {
                         glThreadManager.wait()
                     } catch (e: InterruptedException) {
@@ -1370,7 +1385,8 @@ open class TextureView @JvmOverloads constructor(
 
                 // Wait for thread to react to resize and render a frame
                 while (!exited && !paused && !renderComplete
-                        && ableToDraw()) {
+                    && ableToDraw()
+                ) {
                     if (LOG_SURFACE) {
                         Log.i("Main thread", "onWindowResize waiting for render complete from tid=$id")
                     }
@@ -1504,8 +1520,7 @@ open class TextureView @JvmOverloads constructor(
                     multipleGLESContextsAllowed = true
                 }
                 if (LOG_SURFACE) {
-                    Log.w(TAG, "checkGLESVersion glesVersion =" +
-                            " " + glesVersion + " multipleGLESContextsAllowed = " + multipleGLESContextsAllowed)
+                    Log.w(TAG, "glesVersion=$glesVersion multipleGLESContextsAllowed=$multipleGLESContextsAllowed")
                 }
                 glesVersionCheckComplete = true
             }
@@ -1522,9 +1537,7 @@ open class TextureView @JvmOverloads constructor(
                 }
                 limitedGLESContexts = !multipleGLESContextsAllowed
                 if (LOG_SURFACE) {
-                    Log.w(TAG, "checkGLDriver renderer = \"" + renderer + "\" multipleContextsAllowed = "
-                            + multipleGLESContextsAllowed
-                            + " limitedGLESContexts = " + limitedGLESContexts)
+                    Log.w(TAG, "renderer=\"$renderer\" multipleContextsAllowed=$multipleGLESContextsAllowed limitedGLESContexts=$limitedGLESContexts")
                 }
                 glesDriverCheckComplete = true
             }
