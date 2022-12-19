@@ -1,9 +1,9 @@
-name: Github CI
+name: PullRequest
 
 on: [ pull_request ]
 
 jobs:
-  build:
+  buildTest:
     name: Build
     runs-on: macOS-latest
     steps:
@@ -62,4 +62,4 @@ jobs:
         if: ${{ always() }}
         with:
           name: Rajawali-Lint
-          path: ./**/build/reports/lint-results.html
+          path: ./**/build/reports/lint-results*.html
