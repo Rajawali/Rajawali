@@ -21,7 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
 import org.junit.runner.RunWith
-import org.rajawali3d.examples.data.DataSet
+import org.rajawali3d.examples.data.ExamplesDataSet
 import org.rajawali3d.examples.tools.RecyclerViewMatcher
 
 @RunWith(AndroidJUnit4::class)
@@ -58,7 +58,7 @@ class LauncherSmokeTest {
             .writeToTestStorage("${javaClass.simpleName}_${nameRule.methodName}-R")
 
         var overallIndex = 0
-        DataSet.instance?.categories?.forEach {
+        ExamplesDataSet.instance?.categories?.forEach {
             it.examples.forEach { _ ->
                 overallIndex++
                 println("Click on $overallIndex")
