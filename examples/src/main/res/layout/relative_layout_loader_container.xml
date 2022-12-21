@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/relative_layout_loader_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    android:id="@+id/relative_layout_loader_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ProgressBar
         android:id="@+id/progress_bar_loader"
