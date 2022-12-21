@@ -58,7 +58,7 @@ public class OrenNayarFragmentShaderFragment extends AShader implements IShaderF
 	public void main() {
 		RFloat gShadowValue = (RFloat) getGlobal(DefaultShaderVar.G_SHADOW_VALUE);
 		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
-		RVec3 ambientColor = (RVec3) getGlobal(LightsShaderVar.G_AMBIENT_COLOR);
+		RVec3 ambientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
 		RVec3 eyeDir = (RVec3) getGlobal(DefaultShaderVar.V_EYE_DIR);
 		RVec3 normal = (RVec3) getGlobal(DefaultShaderVar.G_NORMAL);
 
