@@ -13,13 +13,4 @@
         android:indeterminateDrawable="@drawable/animated_progress"
         android:indeterminateOnly="true" />
 
-    <org.rajawali3d.examples.views.GitHubLogoView
-        android:id="@+id/image_view_example_link"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/activity_horizontal_margin" />
-
 </RelativeLayout>
