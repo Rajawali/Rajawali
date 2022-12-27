@@ -37,15 +37,13 @@ task jacocoTestReport(type: JacocoReport) {
     }
 }
 
-dokka {
-    outputFormat = 'html'
-    outputDirectory = "$buildDir/javadoc"
-    sourceDirs = files('src/main/java')
+task dokkaJar(type: Jar, dependsOn: dokkaHtmlPartial) {
+    classifier = 'javadoc'
+    from "$buildDir/dokka/htmlPartial"
 }
 
-task dokkaJar(type: Jar, dependsOn: dokka) {
-    classifier = 'javadoc'
-    from "$buildDir/javadoc"
+tasks.named("dokkaHtml") {
+    outputDirectory.set(buildDir.resolve("dokka"))
 }
 
 task androidSourcesJar(type: Jar) {
