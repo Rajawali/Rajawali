@@ -12,7 +12,7 @@ android {
 
         // VERSION_NAME no longer available as of 4.1
         // https://issuetracker.google.com/issues/158695880
-        buildConfigField 'String', 'VERSION_NAME', "\"$version\""
+        buildConfigField 'String', 'VERSION_NAME', "\"${getTag()}\""
     }
 
     buildTypes {
