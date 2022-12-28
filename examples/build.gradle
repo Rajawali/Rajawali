@@ -10,7 +10,7 @@ android {
         minSdkVersion 16
         targetSdkVersion rootProject.targetSdk
         versionCode getGitCommitCount()
-        versionName version
+        versionName getTag()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
