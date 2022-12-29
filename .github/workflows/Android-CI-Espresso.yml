@@ -1,9 +1,9 @@
-name: Github CI
+name: PullRequest
 
 on: [ pull_request ]
 
 jobs:
-  build:
+  buildTest:
     name: Build
     runs-on: macOS-latest
     steps:
@@ -15,7 +15,7 @@ jobs:
           distribution: 'adopt'
           java-version: 11
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.2
+        uses: malinskiy/action-android/install-sdk@release/0.1.4
       - name: Build project
         run: ./gradlew assembleDebug
       - name: Run tests
@@ -33,15 +33,15 @@ jobs:
         if: ${{ always() }}
         with:
           name: Rajawali-Espresso-report
-          path: sample/build/reports/androidTests/connected
+          path: example/build/reports/androidTests/connected
       - name: Archive screenshots
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: Rajawali-Screenshots
           path: |
-            sample/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected
-            sample/build/outputs/androidTest-results/connected
+            example/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected
+            example/build/outputs/androidTest-results/connected
   check:
     name: Check
     runs-on: macOS-latest
@@ -54,7 +54,7 @@ jobs:
           distribution: 'adopt'
           java-version: 11
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.2
+        uses: malinskiy/action-android/install-sdk@release/0.1.4
       - name: Gradle checks
         run: ./gradlew check
       - name: Archive Lint report
@@ -62,4 +62,4 @@ jobs:
         if: ${{ always() }}
         with:
           name: Rajawali-Lint
-          path: ./**/build/reports/lint-results.html
+          path: ./**/build/reports/lint-results*.html

@@ -20,7 +20,7 @@ jobs:
           distribution: 'adopt'
           java-version: 11
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.0
+        uses: malinskiy/action-android/install-sdk@release/0.1.4
       - name: Build project
         run: ./gradlew clean build
         env:

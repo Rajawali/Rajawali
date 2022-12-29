@@ -21,7 +21,6 @@ android {
         abortOnError false
     }
     namespace 'org.rajawali3d.examples'
-
 }
 
 dependencies {
