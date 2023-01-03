@@ -2,7 +2,7 @@ import org.gradle.internal.jvm.Jvm
 
 buildscript {
     ext.dokka_version = '0.9.18'
-    ext.kotlin_version = '1.7.20'
+    ext.kotlin_version = '1.7.22'
     repositories {
         google()
         mavenCentral()
@@ -20,16 +20,12 @@ println "Gradle uses Java ${Jvm.current()}"
 
 ext {
     minSdk = 15
-    targetSdk = 31
-    compileSdk = 31
+    targetSdk = 33
+    compileSdk = 33
     wear = "2.9.0"
-    wearService = "17.1.0"
-
-    extJUnitVersion = "1.1.2"
-    espresso_core = "3.4.0"
+    wearService = "18.0.0"
 
     isCi = System.env.CI == "true"
-    maxDexHeap = "2g"
 }
 
 println("Building project ${getTag()}")
