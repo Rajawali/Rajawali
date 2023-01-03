@@ -56,14 +56,3 @@ dependencies {
 
 apply from: '../publish.gradle'
 apply plugin: 'kotlin-android'
-
-task dokkaGhPages(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = 'html'
-    outputDirectory = "$buildDir/gh-pages"
-    sourceDirs = files(
-            'src/main/java',
-            '../vr/src/main/java',
-            '../vuforia/src/main/java',
-            '../wear/src/main/java',
-    )
-}
