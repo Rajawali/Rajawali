@@ -9,9 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import com.bmwgroup.apinext.facedetection.utils.round
-import kotlinx.android.synthetic.main.object_roate_overlay.*
 import org.rajawali3d.Object3D
 import org.rajawali3d.examples.R
+import org.rajawali3d.examples.databinding.ObjectRoateOverlayBinding
 import org.rajawali3d.examples.examples.AExampleFragment
 import org.rajawali3d.lights.DirectionalLight
 import org.rajawali3d.loader.LoaderAWD
@@ -25,42 +25,50 @@ import org.rajawali3d.util.ObjectColorPicker
 class ObjectRotateFragment : AExampleFragment() {
 
     private var dataRenderer: ObjectRotateRenderer? = null
+    private var _binding: ObjectRoateOverlayBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        inflater.inflate(R.layout.object_roate_overlay, mLayout, true)
-        return mLayout
+        _binding = ObjectRoateOverlayBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        textMixed.setOnClickListener { seekBarMixed.progress = 0 }
-        textY.setOnClickListener { seekBarY.progress = 0 }
-        textHorizontal.setOnClickListener { seekBarHoizontal.progress = 0 }
+        binding.textMixed.setOnClickListener { binding.seekBarMixed.progress = 0 }
+        binding.textY.setOnClickListener { binding.seekBarY.progress = 0 }
+        binding.textHorizontal.setOnClickListener { binding.seekBarHoizontal.progress = 0 }
 
-        seekBarMixed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBarMixed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 dataRenderer?.rotateDataX(progress.toDouble())
-                textMixed.text = "Z=${progress}"
+                binding.textMixed.text = "Z=${progress}"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) = Unit
             override fun onStopTrackingTouch(seekBar: SeekBar) = Unit
         })
-        seekBarY.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBarY.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 dataRenderer?.rotateDataY(progress.toDouble())
-                textY.text = "Y=${progress}"
+                binding.textY.text = "Y=${progress}"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) = Unit
             override fun onStopTrackingTouch(seekBar: SeekBar) = Unit
         })
-        seekBarHoizontal.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBarHoizontal.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 dataRenderer?.rotateDataZ(progress.toDouble())
-                textHorizontal.text = "X=${progress}"
+                binding.textHorizontal.text = "X=${progress}"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) = Unit
