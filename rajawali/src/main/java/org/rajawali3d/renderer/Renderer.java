@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -21,9 +21,10 @@ import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import androidx.annotation.NonNull;
 import android.util.SparseArray;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 
 import org.rajawali3d.BuildConfig;
 import org.rajawali3d.cameras.Camera;
@@ -38,12 +39,12 @@ import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.view.ISurface;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.RawShaderLoader;
+import org.rajawali3d.view.ISurface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -76,7 +77,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     protected Context mContext; // Context the renderer is running in
 
     protected ISurface mSurface; // The rendering surface
-    protected int      mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
+    protected int mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
@@ -105,13 +106,13 @@ public abstract class Renderer implements ISurfaceRenderer {
     private boolean mSceneCachingEnabled; //This applies to all scenes
     protected boolean mSceneInitialized; //This applies to all scenes
     protected boolean mEnableDepthBuffer = true; // Do we use the depth buffer?
-    private RenderTarget                  mCurrentRenderTarget;
+    private RenderTarget mCurrentRenderTarget;
     private ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
-    protected final List<Scene>                     mScenes; //List of all scenes this renderer is aware of.
-    protected final List<RenderTarget>              mRenderTargets; //List of all render targets this renderer is aware of.
-    private final Queue<AFrameTask>                 mFrameTaskQueue;
-    private final SparseArray<ModelRunnable>        mLoaderThreads;
+    protected final List<Scene> mScenes; //List of all scenes this renderer is aware of.
+    protected final List<RenderTarget> mRenderTargets; //List of all render targets this renderer is aware of.
+    private final Queue<AFrameTask> mFrameTaskQueue;
+    private final SparseArray<ModelRunnable> mLoaderThreads;
     private final SparseArray<IAsyncLoaderCallback> mLoaderCallbacks;
 
     /**
@@ -449,8 +450,8 @@ public abstract class Renderer implements ISurfaceRenderer {
     public PointF screenToCartesian(float screenX, float screenY) {
         screenY = mDefaultViewportHeight - screenY;
         return new PointF(
-            (screenX / mDefaultViewportWidth) * 2 - 1,
-            (screenY / mDefaultViewportHeight) * 2 - 1
+                (screenX / mDefaultViewportWidth) * 2 - 1,
+                (screenY / mDefaultViewportHeight) * 2 - 1
         );
     }
 

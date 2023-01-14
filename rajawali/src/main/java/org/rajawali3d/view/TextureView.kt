@@ -125,7 +125,7 @@ open class TextureView @JvmOverloads constructor(
     }
 
     private fun initialize() {
-        val glesMajorVersion = Capabilities.getGLESMajorVersion()
+        val glesMajorVersion = Capabilities.gLESMajorVersion
         setEGLContextClientVersion(glesMajorVersion)
 
         setEGLConfigChooser(
@@ -1515,7 +1515,7 @@ open class TextureView @JvmOverloads constructor(
 
         private fun checkGLESVersion() {
             if (!glesVersionCheckComplete) {
-                glesVersion = Capabilities.getGLESMajorVersion()
+                glesVersion = Capabilities.gLESMajorVersion
                 if (glesVersion >= kGLES_20) {
                     multipleGLESContextsAllowed = true
                 }
