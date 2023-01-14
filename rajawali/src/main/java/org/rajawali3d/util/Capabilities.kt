@@ -201,6 +201,9 @@ class Capabilities private constructor() {
         sb.append("Min/Max Aliased Line Width  :").append(minAliasedLineWidth).append("/").append(maxAliasedLineWidth).append("\n")
         sb.append("Min Aliased Point Size      :").append(minAliasedPointSize).append("\n")
         sb.append("Max Aliased Point Width     :").append(maxAliasedPointSize).append("\n")
+        sb.append("Vendor  : ").append(vendor).append("\n")
+        sb.append("Renderer: ").append(renderer).append("\n")
+        sb.append("Version : ").append(version).append("\n")
         return sb.toString()
     }
 
