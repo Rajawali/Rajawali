@@ -1427,10 +1427,7 @@ open class TextureView @JvmOverloads constructor(
          *
          * @param runnable the runnable to be run on the GL rendering thread.
          */
-        fun queueEvent(runnable: Runnable?) {
-            if (runnable == null) {
-                throw IllegalArgumentException("runnable must not be null")
-            }
+        fun queueEvent(runnable: Runnable) {
             synchronized(glThreadManager) {
                 eventQueue.add(runnable)
                 glThreadManager.notifyAll()
