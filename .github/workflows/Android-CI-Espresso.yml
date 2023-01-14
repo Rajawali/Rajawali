@@ -1,6 +1,13 @@
 name: PullRequest
 
-on: [ pull_request ]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   buildTest:
@@ -58,7 +65,7 @@ jobs:
       - name: Gradle checks
         run: ./gradlew check
       - name: Archive Lint report
-        uses: actions/upload-artifact@v2.1.4
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: Rajawali-Lint
