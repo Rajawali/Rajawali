@@ -10,6 +10,14 @@
         android:title="CPU abi" />
 
     <Preference
+        android:key="preference_CAPABILITY1"
+        android:title="OpenGL Capability" />
+
+    <Preference
+        android:key="preference_CAPABILITY2"
+        android:title="OpenGL Capability" />
+
+    <Preference
         android:key="preference_DISPLAY"
         android:title="Display" />
 

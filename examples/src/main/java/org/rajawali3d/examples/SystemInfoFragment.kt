@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import org.rajawali3d.util.Capabilities
+
 
 class SystemInfoFragment : PreferenceFragmentCompat() {
 
@@ -17,6 +19,7 @@ class SystemInfoFragment : PreferenceFragmentCompat() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = super.onCreateView(inflater, container, savedInstanceState)
         container?.context?.setTheme(R.style.PreferenceTheme)
+        requireActivity().title = "System Info"
         return view
     }
 
@@ -28,5 +31,14 @@ class SystemInfoFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_ + "CPU_ABI")?.summary = Build.SUPPORTED_ABIS[0]
         findPreference<Preference>(PREFERENCE_ + "DISPLAY")?.summary = Build.DISPLAY
         findPreference<Preference>(PREFERENCE_ + "USER")?.summary = Build.USER
+        findPreference<Preference>(PREFERENCE_ + "CAPABILITY1")?.summary = Capabilities.instance.toString()
+            .split("\n")
+            .take(9)
+            .takeLast(8)
+            .joinToString("\n")
+        findPreference<Preference>(PREFERENCE_ + "CAPABILITY2")?.summary = Capabilities.instance.toString()
+            .split("\n")
+            .takeLast(9)
+            .joinToString("\n")
     }
 }
