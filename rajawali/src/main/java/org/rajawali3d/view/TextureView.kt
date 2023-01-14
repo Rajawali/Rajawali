@@ -125,7 +125,7 @@ open class TextureView @JvmOverloads constructor(
     }
 
     private fun initialize() {
-        val glesMajorVersion = Capabilities.getGLESMajorVersion()
+        val glesMajorVersion = Capabilities.gLESMajorVersion
         setEGLContextClientVersion(glesMajorVersion)
 
         setEGLConfigChooser(
@@ -1427,10 +1427,7 @@ open class TextureView @JvmOverloads constructor(
          *
          * @param runnable the runnable to be run on the GL rendering thread.
          */
-        fun queueEvent(runnable: Runnable?) {
-            if (runnable == null) {
-                throw IllegalArgumentException("runnable must not be null")
-            }
+        fun queueEvent(runnable: Runnable) {
             synchronized(glThreadManager) {
                 eventQueue.add(runnable)
                 glThreadManager.notifyAll()
@@ -1515,7 +1512,7 @@ open class TextureView @JvmOverloads constructor(
 
         private fun checkGLESVersion() {
             if (!glesVersionCheckComplete) {
-                glesVersion = Capabilities.getGLESMajorVersion()
+                glesVersion = Capabilities.gLESMajorVersion
                 if (glesVersion >= kGLES_20) {
                     multipleGLESContextsAllowed = true
                 }
