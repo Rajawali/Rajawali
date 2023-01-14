@@ -45,7 +45,7 @@ task clean(type: Delete) {
 
 @SuppressWarnings('unused')
 static def getTag() {
-    def process = "git describe --tags --abbrev=0".execute()
+    def process = "git describe --tags".execute()
     return process.text.toString().trim()
 }
 
