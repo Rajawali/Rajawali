@@ -126,27 +126,33 @@ class Capabilities private constructor() {
 
     init {
         mParam = IntArray(1)
-        vendor = GLES20.glGetString(GLES20.GL_VENDOR)
-        renderer = GLES20.glGetString(GLES20.GL_RENDERER)
-        version = GLES20.glGetString(GLES20.GL_VERSION)
-        maxCombinedTextureUnits = getInt(GLES20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)
-        maxCubeMapTextureSize = getInt(GLES20.GL_MAX_CUBE_MAP_TEXTURE_SIZE)
-        maxFragmentUniformVectors = getInt(GLES20.GL_MAX_FRAGMENT_UNIFORM_VECTORS)
-        maxRenderbufferSize = getInt(GLES20.GL_MAX_RENDERBUFFER_SIZE)
-        maxTextureImageUnits = getInt(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS)
-        maxTextureSize = getInt(GLES20.GL_MAX_TEXTURE_SIZE)
-        maxVaryingVectors = getInt(GLES20.GL_MAX_VARYING_VECTORS)
-        maxVertexAttribs = getInt(GLES20.GL_MAX_VERTEX_ATTRIBS)
-        maxVertexTextureImageUnits = getInt(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS)
-        maxVertexUniformVectors = getInt(GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS)
-        maxViewportWidth = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 0)
-        maxViewportHeight = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 1)
-        minAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 0)
-        maxAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 1)
-        minAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0)
-        maxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1)
-        val extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS)
-        this.extensions = extensions.split(" ".toRegex()).toTypedArray()
+        readValues()
+    }
+
+    private fun readValues() {
+        GLES20.glGetString(GLES20.GL_VENDOR)?.let {
+            vendor = GLES20.glGetString(GLES20.GL_VENDOR)
+            renderer = GLES20.glGetString(GLES20.GL_RENDERER)
+            version = GLES20.glGetString(GLES20.GL_VERSION)
+            maxCombinedTextureUnits = getInt(GLES20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)
+            maxCubeMapTextureSize = getInt(GLES20.GL_MAX_CUBE_MAP_TEXTURE_SIZE)
+            maxFragmentUniformVectors = getInt(GLES20.GL_MAX_FRAGMENT_UNIFORM_VECTORS)
+            maxRenderbufferSize = getInt(GLES20.GL_MAX_RENDERBUFFER_SIZE)
+            maxTextureImageUnits = getInt(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS)
+            maxTextureSize = getInt(GLES20.GL_MAX_TEXTURE_SIZE)
+            maxVaryingVectors = getInt(GLES20.GL_MAX_VARYING_VECTORS)
+            maxVertexAttribs = getInt(GLES20.GL_MAX_VERTEX_ATTRIBS)
+            maxVertexTextureImageUnits = getInt(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS)
+            maxVertexUniformVectors = getInt(GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS)
+            maxViewportWidth = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 0)
+            maxViewportHeight = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 1)
+            minAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 0)
+            maxAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 1)
+            minAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0)
+            maxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1)
+            val extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS)
+            this.extensions = extensions.split(" ".toRegex()).toTypedArray()
+        }
     }
 
     private fun getInt(pname: Int): Int {
@@ -236,9 +242,11 @@ class Capabilities private constructor() {
         @JvmStatic
         var instance: Capabilities? = null
             get() {
-                if (field == null) {
+                if (field == null)
                     field = Capabilities()
-                }
+                else if (field?.maxCombinedTextureUnits == 0) // previous instance is not valid
+                    field = Capabilities()
+
                 return field
             }
             private set
