@@ -56,10 +56,6 @@ public class ObjectAddRemoveFragment extends AExampleFragment {
         mProgressBarLoader = mLayout.findViewById(R.id.progress_bar_loader);
         mProgressBarLoader.setVisibility(View.GONE);
 
-        // Set the example link
-        mImageViewExampleLink = mLayout.findViewById(R.id.image_view_example_link);
-        mImageViewExampleLink.setOnClickListener(this);
-
         // Create the renderer
         mRenderer = createRenderer();
         onBeforeApplyRenderer();

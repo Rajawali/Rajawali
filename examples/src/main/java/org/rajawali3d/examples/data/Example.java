@@ -5,8 +5,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.util.Locale;
-
 public class Example implements INamed, Parcelable {
 
     public static final Creator<Example> CREATOR = new Creator<Example>() {
@@ -21,7 +19,6 @@ public class Example implements INamed, Parcelable {
         }
     };
 
-    private static final String BASE_URL = "https://github.com/Rajawali/Rajawali/tree/master/examples/src/main/java";
     @StringRes
     private final int name;
     private final String url;
@@ -44,11 +41,6 @@ public class Example implements INamed, Parcelable {
     @Override
     public int getName() {
         return name;
-    }
-
-    @NonNull
-    public String getPath() {
-        return String.format(Locale.ENGLISH, "%s/%s.java", BASE_URL, url);
     }
 
     @NonNull
