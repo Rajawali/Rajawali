@@ -9,4 +9,9 @@
     <style name="AppTheme" parent="AppBaseTheme">
     </style>
 
+    <style name="PreferenceTheme" parent="@style/AppTheme">
+        <item name="android:typeface">monospace</item>
+    </style>
+
+
 </resources>

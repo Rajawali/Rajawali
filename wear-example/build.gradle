@@ -10,7 +10,9 @@ android {
         versionCode getGitCommitCount()
         versionName getTag()
     }
-    
+    buildFeatures {
+        viewBinding true
+    }
     buildTypes {
         release {
             minifyEnabled false

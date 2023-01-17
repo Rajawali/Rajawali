@@ -183,25 +183,27 @@ class Capabilities private constructor() {
     }
 
     override fun toString(): String {
+        readValues()
         val sb = StringBuffer()
-        sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n")
-        sb.append("Max Combined Texture Image Units   : ").append(maxCombinedTextureUnits).append("\n")
-        sb.append("Max Cube Map Texture Size          : ").append(maxCubeMapTextureSize).append("\n")
-        sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n")
-        sb.append("Max Renderbuffer Size              : ").append(maxRenderbufferSize).append("\n")
-        sb.append("Max Texture Image Units            : ").append(maxTextureImageUnits).append("\n")
-        sb.append("Max Texture Size                   : ").append(maxTextureSize).append("\n")
-        sb.append("Max Varying Vectors                : ").append(maxVaryingVectors).append("\n")
-        sb.append("Max Vertex Attribs                 : ").append(maxVertexAttribs).append("\n")
-        sb.append("Max Vertex Texture Image Units     : ").append(maxVertexTextureImageUnits).append("\n")
-        sb.append("Max Vertex Uniform Vectors         : ").append(maxVertexUniformVectors).append("\n")
-        sb.append("Max Viewport Width                 : ").append(maxViewportWidth).append("\n")
-        sb.append("Max Viewport Height                : ").append(maxViewportHeight).append("\n")
-        sb.append("Min Aliased Line Width             : ").append(minAliasedLineWidth).append("\n")
-        sb.append("Max Aliased Line Width             : ").append(maxAliasedLineWidth).append("\n")
-        sb.append("Min Aliased Point Size             : ").append(minAliasedPointSize).append("\n")
-        sb.append("Max Aliased Point Width            : ").append(maxAliasedPointSize).append("\n")
-        sb.append("-=-=-=- /OpenGL Capabilities -=-=-=-\n")
+        sb.append("=-=-= OpenGL Capabilities =-=-=\n")
+        sb.append("Max Combined Texture Image Units:").append(maxCombinedTextureUnits).append("\n")
+        sb.append("Max Vertex   Texture Image Units:").append(maxVertexTextureImageUnits).append("\n")
+        sb.append("Max Cube Map Texture Size   :").append(maxCubeMapTextureSize).append("\n")
+        sb.append("Max Fragment Uniform Vectors:").append(maxFragmentUniformVectors).append("\n")
+        sb.append("Max Renderbuffer Size       :").append(maxRenderbufferSize).append("\n")
+        sb.append("Max Texture Image Units     :").append(maxTextureImageUnits).append("\n")
+        sb.append("Max Texture Size            :").append(maxTextureSize).append("\n")
+        sb.append("Max Varying Vectors         :").append(maxVaryingVectors).append("\n")
+        sb.append("Max Vertex Attribs          :").append(maxVertexAttribs).append("\n")
+        sb.append("Max Vertex Uniform Vectors  :").append(maxVertexUniformVectors).append("\n")
+        sb.append("Max Viewport Width          :").append(maxViewportWidth).append("\n")
+        sb.append("Max Viewport Height         :").append(maxViewportHeight).append("\n")
+        sb.append("Min/Max Aliased Line Width  :").append(minAliasedLineWidth).append("/").append(maxAliasedLineWidth).append("\n")
+        sb.append("Min Aliased Point Size      :").append(minAliasedPointSize).append("\n")
+        sb.append("Max Aliased Point Width     :").append(maxAliasedPointSize).append("\n")
+        sb.append("Vendor  : ").append(vendor).append("\n")
+        sb.append("Renderer: ").append(renderer).append("\n")
+        sb.append("Version : ").append(version).append("\n")
         return sb.toString()
     }
 
@@ -309,8 +311,6 @@ class Capabilities private constructor() {
 
         /**
          * The EGL major version number of this device.
-         *
-         * @return
          */
         val eGLMajorVersion: Int
             get() {
@@ -320,8 +320,6 @@ class Capabilities private constructor() {
 
         /**
          * The EGL minor version number of this device.
-         *
-         * @return
          */
         val eGLMinorVersion: Int
             get() {
@@ -331,8 +329,6 @@ class Capabilities private constructor() {
 
         /**
          * The highest GL ES major version number supported by this device.
-         *
-         * @return
          */
         @JvmStatic
         val gLESMajorVersion: Int
