@@ -1,6 +1,6 @@
 package org.rajawali3d.vr.surface;
 
-/**
+/*
  * Copyright 2015 Dennis Ippel
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
@@ -19,7 +19,9 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.google.vrtoolkit.cardboard.CardboardView;
+
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
@@ -35,16 +37,16 @@ public class VRSurfaceView extends CardboardView implements ISurface {
 
     protected RendererDelegate mRendererDelegate;
 
-    protected double               mFrameRate          = 60.0;
-    protected int                  mRenderMode         = ISurface.RENDERMODE_WHEN_DIRTY;
+    protected double mFrameRate = 60.0;
+    protected int mRenderMode = ISurface.RENDERMODE_WHEN_DIRTY;
     protected ANTI_ALIASING_CONFIG mAntiAliasingConfig = ANTI_ALIASING_CONFIG.NONE;
-    protected boolean              mIsTransparent      = false;
-    protected int                  mBitsRed            = 5;
-    protected int                  mBitsGreen          = 6;
-    protected int                  mBitsBlue           = 5;
-    protected int                  mBitsAlpha          = 0;
-    protected int                  mBitsDepth          = 16;
-    protected int                  mMultiSampleCount   = 0;
+    protected boolean mIsTransparent = false;
+    protected int mBitsRed = 5;
+    protected int mBitsGreen = 6;
+    protected int mBitsBlue = 5;
+    protected int mBitsAlpha = 0;
+    protected int mBitsDepth = 16;
+    protected int mMultiSampleCount = 0;
 
     public VRSurfaceView(Context context) {
         super(context);
@@ -56,10 +58,9 @@ public class VRSurfaceView extends CardboardView implements ISurface {
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
-        if (attrs == null) {
+        if (attrs == null)
             return;
-        }
-        final TypedArray array = context.obtainStyledAttributes(attrs, org.rajawali3d.R.styleable.SurfaceView);
+        final TypedArray array = context.obtainStyledAttributes(attrs, org.rajawali3d.R.styleable.VRSurfaceView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
@@ -95,13 +96,13 @@ public class VRSurfaceView extends CardboardView implements ISurface {
 
         if (mIsTransparent) {
             setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
-                                                             8, 8, 8, 8, mBitsDepth));
+                    8, 8, 8, 8, mBitsDepth));
 
             getHolder().setFormat(PixelFormat.TRANSLUCENT);
             setZOrderOnTop(true);
         } else {
             setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
-                                                             mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
+                    mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
 
             getHolder().setFormat(PixelFormat.RGBA_8888);
             setZOrderOnTop(false);
@@ -223,14 +224,14 @@ public class VRSurfaceView extends CardboardView implements ISurface {
      */
     private static class RendererDelegate implements GLSurfaceView.Renderer {
 
-        final VRSurfaceView    mRajawaliSurfaceView; // The surface view to render on
+        final VRSurfaceView mRajawaliSurfaceView; // The surface view to render on
         final ISurfaceRenderer mRenderer; // The renderer
 
         public RendererDelegate(ISurfaceRenderer renderer, VRSurfaceView surfaceView) {
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
             mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY ?
-                                   mRajawaliSurfaceView.mFrameRate : 0);
+                    mRajawaliSurfaceView.mFrameRate : 0);
             mRenderer.setAntiAliasingMode(mRajawaliSurfaceView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliSurfaceView);
         }

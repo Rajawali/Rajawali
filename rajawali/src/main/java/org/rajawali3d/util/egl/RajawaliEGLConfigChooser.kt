@@ -2,7 +2,6 @@ package org.rajawali3d.util.egl
 
 import android.annotation.TargetApi
 import android.opengl.EGLExt
-import android.opengl.GLSurfaceView
 import android.os.Build
 import org.rajawali3d.view.IRajawaliEglConfigChooser
 import org.rajawali3d.view.ISurface

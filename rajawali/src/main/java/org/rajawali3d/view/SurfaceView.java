@@ -46,8 +46,9 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
-        if (attrs == null) return;
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SurfaceView);
+        if (attrs == null)
+            return;
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SurfaceView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
@@ -72,8 +73,8 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
             } else if (attr == R.styleable.SurfaceView_bitsDepth) {
                 mBitsDepth = array.getInteger(attr, 16);
             }
+            array.recycle();
         }
-        array.recycle();
     }
 
     private void initialize() {
@@ -210,14 +211,14 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
      */
     private static class RendererDelegate implements Renderer {
 
-        final SurfaceView      mRajawaliSurfaceView; // The surface view to render on
+        final SurfaceView mRajawaliSurfaceView; // The surface view to render on
         final ISurfaceRenderer mRenderer; // The renderer
 
         public RendererDelegate(ISurfaceRenderer renderer, SurfaceView surfaceView) {
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
             mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY ?
-                mRajawaliSurfaceView.mFrameRate : 0);
+                    mRajawaliSurfaceView.mFrameRate : 0);
             mRenderer.setAntiAliasingMode(mRajawaliSurfaceView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliSurfaceView);
         }
