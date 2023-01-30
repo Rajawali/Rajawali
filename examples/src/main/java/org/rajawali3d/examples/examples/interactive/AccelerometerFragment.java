@@ -23,14 +23,14 @@ public class AccelerometerFragment extends AExampleFragment implements SensorEve
     private final static float ALPHA = 0.8f;
     private final static int SENSITIVITY = 5;
 
-    private float mGravity[];
+    private float[] mGravity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mGravity = new float[3];
-        SensorManager mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        SensorManager mSensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_FASTEST);
     }
@@ -58,9 +58,8 @@ public class AccelerometerFragment extends AExampleFragment implements SensorEve
     }
 
     private final class AccelerometerRenderer extends AExampleRenderer {
-        private DirectionalLight mLight;
         private Object3D mMonkey;
-        private Vector3 mAccValues;
+        private final Vector3 mAccValues;
 
         public AccelerometerRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
@@ -70,7 +69,7 @@ public class AccelerometerFragment extends AExampleFragment implements SensorEve
         @Override
         protected void initScene() {
             try {
-                mLight = new DirectionalLight(0.1f, -1.0f, -1.0f);
+                DirectionalLight mLight = new DirectionalLight(0.1f, -1.0f, -1.0f);
                 mLight.setColor(1.0f, 1.0f, 1.0f);
                 mLight.setPower(1);
                 getCurrentScene().addLight(mLight);
