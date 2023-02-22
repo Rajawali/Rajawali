@@ -35,7 +35,7 @@ dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'androidx.annotation:annotation:1.5.0'
+    implementation 'androidx.annotation:annotation:1.6.0'
 
     implementation project(':rajawali')
 }
